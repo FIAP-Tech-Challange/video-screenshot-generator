@@ -1,0 +1,52 @@
+<nz-layout class="main-layout">
+  <nz-sider
+    nzCollapsible
+    [(nzCollapsed)]="isCollapsed"
+    [nzTrigger]="null"
+    class="sidebar"
+  >
+    <div class="logo">
+      @if (!isCollapsed) {
+      <h3>VSG</h3>
+      } @else {
+      <span>V</span>
+      }
+    </div>
+    <ul nz-menu nzTheme="dark" nzMode="inline">
+      <li nz-menu-item>
+        <span nz-icon nzType="dashboard"></span>
+        <span>Dashboard</span>
+      </li>
+      <li nz-menu-item>
+        <span nz-icon nzType="video-camera"></span>
+        <span>Vídeos</span>
+      </li>
+      <li nz-menu-item>
+        <span nz-icon nzType="picture"></span>
+        <span>Screenshots</span>
+      </li>
+      <li nz-menu-item>
+        <span nz-icon nzType="setting"></span>
+        <span>Configurações</span>
+      </li>
+    </ul>
+  </nz-sider>
+
+  <nz-layout>
+    <nz-header class="header">
+      <button
+        class="trigger"
+        nz-icon
+        [nzType]="isCollapsed ? 'menu-unfold' : 'menu-fold'"
+        (click)="isCollapsed = !isCollapsed"
+        aria-label="Toggle sidebar"
+      ></button>
+    </nz-header>
+
+    <nz-content class="content">
+      <router-outlet></router-outlet>
+    </nz-content>
+
+    <nz-footer class="footer"> Video Screenshot Generator ©2026 </nz-footer>
+  </nz-layout>
+</nz-layout>
