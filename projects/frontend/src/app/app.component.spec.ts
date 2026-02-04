@@ -22,12 +22,10 @@ describe('AppComponent', () => {
     expect(app.title).toEqual('frontend');
   });
 
-  it('should render welcome message', () => {
+  it('should have router-outlet for routing', () => {
     const fixture = TestBed.createComponent(AppComponent);
     fixture.detectChanges();
     const compiled = fixture.nativeElement as HTMLElement;
-    expect(compiled.querySelector('h1')?.textContent).toContain(
-      'Bem-vindo ao Frontend'
-    );
+    expect(compiled.querySelector('router-outlet')).toBeTruthy();
   });
 });

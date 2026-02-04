@@ -1,0 +1,113 @@
+@use "styles/variables" as *;
+
+.settings-container {
+  max-width: 720px;
+}
+
+.settings-header {
+  margin-bottom: 28px;
+
+  h1 {
+    margin: 0 0 8px;
+    font-size: 24px;
+    font-weight: 700;
+    color: $color-dark;
+  }
+
+  p {
+    margin: 0;
+    font-size: 14px;
+    color: rgba(0, 0, 0, 0.45);
+  }
+}
+
+.settings-content {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.modern-card {
+  border-radius: $border-radius-card;
+  border: none;
+  box-shadow: $card-shadow;
+  transition: $transition-base;
+
+  &:hover {
+    box-shadow: $hover-shadow;
+  }
+}
+
+.avatar-card {
+  .avatar-section {
+    display: flex;
+    align-items: center;
+    gap: 24px;
+    flex-wrap: wrap;
+  }
+
+  .profile-avatar {
+    background: $primary-gradient;
+    flex-shrink: 0;
+  }
+
+  .avatar-actions {
+    display: flex;
+    gap: 12px;
+  }
+}
+
+.form-card {
+  ::ng-deep .ant-form-item {
+    margin-bottom: 20px;
+  }
+
+  .ant-btn {
+    margin-right: 8px;
+  }
+}
+
+.security-card {
+  h3 {
+    margin: 0 0 20px;
+    font-size: 18px;
+    font-weight: 600;
+  }
+}
+
+.security-items {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.security-item {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 16px;
+  background: #fafafa;
+  border-radius: $border-radius-item;
+
+  .anticon {
+    font-size: 24px;
+    color: $color-primary;
+  }
+
+  .security-info {
+    flex: 1;
+    min-width: 0;
+
+    h4 {
+      margin: 0 0 4px;
+      font-size: 14px;
+      font-weight: 600;
+    }
+
+    p {
+      margin: 0;
+      font-size: 13px;
+      color: rgba(0, 0, 0, 0.45);
+    }
+  }
+}

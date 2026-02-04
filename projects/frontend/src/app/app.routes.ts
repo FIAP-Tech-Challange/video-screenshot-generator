@@ -1,8 +1,17 @@
 import { Routes } from '@angular/router';
 import { MainLayoutComponent } from './layouts/main-layout/main-layout.component';
-import { authGuard } from './core/guards/auth.guard';
+import { authGuard } from './auth/guards/auth.guard';
+import { guestGuard } from './auth/guards/guest.guard';
+import { LoginComponent } from './auth/components/login/login.component';
+import { RegisterComponent } from './auth/components/register/register.component';
+import { UploadComponent } from './modules/upload/upload.component';
+import { VideosComponent } from './modules/videos/videos.component';
+import { SettingsComponent } from './modules/settings/settings.component';
 
 export const routes: Routes = [
+  { path: '', redirectTo: '/login', pathMatch: 'full' },
+  { path: 'login', component: LoginComponent, canActivate: [guestGuard] },
+  { path: 'register', component: RegisterComponent, canActivate: [guestGuard] },
   {
     path: '',
     component: MainLayoutComponent,
@@ -15,6 +24,9 @@ export const routes: Routes = [
             (m) => m.DASHBOARD_ROUTES
           ),
       },
+      { path: 'upload', component: UploadComponent },
+      { path: 'videos', component: VideosComponent },
+      { path: 'settings', component: SettingsComponent },
       {
         path: '',
         redirectTo: 'dashboard',
@@ -22,13 +34,5 @@ export const routes: Routes = [
       },
     ],
   },
-  {
-    path: 'auth',
-    loadChildren: () =>
-      import('./modules/auth/auth.routes').then((m) => m.AUTH_ROUTES),
-  },
-  {
-    path: '**',
-    redirectTo: 'dashboard',
-  },
+  { path: '**', redirectTo: '/login' },
 ];

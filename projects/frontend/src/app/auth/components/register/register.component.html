@@ -1,0 +1,154 @@
+<div class="auth-page">
+  <div class="auth-background"></div>
+  <div class="auth-card-wrapper">
+    <nz-card class="auth-card" nzTitle="">
+      <div class="auth-card-header">
+        <span
+          nz-icon
+          nzType="user-add"
+          nzTheme="outline"
+          class="auth-icon"
+        ></span>
+        <h1>Criar conta</h1>
+        <p>Preencha os dados para se cadastrar</p>
+      </div>
+
+      <form nz-form [formGroup]="registerForm" (ngSubmit)="onSubmit()">
+        <nz-form-item>
+          <nz-form-control nzErrorTip="Informe nome e sobrenome">
+            <input
+              nz-input
+              formControlName="name"
+              placeholder="Nome completo"
+              type="text"
+              autocomplete="name"
+              maxlength="100"
+              aria-label="Nome completo"
+            />
+          </nz-form-control>
+        </nz-form-item>
+
+        <nz-form-item>
+          <nz-form-control nzErrorTip="Informe um email válido">
+            <input
+              nz-input
+              formControlName="email"
+              placeholder="Email"
+              type="email"
+              autocomplete="email"
+              aria-label="Email"
+            />
+          </nz-form-control>
+        </nz-form-item>
+
+        <nz-form-item>
+          <nz-form-control
+            nzErrorTip="Mín. 8 e máx. 20 caracteres, 1 maiúscula e 1 caractere especial"
+          >
+            <nz-input-group [nzSuffix]="passwordSuffix">
+              <input
+                nz-input
+                formControlName="password"
+                placeholder="Senha (máx. 20 caracteres)"
+                [type]="showPassword() ? 'text' : 'password'"
+                autocomplete="new-password"
+                maxlength="20"
+                aria-label="Senha"
+              />
+            </nz-input-group>
+            <ng-template #passwordSuffix>
+              <i
+                nz-icon
+                [nzType]="showPassword() ? 'eye-invisible' : 'eye'"
+                nzTheme="outline"
+                class="password-toggle-icon"
+                (click)="togglePasswordVisibility()"
+                [attr.aria-label]="
+                  showPassword() ? 'Ocultar senha' : 'Exibir senha'
+                "
+              ></i>
+            </ng-template>
+            <app-password-strength
+              [password]="registerForm.get('password')?.value ?? ''"
+            />
+          </nz-form-control>
+        </nz-form-item>
+
+        <nz-form-item>
+          <nz-form-control nzErrorTip="As senhas devem ser iguais">
+            <nz-input-group [nzSuffix]="confirmPasswordSuffix">
+              <input
+                nz-input
+                formControlName="confirmPassword"
+                placeholder="Confirmar senha (máx. 20 caracteres)"
+                [type]="showConfirmPassword() ? 'text' : 'password'"
+                autocomplete="new-password"
+                maxlength="20"
+                aria-label="Confirmar senha"
+              />
+            </nz-input-group>
+            <ng-template #confirmPasswordSuffix>
+              <i
+                nz-icon
+                [nzType]="showConfirmPassword() ? 'eye-invisible' : 'eye'"
+                nzTheme="outline"
+                class="password-toggle-icon"
+                (click)="toggleConfirmPasswordVisibility()"
+                [attr.aria-label]="
+                  showConfirmPassword() ? 'Ocultar senha' : 'Exibir senha'
+                "
+              ></i>
+            </ng-template>
+          </nz-form-control>
+        </nz-form-item>
+
+        <nz-form-item>
+          <nz-form-control nzErrorTip="Telefone inválido (10 ou 11 dígitos)">
+            <input
+              nz-input
+              formControlName="phone"
+              placeholder="Telefone (00) 00000-0000"
+              type="tel"
+              maxlength="16"
+              (input)="onPhoneInput($event)"
+              aria-label="Telefone"
+            />
+          </nz-form-control>
+        </nz-form-item>
+
+        <nz-form-item>
+          <nz-form-control nzErrorTip="CPF inválido">
+            <input
+              nz-input
+              formControlName="cpf"
+              placeholder="CPF 000.000.000-00"
+              type="text"
+              inputmode="numeric"
+              maxlength="14"
+              (input)="onCPFInput($event)"
+              aria-label="CPF"
+            />
+          </nz-form-control>
+        </nz-form-item>
+
+        <button
+          nz-button
+          nzType="primary"
+          nzBlock
+          nzSize="large"
+          [nzLoading]="loading()"
+          [disabled]="registerForm.invalid"
+          type="submit"
+          aria-label="Cadastrar"
+        >
+          Cadastrar
+        </button>
+      </form>
+
+      <div class="auth-footer">
+        <span>Já tem conta?</span>
+        <a routerLink="/login" nz-button nzType="link">Entrar</a>
+      </div>
+    </nz-card>
+  </div>
+</div>
