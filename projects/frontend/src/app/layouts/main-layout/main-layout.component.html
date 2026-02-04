@@ -1,52 +1,93 @@
-<nz-layout class="main-layout">
-  <nz-sider
-    nzCollapsible
-    [(nzCollapsed)]="isCollapsed"
-    [nzTrigger]="null"
-    class="sidebar"
+<div class="layout-wrapper">
+  <app-sidebar
+    [isCollapsed]="isCollapsed()"
+    [isMobileOpen]="isMobileMenuOpen()"
+    (toggleCollapse)="toggleSidebar()"
   >
-    <div class="logo">
-      @if (!isCollapsed) {
-      <h3>VSG</h3>
-      } @else {
-      <span>V</span>
-      }
-    </div>
-    <ul nz-menu nzTheme="dark" nzMode="inline">
-      <li nz-menu-item>
-        <span nz-icon nzType="dashboard"></span>
-        <span>Dashboard</span>
-      </li>
-      <li nz-menu-item>
-        <span nz-icon nzType="video-camera"></span>
-        <span>Vídeos</span>
-      </li>
-      <li nz-menu-item>
-        <span nz-icon nzType="picture"></span>
-        <span>Screenshots</span>
-      </li>
-      <li nz-menu-item>
-        <span nz-icon nzType="setting"></span>
-        <span>Configurações</span>
-      </li>
-    </ul>
-  </nz-sider>
+  </app-sidebar>
 
-  <nz-layout>
-    <nz-header class="header">
-      <button
-        class="trigger"
-        nz-icon
-        [nzType]="isCollapsed ? 'menu-unfold' : 'menu-fold'"
-        (click)="isCollapsed = !isCollapsed"
-        aria-label="Toggle sidebar"
-      ></button>
-    </nz-header>
+  <div class="main-content" [class.collapsed]="isCollapsed()">
+    <header class="main-header">
+      <div class="header-left">
+        <button
+          nz-button
+          nzType="text"
+          nzShape="circle"
+          class="sidebar-toggle"
+          (click)="toggleSidebar()"
+          type="button"
+          aria-label="Alternar menu"
+        >
+          <i
+            nz-icon
+            [nzType]="isCollapsed() ? 'menu-unfold' : 'menu-fold'"
+            nzTheme="outline"
+          ></i>
+        </button>
+        <h2 class="page-title">{{ currentPageTitle() }}</h2>
+      </div>
 
-    <nz-content class="content">
+      <div class="header-actions">
+        <nz-badge [nzCount]="5" [nzOverflowCount]="99">
+          <button
+            nz-button
+            nzType="text"
+            nzShape="circle"
+            type="button"
+            aria-label="Notificações"
+          >
+            <i nz-icon nzType="bell" nzTheme="outline"></i>
+          </button>
+        </nz-badge>
+
+        <div
+          nz-dropdown
+          [nzDropdownMenu]="userMenu"
+          class="user-avatar-dropdown"
+        >
+          <nz-avatar [nzSize]="40" nzIcon="user"> </nz-avatar>
+        </div>
+
+        <nz-dropdown-menu #userMenu="nzDropdownMenu">
+          <ul nz-menu>
+            <li
+              nz-menu-item
+              [routerLink]="['/settings']"
+              (click)="closeMobileMenu()"
+            >
+              <i nz-icon nzType="user" nzTheme="outline"></i>
+              Meu Perfil
+            </li>
+            <li
+              nz-menu-item
+              [routerLink]="['/settings']"
+              (click)="closeMobileMenu()"
+            >
+              <i nz-icon nzType="setting" nzTheme="outline"></i>
+              Configurações
+            </li>
+            <li nz-menu-divider></li>
+            <li nz-menu-item (click)="logout()">
+              <i nz-icon nzType="logout" nzTheme="outline"></i>
+              Sair
+            </li>
+          </ul>
+        </nz-dropdown-menu>
+      </div>
+    </header>
+
+    <div class="content-wrapper">
       <router-outlet></router-outlet>
-    </nz-content>
+    </div>
+  </div>
+</div>
 
-    <nz-footer class="footer"> Video Screenshot Generator ©2026 </nz-footer>
-  </nz-layout>
-</nz-layout>
+@if (isMobileMenuOpen()) {
+<div
+  class="sidebar-overlay"
+  (click)="closeMobileMenu()"
+  role="button"
+  tabindex="0"
+  aria-label="Fechar menu"
+></div>
+}

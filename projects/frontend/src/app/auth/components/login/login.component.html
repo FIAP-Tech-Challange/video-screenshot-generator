@@ -1,0 +1,73 @@
+<div class="auth-page">
+  <div class="auth-background"></div>
+  <div class="auth-card-wrapper">
+    <nz-card class="auth-card" nzTitle="">
+      <div class="auth-card-header">
+        <span nz-icon nzType="lock" nzTheme="outline" class="auth-icon"></span>
+        <h1>Entrar</h1>
+        <p>Use seu email e senha para acessar</p>
+      </div>
+
+      <form nz-form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+        <nz-form-item>
+          <nz-form-control nzErrorTip="Informe um email válido">
+            <input
+              nz-input
+              formControlName="email"
+              placeholder="Email"
+              type="email"
+              autocomplete="email"
+              aria-label="Email"
+            />
+          </nz-form-control>
+        </nz-form-item>
+
+        <nz-form-item>
+          <nz-form-control nzErrorTip="Senha deve ter no mínimo 8 caracteres">
+            <nz-input-group [nzSuffix]="passwordSuffix">
+              <input
+                nz-input
+                formControlName="password"
+                placeholder="Senha"
+                [type]="showPassword() ? 'text' : 'password'"
+                autocomplete="current-password"
+                maxlength="20"
+                aria-label="Senha"
+              />
+            </nz-input-group>
+            <ng-template #passwordSuffix>
+              <i
+                nz-icon
+                [nzType]="showPassword() ? 'eye-invisible' : 'eye'"
+                nzTheme="outline"
+                class="password-toggle-icon"
+                (click)="togglePasswordVisibility()"
+                [attr.aria-label]="
+                  showPassword() ? 'Ocultar senha' : 'Exibir senha'
+                "
+              ></i>
+            </ng-template>
+          </nz-form-control>
+        </nz-form-item>
+
+        <button
+          nz-button
+          nzType="primary"
+          nzBlock
+          nzSize="large"
+          [nzLoading]="loading()"
+          [disabled]="loginForm.invalid"
+          type="submit"
+          aria-label="Entrar"
+        >
+          Entrar
+        </button>
+      </form>
+
+      <div class="auth-footer">
+        <span>Não tem conta?</span>
+        <a routerLink="/register" nz-button nzType="link">Criar conta</a>
+      </div>
+    </nz-card>
+  </div>
+</div>

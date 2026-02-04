@@ -17,28 +17,30 @@ Aplicação frontend desenvolvida com Angular 17 e ng-zorro-antd (Ant Design).
 ```
 src/
 ├── app/
-│   ├── core/                    # Serviços singleton, guards, interceptors
-│   │   ├── guards/              # Guards de autenticação
-│   │   ├── interceptors/        # Interceptors HTTP
+│   ├── auth/                    # Autenticação (login, cadastro, guards)
+│   │   ├── components/          # Login e Register
+│   │   ├── guards/              # authGuard (proteção de rotas)
+│   │   ├── services/            # AuthService, ValidatorsService
+│   │   ├── utils/               # Validação CPF e senha
+│   │   └── models/              # LoginCredentials, RegisterUser
+│   ├── core/                    # Interceptors, serviços globais
+│   │   ├── interceptors/        # auth.interceptor, http-error.interceptor
 │   │   ├── models/              # Interfaces e tipos
-│   │   └── services/            # Serviços core (ApiService)
-│   ├── shared/                  # Componentes, pipes e diretivas compartilhados
-│   │   ├── components/          # Componentes reutilizáveis
-│   │   ├── pipes/               # Pipes customizados
-│   │   └── directives/          # Diretivas customizadas
-│   ├── modules/                 # Módulos de funcionalidade (lazy loading)
-│   │   ├── auth/                # Módulo de autenticação
-│   │   └── dashboard/           # Módulo de dashboard
-│   ├── layouts/                 # Componentes de layout
-│   │   └── main-layout/         # Layout principal com sidebar
+│   │   └── services/            # ApiService
+│   ├── shared/                  # Componentes reutilizáveis
+│   │   ├── components/          # password-strength, loading
+│   │   └── pipes/               # Pipes customizados
+│   ├── modules/                 # Módulos de funcionalidade
+│   │   ├── dashboard/           # Dashboard (cards, estatísticas, atividade)
+│   │   ├── upload/              # Upload de vídeo (drag & drop, preview)
+│   │   ├── videos/              # Meus Vídeos (lista)
+│   │   └── settings/            # Configurações de perfil e segurança
+│   ├── layouts/                 # Layout principal (sidebar VideoFlow, rotas ativas)
 │   ├── app.component.ts         # Componente raiz
-│   ├── app.config.ts            # Configuração da aplicação
-│   └── app.routes.ts            # Rotas principais
+│   ├── app.config.ts            # Configuração (rotas, HTTP, interceptors)
+│   └── app.routes.ts            # Rotas: /login, /register, /dashboard (protegido)
 ├── assets/                      # Arquivos estáticos
 ├── environments/                # Configurações de ambiente
-│   ├── environment.ts           # Desenvolvimento
-│   ├── environment.prod.ts      # Produção
-│   └── environment.test.ts      # Testes
 ├── index.html                   # HTML principal
 ├── main.ts                      # Entry point
 └── styles.scss                  # Estilos globais
@@ -144,22 +146,37 @@ npm run test:watch
 npm run test:coverage
 ```
 
-## 🔒 Autenticação e Guards
+## 🔒 Autenticação (Login e Cadastro)
 
-O projeto possui um `authGuard` configurado para proteger rotas privadas.
+### Funcionalidades
 
-**Nota**: A lógica de autenticação está como TODO e precisa ser implementada de acordo com o backend.
+- **Login** (`/login`): email e senha (mín. 8 caracteres). Validação em tempo real. Link para criar conta.
+- **Cadastro** (`/register`): email, senha (8+ caracteres, 1 maiúscula, 1 especial), confirmação de senha, telefone (máscara brasileira), CPF (validação e formatação XXX.XXX.XXX-XX). Indicador visual de força da senha. Link para login.
+- **Guards**: `authGuard` protege rotas privadas; redireciona para `/login` se não autenticado.
+- **AuthService** (mock): login/register com delay, persistência em `localStorage`, logout com redirecionamento.
+- **Interceptor**: `auth.interceptor` adiciona o token Bearer nas requisições HTTP.
+
+### Validações
+
+- **CPF**: válido (dígitos verificadores) e formatação automática.
+- **Senha**: mínimo 8 caracteres, 1 maiúscula, 1 caractere especial.
+- **Telefone**: 10 ou 11 dígitos, máscara `(XX) XXXXX-XXXX`.
+- **Confirmação de senha**: validação cruzada no formulário.
 
 ## 🚦 Rotas
 
 ### Rotas Públicas
 
-- `/auth/login` - Página de login
+- `/login` - Página de login
+- `/register` - Página de cadastro
 
 ### Rotas Privadas (requerem autenticação)
 
-- `/dashboard` - Dashboard principal
-- `/` - Redireciona para dashboard
+- `/dashboard` - Dashboard (cards, estatísticas, atividade recente, atalho para upload)
+- `/upload` - Upload de vídeo (drag & drop, MP4/MOV/AVI/MKV/WebM, preview)
+- `/videos` - Meus Vídeos (lista; empty state com link para upload)
+- `/settings` - Configurações (avatar, perfil, segurança)
+- `/` - Redireciona para `dashboard`
 
 Todas as rotas privadas utilizam **lazy loading** para otimização de performance.
 
