@@ -1,0 +1,96 @@
+services:
+  postgres:
+    image: postgres:15
+    restart: unless-stopped
+    env_file:
+      - .env
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_PORT: ${POSTGRES_PORT}
+    ports:
+      - "${POSTGRES_PORT}:${POSTGRES_PORT}"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  db-migrate:
+    image: node:20-alpine
+    restart: "no"
+    env_file:
+      - .env
+    environment:
+      DB_HOST: postgres
+      DB_PORT: ${POSTGRES_PORT}
+      DB_USERNAME: ${POSTGRES_USER}
+      DB_PASSWORD: ${POSTGRES_PASSWORD}
+      DB_NAME: ${POSTGRES_DB}
+      DB_LOGGING: ${DB_LOGGING:-false}
+    working_dir: /usr/src/app
+    volumes:
+      - ./infra/database:/usr/src/app
+    depends_on:
+      postgres:
+        condition: service_healthy
+    command: sh -c "npm install && npm run migration:run"
+
+  api-bff:
+    build:
+      context: ./projects/api-bff
+      dockerfile: Dockerfile
+      target: dev
+    image: api-bff:dev
+    restart: unless-stopped
+    env_file:
+      - .env
+    environment:
+      DB_URL: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:${POSTGRES_PORT}/${POSTGRES_DB}
+      DB_PORT: ${POSTGRES_PORT}
+      DB_USERNAME: ${POSTGRES_USER}
+      DB_PASSWORD: ${POSTGRES_PASSWORD}
+      DB_NAME: ${POSTGRES_DB}
+      DB_LOGGING: ${DB_LOGGING:-false}
+      JWT_SECRET: ${JWT_SECRET}
+      NODE_ENV: development
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./projects/api-bff:/usr/src/app
+      - /usr/src/app/node_modules
+    depends_on:
+      postgres:
+        condition: service_healthy
+      db-migrate:
+        condition: service_completed_successfully
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "wget -qO- --timeout=2 http://127.0.0.1:3000/health || exit 1",
+        ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  minio:
+    image: minio/minio:latest
+    container_name: minio
+    restart: always
+    ports:
+      - "9000:9000"
+      - "8000:9001"
+    environment:
+      MINIO_ROOT_USER: ${ACCESS_KEY_ID_MINIO}
+      MINIO_ROOT_PASSWORD: ${SECRET_ACCESS_KEY_MINIO}
+    volumes:
+      - minio_data:/data
+    command: server /data --console-address ":9001"
+
+volumes:
+  postgres_data:
+  minio_data:

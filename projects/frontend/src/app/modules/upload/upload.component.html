@@ -1,0 +1,64 @@
+<div class="upload-container">
+  <div class="upload-header">
+    <h1>Upload de Vídeo</h1>
+    <p>Envie seus vídeos nos formatos suportados</p>
+  </div>
+
+  <nz-upload
+    class="upload-area"
+    nzType="drag"
+    [nzMultiple]="false"
+    [nzAccept]="acceptTypes"
+    [nzBeforeUpload]="beforeUpload"
+    [nzShowUploadList]="false"
+  >
+    <div class="upload-content">
+      <p class="ant-upload-drag-icon">
+        <span nz-icon nzType="cloud-upload" nzTheme="outline"></span>
+      </p>
+      <p class="ant-upload-text">Clique ou arraste o arquivo para esta área</p>
+      <p class="ant-upload-hint">
+        Formatos suportados: MP4, MOV, AVI, MKV, WebM (máx. 100MB)
+      </p>
+    </div>
+  </nz-upload>
+
+  @if (uploadProgress() > 0 && uploadProgress() < 100) {
+  <div class="upload-progress">
+    <div class="progress-header">
+      <h4>Enviando vídeo...</h4>
+      <span>{{ uploadProgress() }}%</span>
+    </div>
+    <nz-progress
+      [nzPercent]="uploadProgress()"
+      [nzStatus]="uploadStatus()"
+    ></nz-progress>
+    @if (currentFile(); as file) {
+    <div class="file-info">
+      <span nz-icon nzType="file"></span>
+      <span>{{ file.name }}</span>
+      <span class="file-size">{{ file.size | fileSize }}</span>
+    </div>
+    }
+  </div>
+  } @if (videoPreview(); as src) {
+  <div class="video-preview">
+    <div class="preview-header">
+      <h3>Pré-visualização</h3>
+      <div class="preview-actions">
+        <button nz-button nzType="primary" (click)="confirmUpload()">
+          <span nz-icon nzType="check"></span>
+          Confirmar Upload
+        </button>
+        <button nz-button nzType="default" (click)="removePreview()">
+          <span nz-icon nzType="close"></span>
+          Remover
+        </button>
+      </div>
+    </div>
+    <video controls class="preview-player" [src]="src">
+      Seu navegador não suporta a tag de vídeo.
+    </video>
+  </div>
+  }
+</div>
