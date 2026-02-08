@@ -1,6 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
 import { BadRequestException } from '@nestjs/common';
 import { VideoProcessingJobService } from './video-processing-job.service';
 import {
@@ -13,7 +12,6 @@ import type { MulterFile } from './types';
 
 describe('VideoProcessingJobService', () => {
   let service: VideoProcessingJobService;
-  let repository: Repository<VideoProcessingJob>;
   let storageService: IStorageClient;
 
   const mockRepository = {
@@ -39,9 +37,6 @@ describe('VideoProcessingJobService', () => {
     }).compile();
 
     service = module.get<VideoProcessingJobService>(VideoProcessingJobService);
-    repository = module.get<Repository<VideoProcessingJob>>(
-      getRepositoryToken(VideoProcessingJob),
-    );
     storageService = module.get<IStorageClient>('IStorageClient');
   });
 
@@ -104,7 +99,9 @@ describe('VideoProcessingJobService', () => {
 
       await service.create(userId, mockFile);
 
-      const uploadedFiles = (storageService as StorageLocalService).getUploadedFiles();
+      const uploadedFiles = (
+        storageService as StorageLocalService
+      ).getUploadedFiles();
       const expectedFileName = `${userId}/${mockJob.id}/${mockFile.originalname}`;
 
       expect(uploadedFiles.has(expectedFileName)).toBe(true);
@@ -112,12 +109,14 @@ describe('VideoProcessingJobService', () => {
     });
 
     it('should throw BadRequestException when file is not provided', async () => {
-      await expect(service.create(userId, undefined as any)).rejects.toThrow(
-        BadRequestException,
-      );
-      await expect(service.create(userId, undefined as any)).rejects.toThrow(
-        'File is required',
-      );
+      await expect(
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+        service.create(userId, undefined as any),
+      ).rejects.toThrow(BadRequestException);
+      await expect(
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+        service.create(userId, undefined as any),
+      ).rejects.toThrow('File is required');
 
       expect(mockRepository.create).not.toHaveBeenCalled();
       expect(mockRepository.save).not.toHaveBeenCalled();
@@ -195,16 +194,26 @@ describe('VideoProcessingJobService', () => {
         processedAt: null,
       };
 
-      mockRepository.create.mockReturnValueOnce(mockJob1).mockReturnValueOnce(mockJob2);
-      mockRepository.save.mockResolvedValueOnce(mockJob1).mockResolvedValueOnce(mockJob2);
+      mockRepository.create
+        .mockReturnValueOnce(mockJob1)
+        .mockReturnValueOnce(mockJob2);
+      mockRepository.save
+        .mockResolvedValueOnce(mockJob1)
+        .mockResolvedValueOnce(mockJob2);
 
       await service.create(userId1, mockFile);
       await service.create(userId2, mockFile);
 
-      const uploadedFiles = (storageService as StorageLocalService).getUploadedFiles();
+      const uploadedFiles = (
+        storageService as StorageLocalService
+      ).getUploadedFiles();
 
-      expect(uploadedFiles.has(`${userId1}/job-1/${mockFile.originalname}`)).toBe(true);
-      expect(uploadedFiles.has(`${userId2}/job-2/${mockFile.originalname}`)).toBe(true);
+      expect(
+        uploadedFiles.has(`${userId1}/job-1/${mockFile.originalname}`),
+      ).toBe(true);
+      expect(
+        uploadedFiles.has(`${userId2}/job-2/${mockFile.originalname}`),
+      ).toBe(true);
     });
 
     it('should handle large files', async () => {
@@ -230,9 +239,13 @@ describe('VideoProcessingJobService', () => {
       const result = await service.create(userId, largeFile);
 
       expect(result).toEqual(mockJob);
-      const uploadedFiles = (storageService as StorageLocalService).getUploadedFiles();
+      const uploadedFiles = (
+        storageService as StorageLocalService
+      ).getUploadedFiles();
       const expectedFileName = `${userId}/${mockJob.id}/${largeFile.originalname}`;
-      expect(uploadedFiles.get(expectedFileName)?.length).toBe(100 * 1024 * 1024);
+      expect(uploadedFiles.get(expectedFileName)?.length).toBe(
+        100 * 1024 * 1024,
+      );
     });
 
     it('should handle special characters in file names', async () => {
