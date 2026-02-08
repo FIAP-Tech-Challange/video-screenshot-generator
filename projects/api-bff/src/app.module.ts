@@ -7,6 +7,7 @@ import { AuthModule } from './modules/auth/auth.module';
 import { StorageModule } from './modules/storage/storage.module';
 import { validateEnv } from './config/validate-env';
 import { createTypeOrmConfig } from './config/typeorm.config';
+import { VideoProcessingJobModule } from './modules/video-processing-job/video-processing-job.module';
 
 @Module({
   imports: [
@@ -25,6 +26,7 @@ import { createTypeOrmConfig } from './config/typeorm.config';
     UsersModule,
     AuthModule,
     StorageModule,
+    VideoProcessingJobModule,
   ],
   controllers: [AppController],
   providers: [],

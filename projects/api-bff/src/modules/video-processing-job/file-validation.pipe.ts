@@ -20,26 +20,22 @@ export class FileValidationPipe implements PipeTransform {
       throw new BadRequestException('File is required');
     }
 
-    // Validate file extension
     if (!file.originalname.toLowerCase().endsWith('.mp4')) {
       throw new BadRequestException('Only MP4 files are allowed');
     }
 
-    // Validate MIME type
     if (file.mimetype !== 'video/mp4') {
       throw new BadRequestException(
         'Invalid file type. Only video/mp4 is allowed',
       );
     }
 
-    // Validate file size
     if (file.size > this.maxFileSizeBytes) {
       throw new BadRequestException(
         `File size exceeds maximum allowed size of ${this.maxFileSizeMB}MB`,
       );
     }
 
-    // Validate file is not empty
     if (file.size === 0) {
       throw new BadRequestException('File cannot be empty');
     }

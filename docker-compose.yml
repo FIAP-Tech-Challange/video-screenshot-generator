@@ -60,7 +60,7 @@ services:
             DB_NAME: ${POSTGRES_DB}
             DB_LOGGING: ${DB_LOGGING:-false}
             JWT_SECRET: ${JWT_SECRET}
-            MINIO_ENDPOINT: minio:${MINIO_PORT}
+            MINIO_ENDPOINT: ${MINIO_ENDPOINT}
             MINIO_PORT: ${MINIO_PORT}
             MINIO_ACCESS_KEY: ${ACCESS_KEY_ID_MINIO}
             MINIO_SECRET_KEY: ${SECRET_ACCESS_KEY_MINIO}
