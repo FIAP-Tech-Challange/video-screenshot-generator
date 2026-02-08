@@ -23,23 +23,7 @@ export class StorageService implements IStorageClient {
     })!;
   }
 
-  async generateUploadUrl(fileName: string): Promise<string> {
-    const expiry = 60 * 60;
-    const url = await this.minioClient.presignedPutObject(
-      this.srcBucketName,
-      fileName,
-      expiry,
-    );
-    return url;
-  }
-
-  async generateDownloadUrl(fileName: string): Promise<string> {
-    const expiry = 60 * 60;
-    const url = await this.minioClient.presignedGetObject(
-      this.srcBucketName,
-      fileName,
-      expiry,
-    );
-    return url;
+  async putObject(fileName: string, buffer: Buffer): Promise<void> {
+    await this.minioClient.putObject(this.srcBucketName, fileName, buffer);
   }
 }

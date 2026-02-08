@@ -1,15 +1,9 @@
 export interface IStorageClient {
   /**
-   * Generates a presigned URL for uploading a file
+   * Uploads a file directly from a buffer
    * @param fileName - The name of the file to upload
-   * @returns A presigned URL that can be used to upload the file
+   * @param buffer - The file content as a buffer
+   * @returns Promise that resolves when upload is complete
    */
-  generateUploadUrl(fileName: string): Promise<string>;
-
-  /**
-   * Generates a presigned URL for downloading a file
-   * @param fileName - The name of the file to download
-   * @returns A presigned URL that can be used to download the file
-   */
-  generateDownloadUrl(fileName: string): Promise<string>;
+  putObject(fileName: string, buffer: Buffer): Promise<void>;
 }

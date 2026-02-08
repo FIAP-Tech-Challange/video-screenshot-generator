@@ -4,6 +4,7 @@ import type { IStorageClient } from './storage.interface';
 
 describe('StorageService', () => {
   let service: IStorageClient;
+  let localService: StorageLocalService;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -16,6 +17,7 @@ describe('StorageService', () => {
     }).compile();
 
     service = module.get<IStorageClient>('IStorageClient');
+    localService = service as StorageLocalService;
   });
 
   afterEach(() => {
@@ -24,50 +26,67 @@ describe('StorageService', () => {
     }
   });
 
-  describe('generateUploadUrl', () => {
-    it('should generate a signed upload URL', async () => {
-      const result = await service.generateUploadUrl('test-file.mp4');
+  describe('putObject', () => {
+    it('should upload a file from buffer', async () => {
+      const fileName = 'test-file.mp4';
+      const buffer = Buffer.from('test content');
 
-      expect(result).toContain('test-file.mp4');
-      expect(result).toContain('signature=mock-upload-');
-      expect(result).toContain('/uploads/');
+      await service.putObject(fileName, buffer);
+
+      const uploadedFiles = localService.getUploadedFiles();
+      expect(uploadedFiles.has(fileName)).toBe(true);
+      expect(uploadedFiles.get(fileName)).toEqual(buffer);
     });
 
-    it('should generate unique URLs for different files', async () => {
-      const url1 = await service.generateUploadUrl('file1.mp4');
-      const url2 = await service.generateUploadUrl('file2.mp4');
+    it('should upload multiple files', async () => {
+      const file1 = 'file1.mp4';
+      const file2 = 'file2.mp4';
+      const buffer1 = Buffer.from('content 1');
+      const buffer2 = Buffer.from('content 2');
 
-      expect(url1).not.toBe(url2);
-      expect(url1).toContain('file1.mp4');
-      expect(url2).toContain('file2.mp4');
+      await service.putObject(file1, buffer1);
+      await service.putObject(file2, buffer2);
+
+      const uploadedFiles = localService.getUploadedFiles();
+      expect(uploadedFiles.size).toBe(2);
+      expect(uploadedFiles.get(file1)).toEqual(buffer1);
+      expect(uploadedFiles.get(file2)).toEqual(buffer2);
     });
 
-    it('should generate different URLs on subsequent calls', async () => {
-      const url1 = await service.generateUploadUrl('video.mp4');
-      // Small delay to ensure different timestamp
-      await new Promise((resolve) => setTimeout(resolve, 1));
-      const url2 = await service.generateUploadUrl('video.mp4');
+    it('should overwrite file if same name is used', async () => {
+      const fileName = 'video.mp4';
+      const buffer1 = Buffer.from('original content');
+      const buffer2 = Buffer.from('updated content');
 
-      expect(url1).not.toBe(url2);
+      await service.putObject(fileName, buffer1);
+      await service.putObject(fileName, buffer2);
+
+      const uploadedFiles = localService.getUploadedFiles();
+      expect(uploadedFiles.size).toBe(1);
+      expect(uploadedFiles.get(fileName)).toEqual(buffer2);
+    });
+
+    it('should handle empty buffer', async () => {
+      const fileName = 'empty.txt';
+      const buffer = Buffer.from('');
+
+      await service.putObject(fileName, buffer);
+
+      const uploadedFiles = localService.getUploadedFiles();
+      expect(uploadedFiles.has(fileName)).toBe(true);
+      expect(uploadedFiles.get(fileName)?.length).toBe(0);
     });
   });
 
-  describe('generateDownloadUrl', () => {
-    it('should generate a signed download URL', async () => {
-      const result = await service.generateDownloadUrl('test-file.mp4');
+  describe('clear', () => {
+    it('should clear all uploaded files', async () => {
+      await service.putObject('file1.mp4', Buffer.from('content 1'));
+      await service.putObject('file2.mp4', Buffer.from('content 2'));
 
-      expect(result).toContain('test-file.mp4');
-      expect(result).toContain('signature=mock-download-');
-      expect(result).toContain('/downloads/');
-    });
+      localService.clear();
 
-    it('should generate unique URLs for different files', async () => {
-      const url1 = await service.generateDownloadUrl('file1.mp4');
-      const url2 = await service.generateDownloadUrl('file2.mp4');
-
-      expect(url1).not.toBe(url2);
-      expect(url1).toContain('file1.mp4');
-      expect(url2).toContain('file2.mp4');
+      const uploadedFiles = localService.getUploadedFiles();
+      expect(uploadedFiles.size).toBe(0);
     });
   });
 });
