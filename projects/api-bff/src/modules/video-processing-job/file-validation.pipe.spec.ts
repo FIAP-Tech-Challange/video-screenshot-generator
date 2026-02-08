@@ -14,9 +14,7 @@ describe('FileValidationPipe', () => {
     pipe = new FileValidationPipe(configService);
   });
 
-  const createMockFile = (
-    overrides: Partial<MulterFile> = {},
-  ): MulterFile => ({
+  const createMockFile = (overrides: Partial<MulterFile> = {}): MulterFile => ({
     fieldname: 'file',
     originalname: 'video.mp4',
     encoding: '7bit',
