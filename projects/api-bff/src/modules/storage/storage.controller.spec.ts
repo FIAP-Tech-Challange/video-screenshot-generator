@@ -1,14 +1,15 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { StorageController } from './storage.controller';
-import { StorageService } from './storage.service';
+import type { IStorageClient } from './storage.interface';
 import { JwtAuthGuard } from '../auth/jwt.guard';
 
 describe('StorageController', () => {
   let controller: StorageController;
-  let storageService: StorageService;
+  let storageService: IStorageClient;
 
   const mockStorageService = {
     generateUploadUrl: jest.fn(),
+    generateDownloadUrl: jest.fn(),
   };
 
   const mockJwtAuthGuard = {
@@ -20,7 +21,7 @@ describe('StorageController', () => {
       controllers: [StorageController],
       providers: [
         {
-          provide: StorageService,
+          provide: 'IStorageClient',
           useValue: mockStorageService,
         },
       ],
@@ -30,7 +31,7 @@ describe('StorageController', () => {
       .compile();
 
     controller = module.get<StorageController>(StorageController);
-    storageService = module.get<StorageService>(StorageService);
+    storageService = module.get<IStorageClient>('IStorageClient');
   });
 
   afterEach(() => {

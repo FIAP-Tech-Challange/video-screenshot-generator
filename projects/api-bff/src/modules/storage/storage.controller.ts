@@ -1,11 +1,14 @@
-import { Controller, Post, Body, UseGuards } from '@nestjs/common';
-import { StorageService } from './storage.service';
+import { Controller, Post, Body, UseGuards, Inject } from '@nestjs/common';
+import type { IStorageClient } from './storage.interface';
 import { JwtAuthGuard } from '../auth/jwt.guard';
 
 @Controller('storage')
 @UseGuards(JwtAuthGuard)
 export class StorageController {
-  constructor(private readonly storageService: StorageService) {}
+  constructor(
+    @Inject('IStorageClient')
+    private readonly storageService: IStorageClient,
+  ) {}
 
   @Post('upload-url')
   async generateUploadUrl(
