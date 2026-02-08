@@ -4,6 +4,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { AppController } from './app.controller';
 import { UsersModule } from './modules/users/users.module';
 import { AuthModule } from './modules/auth/auth.module';
+import { StorageModule } from './modules/storage/storage.module';
 import { validateEnv } from './config/validate-env';
 import { createTypeOrmConfig } from './config/typeorm.config';
 
@@ -23,6 +24,7 @@ import { createTypeOrmConfig } from './config/typeorm.config';
 
     UsersModule,
     AuthModule,
+    StorageModule,
   ],
   controllers: [AppController],
   providers: [],
