@@ -41,6 +41,7 @@ export class LoginComponent {
 
   readonly loading = signal(false);
   readonly showPassword = signal(false);
+  readonly errorMessage = signal<string | null>(null);
   readonly loginForm: FormGroup;
 
   togglePasswordVisibility(): void {
@@ -68,14 +69,22 @@ export class LoginComponent {
 
   onSubmit(): void {
     if (this.loginForm.invalid) return;
+    this.errorMessage.set(null);
     this.loading.set(true);
     const { email, password } = this.loginForm.value;
     this.authService.login(email, password).subscribe({
-      next: () => {
+      next: (result) => {
         this.loading.set(false);
-        this.router.navigate(['/dashboard'], { replaceUrl: true });
+        if (result.success) {
+          this.router.navigate(['/dashboard'], { replaceUrl: true });
+        } else {
+          this.errorMessage.set(result.message);
+        }
       },
-      error: () => this.loading.set(false),
+      error: () => {
+        this.loading.set(false);
+        this.errorMessage.set('Erro ao conectar. Tente novamente.');
+      },
     });
   }
 }

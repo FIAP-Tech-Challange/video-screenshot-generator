@@ -3,13 +3,12 @@ export interface LoginCredentials {
   password: string;
 }
 
+/** Dados enviados à API de cadastro (confirmPassword só no frontend) */
 export interface RegisterUser {
   name: string;
   email: string;
   password: string;
   confirmPassword: string;
-  phone: string;
-  cpf: string;
 }
 
 export interface AuthUser {

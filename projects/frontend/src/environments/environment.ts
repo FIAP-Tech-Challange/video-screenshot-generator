@@ -1,5 +1,5 @@
 export const environment = {
   production: false,
-  apiUrl: 'http://localhost:3000/api',
-  bffUrl: 'http://localhost:3001/api',
+  /** Em dev o proxy (proxy.conf.json) encaminha /api para http://localhost:3000 */
+  apiUrl: '/api',
 };
