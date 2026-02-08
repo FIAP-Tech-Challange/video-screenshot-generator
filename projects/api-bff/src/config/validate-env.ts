@@ -13,6 +13,7 @@ export type AppConfig = {
   MINIO_ACCESS_KEY: string;
   MINIO_SECRET_KEY: string;
   SRC_BUCKET_NAME: string;
+  MAX_FILE_SIZE_MB: number;
 };
 
 function getString(config: Record<string, unknown>, key: string): string {
@@ -62,5 +63,6 @@ export function validateEnv(config: Record<string, unknown>): AppConfig {
     MINIO_ACCESS_KEY: getString(config, 'MINIO_ACCESS_KEY'),
     MINIO_SECRET_KEY: getString(config, 'MINIO_SECRET_KEY'),
     SRC_BUCKET_NAME: getString(config, 'SRC_BUCKET_NAME'),
+    MAX_FILE_SIZE_MB: getNumber(config, 'MAX_FILE_SIZE_MB'),
   };
 }

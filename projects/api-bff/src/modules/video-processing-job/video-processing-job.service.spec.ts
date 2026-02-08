@@ -1,6 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
-import { BadRequestException } from '@nestjs/common';
 import { VideoProcessingJobService } from './video-processing-job.service';
 import {
   VideoProcessingJob,
@@ -106,20 +105,6 @@ describe('VideoProcessingJobService', () => {
 
       expect(uploadedFiles.has(expectedFileName)).toBe(true);
       expect(uploadedFiles.get(expectedFileName)).toEqual(mockFile.buffer);
-    });
-
-    it('should throw BadRequestException when file is not provided', async () => {
-      await expect(
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-        service.create(userId, undefined as any),
-      ).rejects.toThrow(BadRequestException);
-      await expect(
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-        service.create(userId, undefined as any),
-      ).rejects.toThrow('File is required');
-
-      expect(mockRepository.create).not.toHaveBeenCalled();
-      expect(mockRepository.save).not.toHaveBeenCalled();
     });
 
     it('should create job with correct file name', async () => {

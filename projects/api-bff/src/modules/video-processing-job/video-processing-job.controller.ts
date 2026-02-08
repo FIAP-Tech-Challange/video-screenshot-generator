@@ -10,6 +10,7 @@ import { JwtAuthGuard } from '../auth/jwt.guard';
 import { UserId } from '../auth/user-id.decorator';
 import { VideoProcessingJobService } from './video-processing-job.service';
 import { VideoProcessingJob } from './video-processing-job.entity';
+import { FileValidationPipe } from './file-validation.pipe';
 import type { MulterFile } from './types';
 
 @Controller('video-processing-job')
@@ -23,7 +24,7 @@ export class VideoProcessingJobController {
   @UseInterceptors(FileInterceptor('file'))
   async create(
     @UserId() userId: string,
-    @UploadedFile() file: MulterFile,
+    @UploadedFile(FileValidationPipe) file: MulterFile,
   ): Promise<VideoProcessingJob> {
     return await this.videoProcessingJobService.create(userId, file);
   }

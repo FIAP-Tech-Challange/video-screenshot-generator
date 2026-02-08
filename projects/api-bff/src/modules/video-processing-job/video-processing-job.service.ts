@@ -1,4 +1,4 @@
-import { BadRequestException, Inject, Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import {
@@ -18,10 +18,6 @@ export class VideoProcessingJobService {
   ) {}
 
   async create(userId: string, file: MulterFile): Promise<VideoProcessingJob> {
-    if (!file) {
-      throw new BadRequestException('File is required');
-    }
-
     const job = this.videoProcessingJobRepository.create({
       userId,
       fileName: file.originalname,
