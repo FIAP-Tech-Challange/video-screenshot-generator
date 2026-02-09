@@ -108,6 +108,18 @@
           </div>
         }
 
+        @if (successMessage()) {
+          <div class="auth-success" role="status">
+            <span
+              nz-icon
+              nzType="check-circle"
+              nzTheme="fill"
+              class="auth-success-icon"
+            ></span>
+            {{ successMessage() }}
+          </div>
+        }
+
         <button
           nz-button
           nzType="primary"

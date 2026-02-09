@@ -3,6 +3,7 @@ import {
   inject,
   ChangeDetectionStrategy,
   signal,
+  OnDestroy,
 } from '@angular/core';
 import {
   FormBuilder,
@@ -25,6 +26,7 @@ import {
 import { PasswordStrengthComponent } from '../../../shared/components/password-strength/password-strength.component';
 
 const PASSWORD_MAX_LENGTH = 20;
+const SUCCESS_DELAY_MS = 2000;
 
 @Component({
   selector: 'app-register',
@@ -43,7 +45,7 @@ const PASSWORD_MAX_LENGTH = 20;
   templateUrl: './register.component.html',
   styleUrl: './register.component.scss',
 })
-export class RegisterComponent {
+export class RegisterComponent implements OnDestroy {
   private readonly fb = inject(FormBuilder);
   private readonly router = inject(Router);
   private readonly authService = inject(AuthService);
@@ -52,7 +54,16 @@ export class RegisterComponent {
   readonly showPassword = signal(false);
   readonly showConfirmPassword = signal(false);
   readonly errorMessage = signal<string | null>(null);
+  readonly successMessage = signal<string | null>(null);
   readonly registerForm: FormGroup;
+
+  private successRedirectTimeout: ReturnType<typeof setTimeout> | null = null;
+
+  ngOnDestroy(): void {
+    if (this.successRedirectTimeout != null) {
+      clearTimeout(this.successRedirectTimeout);
+    }
+  }
 
   togglePasswordVisibility(): void {
     this.showPassword.update((v) => !v);
@@ -115,13 +126,20 @@ export class RegisterComponent {
   onSubmit(): void {
     if (this.registerForm.invalid) return;
     this.errorMessage.set(null);
+    this.successMessage.set(null);
     this.loading.set(true);
     this.authService.register(this.registerForm.value).subscribe({
       next: (result) => {
-        this.loading.set(false);
         if (result.success) {
-          this.router.navigate(['/dashboard'], { replaceUrl: true });
+          this.successMessage.set('Conta criada com sucesso');
+          this.successRedirectTimeout = setTimeout(() => {
+            this.loading.set(false);
+            this.successMessage.set(null);
+            this.successRedirectTimeout = null;
+            this.router.navigate(['/dashboard'], { replaceUrl: true });
+          }, SUCCESS_DELAY_MS);
         } else {
+          this.loading.set(false);
           this.errorMessage.set(result.message);
         }
       },

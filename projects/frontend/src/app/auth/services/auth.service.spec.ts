@@ -35,18 +35,22 @@ describe('AuthService', () => {
     expect(service.isAuthenticated()).toBe(false);
   });
 
-  it('login should set authenticated and store token', (done) => {
+  it('login should set authenticated and store token and user', (done) => {
     service.login('test@test.com', 'password').subscribe((result) => {
       expect(result.success).toBe(true);
       expect(service.isAuthenticated()).toBe(true);
       expect(service.getToken()).toBe(FAKE_JWT);
       expect(service.getUser()?.email).toBe('test@test.com');
       expect(service.getUser()?.id).toBe('user-123');
+      expect(service.getUser()?.name).toBe('Test User');
       done();
     });
     const req = httpMock.expectOne((r) => r.url.includes('/auth/login'));
     expect(req.request.method).toBe('POST');
-    req.flush({ accessToken: FAKE_JWT });
+    req.flush({
+      accessToken: FAKE_JWT,
+      user: { id: 'user-123', email: 'test@test.com', name: 'Test User' },
+    });
   });
 
   it('logout should clear state and navigate to login', () => {
@@ -56,7 +60,12 @@ describe('AuthService', () => {
       expect(service.getToken()).toBeNull();
       expect(routerMock.navigate).toHaveBeenCalledWith(['/login']);
     });
-    httpMock.expectOne((r) => r.url.includes('/auth/login')).flush({ accessToken: FAKE_JWT });
+    httpMock
+      .expectOne((r) => r.url.includes('/auth/login'))
+      .flush({
+        accessToken: FAKE_JWT,
+        user: { id: 'u1', email: 'test@test.com', name: 'Test' },
+      });
   });
 
   it('register should call register then login and store user', (done) => {
@@ -82,6 +91,9 @@ describe('AuthService', () => {
     });
     registerReq.flush({ id: 'user-1', name: 'João Silva', email: 'new@test.com' });
     const loginReq = httpMock.expectOne((r) => r.url.includes('/auth/login'));
-    loginReq.flush({ accessToken: FAKE_JWT });
+    loginReq.flush({
+      accessToken: FAKE_JWT,
+      user: { id: 'user-1', name: 'João Silva', email: 'new@test.com' },
+    });
   });
 });
