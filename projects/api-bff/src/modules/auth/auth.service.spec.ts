@@ -247,6 +247,7 @@ describe('AuthService', () => {
       expect(jwtService.sign).toHaveBeenCalledTimes(1);
       expect(result).toEqual({
         accessToken: mockToken,
+        user: { id: mockUser.id, email: mockUser.email, name: mockUser.name },
       });
     });
 
@@ -421,7 +422,17 @@ describe('AuthService', () => {
 
       // Assert
       expect(result1.accessToken).toBe(mockToken1);
+      expect(result1.user).toEqual({
+        id: mockUser1.id,
+        email: mockUser1.email,
+        name: mockUser1.name,
+      });
       expect(result2.accessToken).toBe(mockToken2);
+      expect(result2.user).toEqual({
+        id: mockUser2.id,
+        email: mockUser2.email,
+        name: mockUser2.name,
+      });
       // eslint-disable-next-line @typescript-eslint/unbound-method
       expect(usersService.validateCredentials).toHaveBeenCalledTimes(2);
       // eslint-disable-next-line @typescript-eslint/unbound-method

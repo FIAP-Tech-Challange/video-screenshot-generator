@@ -29,11 +29,14 @@ export class AuthController {
   }
 
   @Post('login')
-  async login(@Body() body: AuthRequestDto): Promise<{ accessToken: string }> {
+  async login(
+    @Body() body: AuthRequestDto,
+  ): Promise<{
+    accessToken: string;
+    user: { id: string; email: string; name: string };
+  }> {
     const email = body?.email ?? '';
     const password = body?.password ?? '';
-    const { accessToken } = await this.authService.login(email, password);
-
-    return { accessToken };
+    return this.authService.login(email, password);
   }
 }
