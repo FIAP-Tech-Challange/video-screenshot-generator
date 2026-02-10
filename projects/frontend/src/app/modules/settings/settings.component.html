@@ -1,123 +1,26 @@
 <div class="settings-container">
   <div class="settings-header">
-    <h1>Configurações do Perfil</h1>
-    <p>Gerencie suas informações pessoais</p>
+    <h1>Meu perfil</h1>
+    <p>Suas informações de cadastro</p>
   </div>
 
   <div class="settings-content">
-    <nz-card class="avatar-card modern-card" nzHoverable>
-      <div class="avatar-section">
+    <nz-card class="profile-card modern-card" nzHoverable>
+      <div class="profile-section">
         <nz-avatar
           nzIcon="user"
-          [nzSize]="120"
+          [nzSize]="80"
           class="profile-avatar"
         ></nz-avatar>
-        <div class="avatar-actions">
-          <button nz-button nzType="primary">
-            <span nz-icon nzType="upload"></span>
-            Alterar Foto
-          </button>
-          <button nz-button nzType="default" nzDanger>
-            <span nz-icon nzType="delete"></span>
-            Remover
-          </button>
-        </div>
-      </div>
-    </nz-card>
-
-    <nz-card class="form-card modern-card" nzHoverable>
-      <form nz-form [formGroup]="profileForm" (ngSubmit)="saveProfile()">
-        <nz-form-item>
-          <nz-form-label [nzSpan]="6">Nome</nz-form-label>
-          <nz-form-control [nzSpan]="14">
-            <input
-              nz-input
-              formControlName="name"
-              placeholder="Nome completo"
-            />
-          </nz-form-control>
-        </nz-form-item>
-
-        <nz-form-item>
-          <nz-form-label [nzSpan]="6">Email</nz-form-label>
-          <nz-form-control [nzSpan]="14">
-            <input
-              nz-input
-              formControlName="email"
-              placeholder="seu@email.com"
-              type="email"
-            />
-          </nz-form-control>
-        </nz-form-item>
-
-        <nz-form-item>
-          <nz-form-label [nzSpan]="6">Telefone</nz-form-label>
-          <nz-form-control [nzSpan]="14">
-            <input
-              nz-input
-              formControlName="phone"
-              placeholder="(00) 00000-0000"
-            />
-          </nz-form-control>
-        </nz-form-item>
-
-        <nz-form-item>
-          <nz-form-label [nzSpan]="6">CPF</nz-form-label>
-          <nz-form-control [nzSpan]="14">
-            <input
-              nz-input
-              formControlName="cpf"
-              placeholder="000.000.000-00"
-            />
-          </nz-form-control>
-        </nz-form-item>
-
-        <nz-form-item>
-          <nz-form-control [nzSpan]="14" [nzOffset]="6">
-            <button
-              nz-button
-              nzType="primary"
-              type="submit"
-              [disabled]="!profileForm.valid"
-            >
-              <span nz-icon nzType="save"></span>
-              Salvar Alterações
-            </button>
-            <button
-              nz-button
-              nzType="default"
-              (click)="resetForm()"
-              type="button"
-            >
-              Cancelar
-            </button>
-          </nz-form-control>
-        </nz-form-item>
-      </form>
-    </nz-card>
-
-    <nz-card class="security-card modern-card" nzHoverable>
-      <h3>Segurança</h3>
-      <div class="security-items">
-        <div class="security-item">
-          <span nz-icon nzType="lock" nzTheme="outline"></span>
-          <div class="security-info">
-            <h4>Alterar Senha</h4>
-            <p>Atualize sua senha regularmente</p>
+        <div class="profile-data">
+          <div class="profile-field">
+            <span class="profile-label">Nome</span>
+            <span class="profile-value">{{ user?.name ?? '—' }}</span>
           </div>
-          <button nz-button nzType="link">Alterar</button>
-        </div>
-        <div class="security-item">
-          <span nz-icon nzType="safety-certificate" nzTheme="outline"></span>
-          <div class="security-info">
-            <h4>Autenticação de Dois Fatores</h4>
-            <p>Adicione uma camada extra de segurança</p>
+          <div class="profile-field">
+            <span class="profile-label">Email</span>
+            <span class="profile-value">{{ user?.email ?? '—' }}</span>
           </div>
-          <nz-switch
-            [ngModel]="twoFactorEnabled"
-            (ngModelChange)="twoFactorEnabled = $event"
-            [ngModelOptions]="{ standalone: true }"
-          ></nz-switch>
         </div>
       </div>
     </nz-card>

@@ -30,7 +30,10 @@ export class AuthService {
   async login(
     email: string,
     password: string,
-  ): Promise<{ accessToken: string }> {
+  ): Promise<{
+    accessToken: string;
+    user: { id: string; email: string; name: string };
+  }> {
     if (!email?.trim() || !password?.trim()) {
       throw new BadRequestException('Email and password are required');
     }
@@ -45,6 +48,9 @@ export class AuthService {
       email: user.email,
     });
 
-    return { accessToken };
+    return {
+      accessToken,
+      user: { id: user.id, email: user.email, name: user.name },
+    };
   }
 }

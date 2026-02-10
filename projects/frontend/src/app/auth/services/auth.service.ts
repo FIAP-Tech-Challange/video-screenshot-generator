@@ -12,6 +12,7 @@ export type AuthResult = { success: true } | { success: false; message: string }
 
 interface LoginResponse {
   accessToken: string;
+  user: { id: string; email: string; name: string };
 }
 
 interface RegisterResponse {
@@ -52,7 +53,7 @@ export class AuthService {
   private readonly apiUrl = environment.apiUrl;
 
   /**
-   * Login: POST /auth/login, armazena token e usuário (id/email do JWT).
+   * Login: POST /auth/login, armazena token e usuário (id, email, name da resposta).
    */
   login(email: string, password: string): Observable<AuthResult> {
     return this.http
@@ -60,8 +61,7 @@ export class AuthService {
       .pipe(
         tap((res) => {
           this.setToken(res.accessToken);
-          const user = this.decodeUserFromToken(res.accessToken);
-          this.setUser(user);
+          this.setUser(res.user);
         }),
         switchMap(() => of({ success: true } as const)),
         catchError((err) => of({ success: false, message: getErrorMessage(err) }))
@@ -90,11 +90,7 @@ export class AuthService {
             .pipe(
               tap((res) => {
                 this.setToken(res.accessToken);
-                this.setUser({
-                  id: registeredUser.id,
-                  email: registeredUser.email,
-                  name: registeredUser.name,
-                });
+                this.setUser(res.user);
               }),
               map((): AuthResult => ({ success: true })),
               catchError((err) =>
