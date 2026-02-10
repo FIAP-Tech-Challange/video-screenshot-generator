@@ -6,7 +6,6 @@ import {
   VideoProcessingJobStatus,
 } from './video-processing-job.entity';
 import type { IStorageClient } from '../storage/storage.interface';
-import type { MulterFile } from './types';
 
 @Injectable()
 export class VideoProcessingJobService {
@@ -17,18 +16,21 @@ export class VideoProcessingJobService {
     private readonly storageService: IStorageClient,
   ) {}
 
-  async create(userId: string, file: MulterFile): Promise<VideoProcessingJob> {
+  async create(
+    userId: string,
+    fileName: string,
+  ): Promise<{ job: VideoProcessingJob; uploadUrl: string }> {
     const job = this.videoProcessingJobRepository.create({
       userId,
-      fileName: file.originalname,
+      fileName,
       status: VideoProcessingJobStatus.QUEUED,
     });
 
-    const fileName = `${userId}/${job.id}/${file.originalname}`;
-    await this.storageService.putObject(fileName, file.buffer);
-
     const savedJob = await this.videoProcessingJobRepository.save(job);
 
-    return savedJob;
+    const objectKey = `${userId}/${savedJob.id}/${fileName}`;
+    const uploadUrl = await this.storageService.generateUploadUrl(objectKey);
+
+    return { job: savedJob, uploadUrl };
   }
 }

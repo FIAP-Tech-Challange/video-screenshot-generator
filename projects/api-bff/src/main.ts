@@ -6,8 +6,8 @@ import { AllExceptionsFilter } from './common/http-exception.filter';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
-  app.setGlobalPrefix('api'); // rotas: /api/auth/register, /api/auth/login, /api/health
-  app.enableCors({ origin: true }); // em dev aceita qualquer origem; em prod definir origins
+  app.setGlobalPrefix('api');
+  app.enableCors({ origin: true });
   app.useGlobalFilters(new AllExceptionsFilter());
 
   const config = app.get(ConfigService);

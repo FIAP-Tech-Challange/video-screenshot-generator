@@ -1,17 +1,14 @@
 import {
+  Body,
+  BadRequestException,
   Controller,
   Post,
   UseGuards,
-  UseInterceptors,
-  UploadedFile,
 } from '@nestjs/common';
-import { FileInterceptor } from '@nestjs/platform-express';
 import { JwtAuthGuard } from '../auth/jwt.guard';
 import { UserId } from '../auth/user-id.decorator';
 import { VideoProcessingJobService } from './video-processing-job.service';
 import { VideoProcessingJob } from './video-processing-job.entity';
-import { FileValidationPipe } from './file-validation.pipe';
-import type { MulterFile } from './types';
 
 @Controller('video-processing-job')
 @UseGuards(JwtAuthGuard)
@@ -21,11 +18,17 @@ export class VideoProcessingJobController {
   ) {}
 
   @Post()
-  @UseInterceptors(FileInterceptor('file'))
   async create(
     @UserId() userId: string,
-    @UploadedFile(FileValidationPipe) file: MulterFile,
-  ): Promise<VideoProcessingJob> {
-    return await this.videoProcessingJobService.create(userId, file);
+    @Body('fileName') fileName: string,
+  ): Promise<{ job: VideoProcessingJob; uploadUrl: string }> {
+    const normalizedFileName =
+      typeof fileName === 'string' ? fileName.trim() : '';
+
+    if (!normalizedFileName) {
+      throw new BadRequestException('fileName is required');
+    }
+
+    return this.videoProcessingJobService.create(userId, normalizedFileName);
   }
 }

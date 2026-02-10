@@ -1,9 +1,8 @@
 export interface IStorageClient {
   /**
-   * Uploads a file directly from a buffer
-   * @param fileName - The name of the file to upload
-   * @param buffer - The file content as a buffer
-   * @returns Promise that resolves when upload is complete
+   * Generates a signed URL for uploading a file directly to storage
+   * @param fileName - The file name that will be uploaded
+   * @returns Promise resolving to a signed upload URL string
    */
-  putObject(fileName: string, buffer: Buffer): Promise<void>;
+  generateUploadUrl(fileName: string): Promise<string>;
 }

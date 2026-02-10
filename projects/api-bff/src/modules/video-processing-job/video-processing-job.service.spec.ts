@@ -7,7 +7,6 @@ import {
 } from './video-processing-job.entity';
 import { StorageLocalService } from '../storage/storage-local.service';
 import type { IStorageClient } from '../storage/storage.interface';
-import type { MulterFile } from './types';
 
 describe('VideoProcessingJobService', () => {
   let service: VideoProcessingJobService;
@@ -41,27 +40,17 @@ describe('VideoProcessingJobService', () => {
 
   afterEach(() => {
     jest.clearAllMocks();
-    if (storageService instanceof StorageLocalService) {
-      storageService.clear();
-    }
   });
 
   describe('create', () => {
     const userId = 'user-123';
-    const mockFile: MulterFile = {
-      fieldname: 'file',
-      originalname: 'video.mp4',
-      encoding: '7bit',
-      mimetype: 'video/mp4',
-      size: 1024,
-      buffer: Buffer.from('fake video content'),
-    };
+    const fileName = 'video.mp4';
 
-    it('should create a video processing job successfully', async () => {
+    it('should create a video processing job and return a signed upload URL', async () => {
       const mockJob = {
         id: 'job-123',
         userId,
-        fileName: mockFile.originalname,
+        fileName,
         status: VideoProcessingJobStatus.QUEUED,
         errorReason: null,
         createdAt: new Date(),
@@ -71,22 +60,27 @@ describe('VideoProcessingJobService', () => {
       mockRepository.create.mockReturnValue(mockJob);
       mockRepository.save.mockResolvedValue(mockJob);
 
-      const result = await service.create(userId, mockFile);
+      const result = await service.create(userId, fileName);
 
       expect(mockRepository.create).toHaveBeenCalledWith({
         userId,
-        fileName: mockFile.originalname,
+        fileName,
         status: VideoProcessingJobStatus.QUEUED,
       });
       expect(mockRepository.save).toHaveBeenCalledWith(mockJob);
-      expect(result).toEqual(mockJob);
+      expect(result.job).toEqual(mockJob);
+
+      const expectedKey = `${userId}/${mockJob.id}/${fileName}`;
+      expect(result.uploadUrl).toBe(
+        `http://localhost/upload/${encodeURIComponent(expectedKey)}`,
+      );
     });
 
-    it('should upload file to storage after creating job', async () => {
+    it('should request the signed URL using the composed object key', async () => {
       const mockJob = {
         id: 'job-456',
         userId,
-        fileName: mockFile.originalname,
+        fileName,
         status: VideoProcessingJobStatus.QUEUED,
         errorReason: null,
         createdAt: new Date(),
@@ -96,83 +90,33 @@ describe('VideoProcessingJobService', () => {
       mockRepository.create.mockReturnValue(mockJob);
       mockRepository.save.mockResolvedValue(mockJob);
 
-      await service.create(userId, mockFile);
+      const generateUploadUrlSpy = jest.spyOn(
+        storageService,
+        'generateUploadUrl',
+      );
 
-      const uploadedFiles = (
-        storageService as StorageLocalService
-      ).getUploadedFiles();
-      const expectedFileName = `${userId}/${mockJob.id}/${mockFile.originalname}`;
+      await service.create(userId, fileName);
 
-      expect(uploadedFiles.has(expectedFileName)).toBe(true);
-      expect(uploadedFiles.get(expectedFileName)).toEqual(mockFile.buffer);
+      expect(generateUploadUrlSpy).toHaveBeenCalledWith(
+        `${userId}/${mockJob.id}/${fileName}`,
+      );
     });
 
-    it('should create job with correct file name', async () => {
-      const customFile: MulterFile = {
-        ...mockFile,
-        originalname: 'my-custom-video.mov',
-      };
-
-      const mockJob = {
-        id: 'job-789',
-        userId,
-        fileName: customFile.originalname,
-        status: VideoProcessingJobStatus.QUEUED,
-        errorReason: null,
-        createdAt: new Date(),
-        processedAt: null,
-      };
-
-      mockRepository.create.mockReturnValue(mockJob);
-      mockRepository.save.mockResolvedValue(mockJob);
-
-      const result = await service.create(userId, customFile);
-
-      expect(result.fileName).toBe('my-custom-video.mov');
-      expect(mockRepository.create).toHaveBeenCalledWith({
-        userId,
-        fileName: 'my-custom-video.mov',
-        status: VideoProcessingJobStatus.QUEUED,
-      });
-    });
-
-    it('should create job with QUEUED status by default', async () => {
-      const mockJob = {
-        id: 'job-default',
-        userId,
-        fileName: mockFile.originalname,
-        status: VideoProcessingJobStatus.QUEUED,
-        errorReason: null,
-        createdAt: new Date(),
-        processedAt: null,
-      };
-
-      mockRepository.create.mockReturnValue(mockJob);
-      mockRepository.save.mockResolvedValue(mockJob);
-
-      const result = await service.create(userId, mockFile);
-
-      expect(result.status).toBe(VideoProcessingJobStatus.QUEUED);
-    });
-
-    it('should handle different user IDs correctly', async () => {
-      const userId1 = 'user-aaa';
-      const userId2 = 'user-bbb';
-
-      const mockJob1 = {
+    it('should handle different user IDs and file names', async () => {
+      const firstJob = {
         id: 'job-1',
-        userId: userId1,
-        fileName: mockFile.originalname,
+        userId: 'user-aaa',
+        fileName: 'first.mp4',
         status: VideoProcessingJobStatus.QUEUED,
         errorReason: null,
         createdAt: new Date(),
         processedAt: null,
       };
 
-      const mockJob2 = {
+      const secondJob = {
         id: 'job-2',
-        userId: userId2,
-        fileName: mockFile.originalname,
+        userId: 'user-bbb',
+        fileName: 'second.mov',
         status: VideoProcessingJobStatus.QUEUED,
         errorReason: null,
         createdAt: new Date(),
@@ -180,81 +124,34 @@ describe('VideoProcessingJobService', () => {
       };
 
       mockRepository.create
-        .mockReturnValueOnce(mockJob1)
-        .mockReturnValueOnce(mockJob2);
+        .mockReturnValueOnce(firstJob)
+        .mockReturnValueOnce(secondJob);
       mockRepository.save
-        .mockResolvedValueOnce(mockJob1)
-        .mockResolvedValueOnce(mockJob2);
+        .mockResolvedValueOnce(firstJob)
+        .mockResolvedValueOnce(secondJob);
 
-      await service.create(userId1, mockFile);
-      await service.create(userId2, mockFile);
-
-      const uploadedFiles = (
-        storageService as StorageLocalService
-      ).getUploadedFiles();
-
-      expect(
-        uploadedFiles.has(`${userId1}/job-1/${mockFile.originalname}`),
-      ).toBe(true);
-      expect(
-        uploadedFiles.has(`${userId2}/job-2/${mockFile.originalname}`),
-      ).toBe(true);
-    });
-
-    it('should handle large files', async () => {
-      const largeFile: MulterFile = {
-        ...mockFile,
-        size: 100 * 1024 * 1024, // 100MB
-        buffer: Buffer.alloc(100 * 1024 * 1024),
-      };
-
-      const mockJob = {
-        id: 'job-large',
-        userId,
-        fileName: largeFile.originalname,
-        status: VideoProcessingJobStatus.QUEUED,
-        errorReason: null,
-        createdAt: new Date(),
-        processedAt: null,
-      };
-
-      mockRepository.create.mockReturnValue(mockJob);
-      mockRepository.save.mockResolvedValue(mockJob);
-
-      const result = await service.create(userId, largeFile);
-
-      expect(result).toEqual(mockJob);
-      const uploadedFiles = (
-        storageService as StorageLocalService
-      ).getUploadedFiles();
-      const expectedFileName = `${userId}/${mockJob.id}/${largeFile.originalname}`;
-      expect(uploadedFiles.get(expectedFileName)?.length).toBe(
-        100 * 1024 * 1024,
+      const firstResult = await service.create(
+        firstJob.userId,
+        firstJob.fileName,
       );
-    });
+      const secondResult = await service.create(
+        secondJob.userId,
+        secondJob.fileName,
+      );
 
-    it('should handle special characters in file names', async () => {
-      const specialFile: MulterFile = {
-        ...mockFile,
-        originalname: 'video with spaces & special-chars_123.mp4',
-      };
+      expect(firstResult.job).toEqual(firstJob);
+      expect(secondResult.job).toEqual(secondJob);
 
-      const mockJob = {
-        id: 'job-special',
-        userId,
-        fileName: specialFile.originalname,
-        status: VideoProcessingJobStatus.QUEUED,
-        errorReason: null,
-        createdAt: new Date(),
-        processedAt: null,
-      };
-
-      mockRepository.create.mockReturnValue(mockJob);
-      mockRepository.save.mockResolvedValue(mockJob);
-
-      const result = await service.create(userId, specialFile);
-
-      expect(result.fileName).toBe('video with spaces & special-chars_123.mp4');
+      expect(firstResult.uploadUrl).toBe(
+        `http://localhost/upload/${encodeURIComponent(
+          `${firstJob.userId}/${firstJob.id}/${firstJob.fileName}`,
+        )}`,
+      );
+      expect(secondResult.uploadUrl).toBe(
+        `http://localhost/upload/${encodeURIComponent(
+          `${secondJob.userId}/${secondJob.id}/${secondJob.fileName}`,
+        )}`,
+      );
     });
   });
 });
