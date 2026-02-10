@@ -18,29 +18,13 @@ import { NzCardModule } from 'ng-zorro-antd/card';
 import { NzIconModule } from 'ng-zorro-antd/icon';
 import { AuthService } from '../../services/auth.service';
 import {
-  cpfValidator,
   passwordStrengthValidator,
   confirmPasswordMatchValidator,
-  brazilianPhoneValidator,
   fullNameValidator,
 } from '../../services/validators.service';
-import { formatCPF } from '../../utils/cpf.validator';
 import { PasswordStrengthComponent } from '../../../shared/components/password-strength/password-strength.component';
 
-const PHONE_MAX_DIGITS = 11;
-const CPF_MAX_DIGITS = 11;
 const PASSWORD_MAX_LENGTH = 20;
-
-function formatPhone(value: string): string {
-  const cleaned = value.replace(/\D/g, '').slice(0, PHONE_MAX_DIGITS);
-  if (cleaned.length <= 2) {
-    return cleaned.replace(/(\d{0,2})/, '($1');
-  }
-  if (cleaned.length <= 7) {
-    return cleaned.replace(/(\d{2})(\d{0,5})/, '($1) $2');
-  }
-  return cleaned.replace(/(\d{2})(\d{5})(\d{0,4})/, '($1) $2-$3');
-}
 
 @Component({
   selector: 'app-register',
@@ -67,6 +51,7 @@ export class RegisterComponent {
   readonly loading = signal(false);
   readonly showPassword = signal(false);
   readonly showConfirmPassword = signal(false);
+  readonly errorMessage = signal<string | null>(null);
   readonly registerForm: FormGroup;
 
   togglePasswordVisibility(): void {
@@ -117,20 +102,6 @@ export class RegisterComponent {
             updateOn: 'change',
           },
         ],
-        phone: [
-          '',
-          {
-            validators: [Validators.required, brazilianPhoneValidator],
-            updateOn: 'blur',
-          },
-        ],
-        cpf: [
-          '',
-          {
-            validators: [Validators.required, cpfValidator],
-            updateOn: 'blur',
-          },
-        ],
       },
       { updateOn: 'blur' }
     );
@@ -141,28 +112,23 @@ export class RegisterComponent {
     });
   }
 
-  onCPFInput(event: Event): void {
-    const input = event.target as HTMLInputElement;
-    const digits = input.value.replace(/\D/g, '').slice(0, CPF_MAX_DIGITS);
-    const formatted = formatCPF(digits);
-    this.registerForm.patchValue({ cpf: formatted }, { emitEvent: false });
-  }
-
-  onPhoneInput(event: Event): void {
-    const input = event.target as HTMLInputElement;
-    const formatted = formatPhone(input.value);
-    this.registerForm.patchValue({ phone: formatted }, { emitEvent: false });
-  }
-
   onSubmit(): void {
     if (this.registerForm.invalid) return;
+    this.errorMessage.set(null);
     this.loading.set(true);
     this.authService.register(this.registerForm.value).subscribe({
-      next: () => {
+      next: (result) => {
         this.loading.set(false);
-        this.router.navigate(['/dashboard'], { replaceUrl: true });
+        if (result.success) {
+          this.router.navigate(['/dashboard'], { replaceUrl: true });
+        } else {
+          this.errorMessage.set(result.message);
+        }
       },
-      error: () => this.loading.set(false),
+      error: () => {
+        this.loading.set(false);
+        this.errorMessage.set('Erro ao conectar. Tente novamente.');
+      },
     });
   }
 }

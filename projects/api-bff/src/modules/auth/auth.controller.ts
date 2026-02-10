@@ -30,10 +30,9 @@ export class AuthController {
 
   @Post('login')
   async login(@Body() body: AuthRequestDto): Promise<{ accessToken: string }> {
-    const { accessToken } = await this.authService.login(
-      body.email,
-      body.password,
-    );
+    const email = body?.email ?? '';
+    const password = body?.password ?? '';
+    const { accessToken } = await this.authService.login(email, password);
 
     return { accessToken };
   }

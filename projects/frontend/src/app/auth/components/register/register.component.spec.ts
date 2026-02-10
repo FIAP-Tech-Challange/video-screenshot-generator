@@ -54,28 +54,12 @@ describe('RegisterComponent', () => {
     expect(component.registerForm.valid).toBe(false);
   });
 
-  it('should format CPF on input', () => {
-    const input = document.createElement('input');
-    input.value = '12345678909';
-    component.onCPFInput({ target: input } as unknown as Event);
-    expect(component.registerForm.get('cpf')?.value).toBe('123.456.789-09');
-  });
-
-  it('should format phone on input', () => {
-    const input = document.createElement('input');
-    input.value = '11987654321';
-    component.onPhoneInput({ target: input } as unknown as Event);
-    expect(component.registerForm.get('phone')?.value).toBe('(11) 98765-4321');
-  });
-
   it('should call authService.register and navigate on submit', () => {
     component.registerForm.patchValue({
       name: 'Maria Santos',
       email: 'user@example.com',
       password: 'Password1!',
       confirmPassword: 'Password1!',
-      phone: '(11) 98765-4321',
-      cpf: '123.456.789-09',
     });
     component.onSubmit();
     expect(authServiceMock.register).toHaveBeenCalled();

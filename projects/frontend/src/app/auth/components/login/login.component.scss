@@ -72,6 +72,16 @@ button[nz-button][nzType="primary"] {
   border-radius: 8px;
 }
 
+.auth-error {
+  margin-bottom: 16px;
+  padding: 12px;
+  background: rgba(255, 77, 79, 0.1);
+  border: 1px solid #ff4d4f;
+  border-radius: 8px;
+  color: #ff4d4f;
+  font-size: 14px;
+}
+
 .auth-footer {
   margin-top: 24px;
   text-align: center;

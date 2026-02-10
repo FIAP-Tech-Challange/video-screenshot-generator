@@ -102,34 +102,11 @@
           </nz-form-control>
         </nz-form-item>
 
-        <nz-form-item>
-          <nz-form-control nzErrorTip="Telefone inválido (10 ou 11 dígitos)">
-            <input
-              nz-input
-              formControlName="phone"
-              placeholder="Telefone (00) 00000-0000"
-              type="tel"
-              maxlength="16"
-              (input)="onPhoneInput($event)"
-              aria-label="Telefone"
-            />
-          </nz-form-control>
-        </nz-form-item>
-
-        <nz-form-item>
-          <nz-form-control nzErrorTip="CPF inválido">
-            <input
-              nz-input
-              formControlName="cpf"
-              placeholder="CPF 000.000.000-00"
-              type="text"
-              inputmode="numeric"
-              maxlength="14"
-              (input)="onCPFInput($event)"
-              aria-label="CPF"
-            />
-          </nz-form-control>
-        </nz-form-item>
+        @if (errorMessage()) {
+          <div class="auth-error" role="alert">
+            {{ errorMessage() }}
+          </div>
+        }
 
         <button
           nz-button

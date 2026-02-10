@@ -50,6 +50,12 @@
           </nz-form-control>
         </nz-form-item>
 
+        @if (errorMessage()) {
+          <div class="auth-error" role="alert">
+            {{ errorMessage() }}
+          </div>
+        }
+
         <button
           nz-button
           nzType="primary"
