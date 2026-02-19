@@ -1,11 +1,12 @@
 import { Module } from '@nestjs/common';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { validateEnv } from './config/validate-env';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { createTypeOrmConfig } from './config/typeorm.config';
-import { BucketModule } from './modules/bucket/bucket.module';
+import { StorageModule } from './modules/storage/storage.module';
+import { EventModule } from './modules/event/event.module';
+import { VideoProcessingModule } from './modules/video-processing/video-processing.module';
+import { HealthModule } from './config/health/health.module';
 
 @Module({
   imports: [
@@ -19,9 +20,12 @@ import { BucketModule } from './modules/bucket/bucket.module';
       inject: [ConfigService],
       useFactory: (config: ConfigService) => createTypeOrmConfig(config),
     }),
-    BucketModule,
+    StorageModule,
+    EventModule,
+    VideoProcessingModule,
+    HealthModule,
   ],
-  controllers: [AppController],
-  providers: [AppService],
+  controllers: [],
+  providers: [],
 })
 export class AppModule {}
