@@ -1,0 +1,240 @@
+services:
+  postgres:
+    image: postgres:15
+    restart: unless-stopped
+    env_file:
+      - .env
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_PORT: ${POSTGRES_PORT}
+    ports:
+      - "${POSTGRES_PORT}:${POSTGRES_PORT}"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - microservices
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  db-migrate:
+    image: node:20-alpine
+    restart: "no"
+    env_file:
+      - .env
+    environment:
+      DB_HOST: postgres
+      DB_PORT: ${POSTGRES_PORT}
+      DB_USERNAME: ${POSTGRES_USER}
+      DB_PASSWORD: ${POSTGRES_PASSWORD}
+      DB_NAME: ${POSTGRES_DB}
+      DB_LOGGING: ${DB_LOGGING:-false}
+    working_dir: /usr/src/app
+    volumes:
+      - ./infra/database:/usr/src/app
+    networks:
+      - microservices
+    depends_on:
+      postgres:
+        condition: service_healthy
+    command: sh -c "npm install && npm run migration:run"
+
+  api-bff:
+    build:
+      context: ./projects/api-bff
+      dockerfile: Dockerfile
+      target: dev
+    image: api-bff:dev
+    restart: unless-stopped
+    env_file:
+      - .env
+    environment:
+      DB_URL: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:${POSTGRES_PORT}/${POSTGRES_DB}
+      DB_PORT: ${POSTGRES_PORT}
+      DB_USERNAME: ${POSTGRES_USER}
+      DB_PASSWORD: ${POSTGRES_PASSWORD}
+      DB_NAME: ${POSTGRES_DB}
+      DB_LOGGING: ${DB_LOGGING:-false}
+      JWT_SECRET: ${JWT_SECRET}
+      MINIO_ENDPOINT: ${MINIO_ENDPOINT}
+      MINIO_PORT: ${MINIO_PORT}
+      MINIO_ACCESS_KEY: ${ACCESS_KEY_ID_MINIO}
+      MINIO_SECRET_KEY: ${SECRET_ACCESS_KEY_MINIO}
+      NODE_ENV: development
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./projects/api-bff:/usr/src/app
+      - /usr/src/app/node_modules
+    networks:
+      - microservices
+    depends_on:
+      postgres:
+        condition: service_healthy
+      db-migrate:
+        condition: service_completed_successfully
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "wget -qO- --timeout=2 http://127.0.0.1:3000/api/health || exit 1",
+        ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  api-consumer:
+    build:
+      context: ./projects/api-consumer
+      dockerfile: Dockerfile
+      target: dev
+    image: api-consumer:dev
+    restart: unless-stopped
+    env_file:
+      - .env
+    environment:
+      DB_URL: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:${POSTGRES_PORT}/${POSTGRES_DB}
+      DB_PORT: ${POSTGRES_PORT}
+      DB_USERNAME: ${POSTGRES_USER}
+      DB_PASSWORD: ${POSTGRES_PASSWORD}
+      DB_NAME: ${POSTGRES_DB}
+      DB_LOGGING: ${DB_LOGGING:-false}
+      KAFKA_BROKER: kafka:29092
+      MINIO_ENDPOINT: ${MINIO_ENDPOINT}
+      MINIO_PORT: ${MINIO_PORT}
+      MINIO_ACCESS_KEY: ${ACCESS_KEY_ID_MINIO}
+      MINIO_SECRET_KEY: ${SECRET_ACCESS_KEY_MINIO}
+      NODE_ENV: development
+    ports:
+      - "3001:3000"
+    volumes:
+      - ./projects/api-consumer:/usr/src/app
+      - /usr/src/app/node_modules
+    networks:
+      - microservices
+    depends_on:
+      db-migrate:
+        condition: service_completed_successfully
+      postgres:
+        condition: service_healthy
+      kafka:
+        condition: service_started
+      minio-init:
+        condition: service_completed_successfully
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "wget -qO- --timeout=2 http://127.0.0.1:3000/api/health || exit 1",
+        ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  minio:
+    image: minio/minio:latest
+    container_name: minio
+    restart: always
+    ports:
+      - "${MINIO_PORT:-9000}:9000"
+      - "${MINIO_CONSOLE_PORT:-9001}:9001"
+    environment:
+      MINIO_ROOT_USER: ${ACCESS_KEY_ID_MINIO}
+      MINIO_ROOT_PASSWORD: ${SECRET_ACCESS_KEY_MINIO}
+      MINIO_NOTIFY_KAFKA_ENABLE_meukafka: "on"
+      MINIO_NOTIFY_KAFKA_BROKERS_meukafka: "kafka:29092"
+      MINIO_NOTIFY_KAFKA_TOPIC_meukafka: "${MINIO_KAFKA_TOPIC}"
+    depends_on:
+      - kafka
+    networks:
+      - microservices
+    volumes:
+      - minio_data:/data
+    command: server /data --console-address ":9001"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]
+      interval: 5s
+      timeout: 20s
+      retries: 5
+
+  minio-init:
+    image: minio/mc:latest
+    restart: "no"
+    container_name: minio-init
+    environment:
+      _MINIO_USER: ${ACCESS_KEY_ID_MINIO}
+      _MINIO_PASS: ${SECRET_ACCESS_KEY_MINIO}
+    entrypoint: |
+      /bin/sh -c "
+      echo '--- initializing config ---';
+
+      until mc alias set myminio http://minio:9000 $$_MINIO_USER $$_MINIO_PASS; do
+        echo 'Minio not ready. Retrying in 2s...';
+        sleep 2;
+      done;
+
+      echo 'Minio ready!';
+
+      mc mb myminio/video --ignore-existing;
+      echo 'Bucket video created.';
+      mc mb myminio/screenshot --ignore-existing;
+      echo 'Bucket screenshot created.';
+
+      mc event add myminio/video arn:minio:sqs::meukafka:kafka --event put --ignore-existing;
+      echo '--- Config completed - topic upload-video created ---';
+      "
+    depends_on:
+      minio:
+        condition: service_healthy
+    networks:
+      - microservices
+
+  kafka:
+    image: confluentinc/cp-kafka:latest
+    container_name: kafka
+    networks:
+      - microservices
+    ports:
+      - "9092:9092"
+    environment:
+      KAFKA_NODE_ID: 1
+      KAFKA_PROCESS_ROLES: broker,controller
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
+      # Interno: 29092, Externo: 9092
+      KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:29092,CONTROLLER://0.0.0.0:29093,PLAINTEXT_HOST://0.0.0.0:9092
+      # Aqui está o segredo: Internamente anuncia kafka:29092
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:29092,PLAINTEXT_HOST://localhost:9092
+      KAFKA_CONTROLLER_LISTENER_NAMES: CONTROLLER
+      KAFKA_CONTROLLER_QUORUM_VOTERS: 1@kafka:29093
+      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
+      KAFKA_AUTO_CREATE_TOPICS_ENABLE: "true"
+      # Dica: Em prod, use um CLUSTER_ID fixo, mas para dev isso funciona
+      CLUSTER_ID: "MkU3OEVBNTcwNTJENDM2Qk"
+
+  kafdrop:
+    image: obsidiandynamics/kafdrop:latest
+    container_name: kafdrop
+    networks:
+      - microservices
+    depends_on:
+      - kafka
+    ports:
+      - "19000:9000"
+    environment:
+      # Kafdrop também está na rede interna, usa a porta interna
+      KAFKA_BROKERCONNECT: kafka:29092
+
+networks:
+  microservices:
+    driver: bridge
+
+volumes:
+  postgres_data:
+  minio_data:
