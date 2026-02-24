@@ -29,11 +29,7 @@ services:
         container_name: db-migrate
         restart: "no"
         environment:
-            DB_HOST: postgres
-            DB_PORT: ${POSTGRES_PORT}
-            DB_USERNAME: ${POSTGRES_USER}
-            DB_PASSWORD: ${POSTGRES_PASSWORD}
-            DB_NAME: ${POSTGRES_DB}
+            DB_URL: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:${POSTGRES_PORT}/${POSTGRES_DB}
             DB_LOGGING: ${DB_LOGGING}
         working_dir: /usr/src/app
         volumes:
@@ -64,6 +60,7 @@ services:
             MINIO_ACCESS_KEY: ${MINIO_ACCESS_KEY}
             MINIO_SECRET_KEY: ${MINIO_SECRET_KEY}
             BUCKET_VIDEO_NAME: ${BUCKET_VIDEO_NAME}
+            BUCKET_REGION: us-east-1
             MAX_FILE_SIZE_MB: ${MAX_FILE_SIZE_MB}
         ports:
             - "${API_BFF_PORT}:${API_BFF_PORT}"
@@ -121,6 +118,8 @@ services:
                 condition: service_completed_successfully
             kafka:
                 condition: service_healthy
+            kafka-init:
+                condition: service_completed_successfully
             minio-init:
                 condition: service_completed_successfully
         healthcheck:
@@ -149,6 +148,8 @@ services:
         depends_on:
             kafka:
                 condition: service_healthy
+            kafka-init:
+                condition: service_completed_successfully
         networks:
             - microservices
         volumes:
@@ -172,8 +173,9 @@ services:
         restart: "no"
         entrypoint: ["/bin/sh"]
         environment:
-            _MINIO_USER: ${MINIO_ACCESS_KEY}
-            _MINIO_PASS: ${MINIO_SECRET_KEY}
+            MINIO_ROOT_USER: ${MINIO_ACCESS_KEY}
+            MINIO_ROOT_PASSWORD: ${MINIO_SECRET_KEY}
+            MINIO_URL: http://minio:${MINIO_PORT}
             BUCKET_VIDEO_NAME: ${BUCKET_VIDEO_NAME}
             BUCKET_SCREENSHOT_NAME: ${BUCKET_SCREENSHOT_NAME}
         volumes:
@@ -191,31 +193,46 @@ services:
         networks:
             - microservices
         ports:
-            - "9092:9092"
+            - "${KAFKA_HOST_PORT}:${KAFKA_HOST_PORT}"
         environment:
             KAFKA_NODE_ID: 1
             KAFKA_PROCESS_ROLES: broker,controller
             KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
-            KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:${KAFKA_INTERNAL_PORT},CONTROLLER://0.0.0.0:29093,PLAINTEXT_HOST://0.0.0.0:9092
-            KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:${KAFKA_INTERNAL_PORT},PLAINTEXT_HOST://localhost:9092
+            KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:${KAFKA_INTERNAL_PORT},CONTROLLER://0.0.0.0:${KAFKA_CONTROLLER_PORT},PLAINTEXT_HOST://0.0.0.0:${KAFKA_HOST_PORT}
+            KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:${KAFKA_INTERNAL_PORT},PLAINTEXT_HOST://localhost:${KAFKA_HOST_PORT}
             KAFKA_CONTROLLER_LISTENER_NAMES: CONTROLLER
-            KAFKA_CONTROLLER_QUORUM_VOTERS: 1@kafka:29093
+            KAFKA_CONTROLLER_QUORUM_VOTERS: 1@kafka:${KAFKA_CONTROLLER_PORT}
             KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
             KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
             KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
             KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
-            KAFKA_AUTO_CREATE_TOPICS_ENABLE: "true"
+            KAFKA_AUTO_CREATE_TOPICS_ENABLE: false
             CLUSTER_ID: "MkU3OEVBNTcwNTJENDM2Qk"
         healthcheck:
             test:
                 [
                     "CMD-SHELL",
-                    "kafka-broker-api-versions --bootstrap-server localhost:9092 > /dev/null 2>&1",
+                    "kafka-broker-api-versions --bootstrap-server localhost:${KAFKA_HOST_PORT} > /dev/null 2>&1",
                 ]
             interval: 10s
             timeout: 10s
             retries: 10
             start_period: 30s
+
+    kafka-init:
+        image: confluentinc/cp-kafka:latest
+        container_name: kafka-init
+        restart: "no"
+        depends_on:
+            kafka:
+                condition: service_healthy
+        networks:
+            - microservices
+        entrypoint: ["/bin/sh", "-c"]
+        command: >
+            "sleep 5; \
+            kafka-topics --bootstrap-server kafka:${KAFKA_INTERNAL_PORT} --create --topic ${MINIO_KAFKA_TOPIC} --partitions 1 --replication-factor 1 || true; \
+            echo 'kafka-init: topic created (or already exists)'; exit 0"
 
     kafdrop:
         image: obsidiandynamics/kafdrop:latest
@@ -226,7 +243,7 @@ services:
             kafka:
                 condition: service_healthy
         ports:
-            - "19000:9000"
+            - "19000:19000"
         environment:
             KAFKA_BROKERCONNECT: kafka:${KAFKA_INTERNAL_PORT}
 

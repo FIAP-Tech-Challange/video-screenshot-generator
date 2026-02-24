@@ -2,7 +2,7 @@
 
 echo '--- initializing config ---';
 
-until mc alias set myminio http://minio:9000 $_MINIO_USER $_MINIO_PASS; do
+until mc alias set myminio ${MINIO_URL} $MINIO_ROOT_USER $MINIO_ROOT_PASSWORD; do
   echo 'Minio not ready. Retrying in 2s...';
   sleep 2;
 done;
