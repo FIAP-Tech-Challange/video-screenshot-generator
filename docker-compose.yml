@@ -106,7 +106,7 @@ services:
             BUCKET_VIDEO_NAME: ${BUCKET_VIDEO_NAME}
             BUCKET_SCREENSHOT_NAME: ${BUCKET_SCREENSHOT_NAME}
             BUCKET_REGION: us-east-1
-            KAFKA_BROKER: kafka:29092
+            KAFKA_BROKER: kafka:${KAFKA_INTERNAL_PORT}
         ports:
             - "${API_CONSUMER_PORT}:${API_CONSUMER_PORT}"
         volumes:
@@ -138,13 +138,13 @@ services:
         container_name: minio
         restart: unless-stopped
         ports:
-            - "${MINIO_PORT}:9000"
-            - "${MINIO_CONSOLE_PORT}:9001"
+            - "${MINIO_PORT}:${MINIO_PORT}"
+            - "${MINIO_CONSOLE_PORT}:${MINIO_CONSOLE_PORT}"
         environment:
             MINIO_ROOT_USER: ${MINIO_ACCESS_KEY}
             MINIO_ROOT_PASSWORD: ${MINIO_SECRET_KEY}
             MINIO_NOTIFY_KAFKA_ENABLE_meukafka: "on"
-            MINIO_NOTIFY_KAFKA_BROKERS_meukafka: "kafka:29092"
+            MINIO_NOTIFY_KAFKA_BROKERS_meukafka: "kafka:${KAFKA_INTERNAL_PORT}"
             MINIO_NOTIFY_KAFKA_TOPIC_meukafka: "${MINIO_KAFKA_TOPIC}"
         depends_on:
             kafka:
@@ -153,10 +153,15 @@ services:
             - microservices
         volumes:
             - minio_data:/data
-        command: server /data --console-address ":9001"
+        command: server /data --address ":${MINIO_PORT}" --console-address ":${MINIO_CONSOLE_PORT}"
         healthcheck:
             test:
-                ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]
+                [
+                    "CMD",
+                    "curl",
+                    "-f",
+                    "http://localhost:${MINIO_PORT}/minio/health/live",
+                ]
             interval: 5s
             timeout: 20s
             retries: 5
@@ -191,8 +196,8 @@ services:
             KAFKA_NODE_ID: 1
             KAFKA_PROCESS_ROLES: broker,controller
             KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
-            KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:29092,CONTROLLER://0.0.0.0:29093,PLAINTEXT_HOST://0.0.0.0:9092
-            KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:29092,PLAINTEXT_HOST://localhost:9092
+            KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:${KAFKA_INTERNAL_PORT},CONTROLLER://0.0.0.0:29093,PLAINTEXT_HOST://0.0.0.0:9092
+            KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:${KAFKA_INTERNAL_PORT},PLAINTEXT_HOST://localhost:9092
             KAFKA_CONTROLLER_LISTENER_NAMES: CONTROLLER
             KAFKA_CONTROLLER_QUORUM_VOTERS: 1@kafka:29093
             KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
@@ -223,7 +228,7 @@ services:
         ports:
             - "19000:9000"
         environment:
-            KAFKA_BROKERCONNECT: kafka:29092
+            KAFKA_BROKERCONNECT: kafka:${KAFKA_INTERNAL_PORT}
 
 networks:
     microservices:
