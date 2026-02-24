@@ -9,6 +9,7 @@ import archiver from 'archiver';
 import type { StorageServicePort } from '../ports/input/storage.service.port';
 import type { FileStoragePort } from '../ports/output/file-storage.port';
 import type { VideoProcessorPort } from '../ports/output/video-processor.port';
+import { AppConfig } from 'src/config/validate-env';
 
 @Injectable()
 export class StorageService implements StorageServicePort, OnModuleInit {
@@ -17,14 +18,13 @@ export class StorageService implements StorageServicePort, OnModuleInit {
   private readonly bucketScreenshotName: string;
 
   constructor(
-    private readonly configService: ConfigService,
+    private readonly configService: ConfigService<AppConfig>,
     @Inject('FileStoragePort') private readonly fileStorage: FileStoragePort,
     @Inject('VideoProcessorPort')
     private readonly videoProcessor: VideoProcessorPort,
   ) {
-    this.bucketVideoName =
-      this.configService.getOrThrow<string>('BUCKET_VIDEO_NAME');
-    this.bucketScreenshotName = this.configService.getOrThrow<string>(
+    this.bucketVideoName = this.configService.getOrThrow('BUCKET_VIDEO_NAME');
+    this.bucketScreenshotName = this.configService.getOrThrow(
       'BUCKET_SCREENSHOT_NAME',
     );
   }

@@ -2,107 +2,54 @@ export type AppConfig = {
   NODE_ENV: 'development' | 'production' | 'test';
   PORT: number;
   DB_URL: string;
-  DB_PORT: number;
-  DB_USERNAME: string;
-  DB_PASSWORD: string;
-  DB_NAME: string;
   DB_LOGGING: boolean;
   BUCKET_VIDEO_NAME: string;
   BUCKET_SCREENSHOT_NAME: string;
   BUCKET_REGION: string;
-  URL_MINIO: string;
-  ACCESS_KEY_ID_MINIO: string;
-  SECRET_ACCESS_KEY_MINIO: string;
+  MINIO_URL: string;
+  MINIO_ACCESS_KEY: string;
+  MINIO_SECRET_KEY: string;
+  KAFKA_BROKER: string;
 };
 
-/**
- * Basic env validation without external dependencies.
- * Accepts the raw env object (process.env) and returns a validated, typed config.
- * Throws an Error if required values are missing or invalid.
- */
+function getString(config: Record<string, unknown>, key: string): string {
+  const value = config[key];
+  if (typeof value !== 'string' || !value.trim()) {
+    throw new Error(`${key} is required`);
+  }
+  return value;
+}
+
+function getNumber(config: Record<string, unknown>, key: string): number {
+  const value = Number(config[key]);
+  if (Number.isNaN(value) || value <= 0) {
+    throw new Error(`${key} must be a valid positive number`);
+  }
+  return value;
+}
+
+function getBoolean(config: Record<string, unknown>, key: string): boolean {
+  const value = config[key];
+  return value === true || value === 'true' || value === '1';
+}
+
 export function validateEnv(config: Record<string, unknown>): AppConfig {
-  const nodeEnvRaw = config.NODE_ENV;
-  const nodeEnv = typeof nodeEnvRaw === 'string' ? nodeEnvRaw : 'development';
+  const nodeEnv = getString(config, 'NODE_ENV');
   if (!['development', 'production', 'test'].includes(nodeEnv)) {
-    throw new Error(`Invalid NODE_ENV value: ${String(nodeEnvRaw)}`);
+    throw new Error(`NODE_ENV must be development, production, or test`);
   }
-
-  const portRaw = config.PORT;
-  const port = Number(portRaw ?? 3000);
-  if (Number.isNaN(port) || port <= 0) {
-    throw new Error(`Invalid PORT value: ${String(portRaw)}`);
-  }
-
-  const dbPortRaw = config.DB_PORT;
-  const dbPort = Number(dbPortRaw ?? 5432);
-  if (Number.isNaN(dbPort) || dbPort <= 0) {
-    throw new Error(`Invalid DB_PORT value: ${String(dbPortRaw)}`);
-  }
-
-  const bucketVideoName =
-    typeof config.BUCKET_VIDEO_NAME === 'string'
-      ? config.BUCKET_VIDEO_NAME
-      : '';
-  if (!bucketVideoName) {
-    throw new Error('BUCKET_VIDEO_NAME is required');
-  }
-
-  const bucketScreenshotName =
-    typeof config.BUCKET_SCREENSHOT_NAME === 'string'
-      ? config.BUCKET_SCREENSHOT_NAME
-      : '';
-  if (!bucketScreenshotName) {
-    throw new Error('BUCKET_SCREENSHOT_NAME is required');
-  }
-
-  const bucketRegion =
-    typeof config.BUCKET_REGION === 'string' ? config.BUCKET_REGION : '';
-  if (!bucketRegion) {
-    throw new Error('BUCKET_REGION is required');
-  }
-
-  const urlMinio = typeof config.URL_MINIO === 'string' ? config.URL_MINIO : '';
-  if (!urlMinio) {
-    throw new Error('URL_MINIO is required');
-  }
-
-  const accessKeyIdMinio =
-    typeof config.ACCESS_KEY_ID_MINIO === 'string'
-      ? config.ACCESS_KEY_ID_MINIO
-      : '';
-  if (!accessKeyIdMinio) {
-    throw new Error('ACCESS_KEY_ID_MINIO is required');
-  }
-
-  const secretAccessKeyMinio =
-    typeof config.SECRET_ACCESS_KEY_MINIO === 'string'
-      ? config.SECRET_ACCESS_KEY_MINIO
-      : '';
-  if (!secretAccessKeyMinio) {
-    throw new Error('SECRET_ACCESS_KEY_MINIO is required');
-  }
-
-  // DB_LOGGING may be provided as 'true'|'false' strings from env; normalize to boolean
-  const rawDbLogging = config.DB_LOGGING;
-  const dbLogging =
-    rawDbLogging === true || rawDbLogging === 'true' || rawDbLogging === '1';
 
   return {
     NODE_ENV: nodeEnv as AppConfig['NODE_ENV'],
-    PORT: port,
-    DB_URL: typeof config.DB_URL === 'string' ? config.DB_URL : '',
-    DB_PORT: dbPort,
-    DB_USERNAME:
-      typeof config.DB_USERNAME === 'string' ? config.DB_USERNAME : '',
-    DB_PASSWORD:
-      typeof config.DB_PASSWORD === 'string' ? config.DB_PASSWORD : '',
-    DB_NAME: typeof config.DB_NAME === 'string' ? config.DB_NAME : 'postgres',
-    DB_LOGGING: Boolean(dbLogging),
-    BUCKET_VIDEO_NAME: bucketVideoName,
-    BUCKET_SCREENSHOT_NAME: bucketScreenshotName,
-    BUCKET_REGION: bucketRegion,
-    URL_MINIO: urlMinio,
-    ACCESS_KEY_ID_MINIO: accessKeyIdMinio,
-    SECRET_ACCESS_KEY_MINIO: secretAccessKeyMinio,
+    PORT: getNumber(config, 'PORT'),
+    DB_URL: getString(config, 'DB_URL'),
+    DB_LOGGING: getBoolean(config, 'DB_LOGGING'),
+    MINIO_ACCESS_KEY: getString(config, 'MINIO_ACCESS_KEY'),
+    MINIO_SECRET_KEY: getString(config, 'MINIO_SECRET_KEY'),
+    BUCKET_VIDEO_NAME: getString(config, 'BUCKET_VIDEO_NAME'),
+    BUCKET_SCREENSHOT_NAME: getString(config, 'BUCKET_SCREENSHOT_NAME'),
+    BUCKET_REGION: getString(config, 'BUCKET_REGION'),
+    MINIO_URL: getString(config, 'MINIO_URL'),
+    KAFKA_BROKER: getString(config, 'KAFKA_BROKER'),
   };
 }

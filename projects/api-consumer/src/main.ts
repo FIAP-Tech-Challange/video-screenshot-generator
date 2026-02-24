@@ -3,18 +3,20 @@ import { AppModule } from './app.module';
 import { VersioningType } from '@nestjs/common';
 import { MicroserviceOptions, Transport } from '@nestjs/microservices';
 import { SwaggerDoc } from './docs/swagger.docs';
+import { ConfigService } from '@nestjs/config';
+import { AppConfig } from './config/validate-env';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
-  app.enableVersioning({ type: VersioningType.URI });
+  const config = app.get(ConfigService<AppConfig>);
 
-  const kafkaBroker = process.env.KAFKA_BROKER || 'localhost:9092';
+  app.enableVersioning({ type: VersioningType.URI });
 
   app.connectMicroservice<MicroserviceOptions>({
     transport: Transport.KAFKA,
     options: {
       client: {
-        brokers: [kafkaBroker],
+        brokers: [config.getOrThrow('KAFKA_BROKER')],
       },
       consumer: {
         groupId: 'video-consumer-group',
@@ -28,6 +30,6 @@ async function bootstrap() {
   await app.startAllMicroservices();
   new SwaggerDoc().setupDocs(app);
 
-  await app.listen(process.env.PORT ?? 3000);
+  await app.listen(config.getOrThrow('PORT'));
 }
 void bootstrap();

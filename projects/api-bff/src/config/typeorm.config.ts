@@ -7,15 +7,8 @@ export function createTypeOrmConfig(
   return {
     type: 'postgres',
     url: config.get<string>('DB_URL'),
-    port: parseInt(String(config.get('DB_PORT')), 10),
-    username: config.get<string>('DB_USERNAME'),
-    password: config.get<string>('DB_PASSWORD'),
-    database: config.get<string>('DB_NAME'),
     entities: [__dirname + '/../**/*.entity{.ts,.js}'],
     synchronize: false,
-    logging:
-      config.get('DB_LOGGING') === true ||
-      config.get<boolean>('DB_LOGGING') ||
-      false,
+    logging: config.get<boolean>('DB_LOGGING'),
   };
 }

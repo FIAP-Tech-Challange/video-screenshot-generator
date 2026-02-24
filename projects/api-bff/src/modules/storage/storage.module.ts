@@ -14,7 +14,7 @@ import type { IStorageClient } from './storage.interface';
     {
       provide: 'IStorageClient',
       useFactory: (configService: ConfigService<AppConfig>): IStorageClient => {
-        const env = configService.get('NODE_ENV', { infer: true });
+        const env = configService.getOrThrow('NODE_ENV', { infer: true });
 
         return env === 'test'
           ? new StorageLocalService()

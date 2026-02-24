@@ -10,21 +10,20 @@ import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { FileStoragePort } from '../../ports/output/file-storage.port';
+import { AppConfig } from 'src/config/validate-env';
 
 @Injectable()
 export class S3StorageAdapter implements FileStoragePort {
   private readonly logger = new Logger(S3StorageAdapter.name);
   private client: S3Client;
 
-  constructor(private readonly configService: ConfigService) {
+  constructor(private readonly configService: ConfigService<AppConfig>) {
     this.client = new S3Client({
-      region: this.configService.get('BUCKET_REGION') ?? 'us-east-1',
-      endpoint: this.configService.get('URL_MINIO'),
+      region: this.configService.getOrThrow('BUCKET_REGION'),
+      endpoint: this.configService.getOrThrow('MINIO_URL'),
       credentials: {
-        accessKeyId: this.configService.getOrThrow('ACCESS_KEY_ID_MINIO'),
-        secretAccessKey: this.configService.getOrThrow(
-          'SECRET_ACCESS_KEY_MINIO',
-        ),
+        accessKeyId: this.configService.getOrThrow('MINIO_ACCESS_KEY'),
+        secretAccessKey: this.configService.getOrThrow('MINIO_SECRET_KEY'),
       },
       forcePathStyle: true,
     });

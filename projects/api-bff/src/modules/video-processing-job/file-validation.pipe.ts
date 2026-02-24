@@ -9,9 +9,7 @@ export class FileValidationPipe implements PipeTransform {
   private readonly maxFileSizeBytes: number;
 
   constructor(private readonly configService: ConfigService<AppConfig>) {
-    this.maxFileSizeMB = this.configService.get('MAX_FILE_SIZE_MB', {
-      infer: true,
-    })!;
+    this.maxFileSizeMB = this.configService.getOrThrow('MAX_FILE_SIZE_MB');
     this.maxFileSizeBytes = this.maxFileSizeMB * 1024 * 1024;
   }
 

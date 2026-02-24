@@ -1,17 +1,3 @@
-x-db-url: &db-url
-    DB_URL: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:${POSTGRES_PORT}/${POSTGRES_DB}
-    DB_LOGGING: ${DB_LOGGING}
-
-x-minio-credentials: &minio-credentials
-    ACCESS_KEY_ID_MINIO: ${ACCESS_KEY_ID_MINIO}
-    SECRET_ACCESS_KEY_MINIO: ${SECRET_ACCESS_KEY_MINIO}
-
-x-depends-db: &depends-db
-    postgres:
-        condition: service_healthy
-    db-migrate:
-        condition: service_completed_successfully
-
 services:
     postgres:
         image: postgres:15
@@ -43,7 +29,12 @@ services:
         container_name: db-migrate
         restart: "no"
         environment:
-            <<: *db-url
+            DB_HOST: postgres
+            DB_PORT: ${POSTGRES_PORT}
+            DB_USERNAME: ${POSTGRES_USER}
+            DB_PASSWORD: ${POSTGRES_PASSWORD}
+            DB_NAME: ${POSTGRES_DB}
+            DB_LOGGING: ${DB_LOGGING}
         working_dir: /usr/src/app
         volumes:
             - ./infra/database:/usr/src/app
@@ -63,14 +54,15 @@ services:
         container_name: api-bff
         restart: unless-stopped
         environment:
-            <<: *db-url
             NODE_ENV: development
             PORT: ${API_BFF_PORT}
+            DB_URL: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:${POSTGRES_PORT}/${POSTGRES_DB}
+            DB_LOGGING: ${DB_LOGGING}
             JWT_SECRET: ${JWT_SECRET}
             MINIO_ENDPOINT: minio
             MINIO_PORT: ${MINIO_PORT}
-            MINIO_ACCESS_KEY: ${ACCESS_KEY_ID_MINIO}
-            MINIO_SECRET_KEY: ${SECRET_ACCESS_KEY_MINIO}
+            MINIO_ACCESS_KEY: ${MINIO_ACCESS_KEY}
+            MINIO_SECRET_KEY: ${MINIO_SECRET_KEY}
             BUCKET_VIDEO_NAME: ${BUCKET_VIDEO_NAME}
             MAX_FILE_SIZE_MB: ${MAX_FILE_SIZE_MB}
         ports:
@@ -81,7 +73,10 @@ services:
         networks:
             - microservices
         depends_on:
-            <<: *depends-db
+            postgres:
+                condition: service_healthy
+            db-migrate:
+                condition: service_completed_successfully
         healthcheck:
             test:
                 [
@@ -101,13 +96,16 @@ services:
         container_name: api-consumer
         restart: unless-stopped
         environment:
-            <<: [*db-url, *minio-credentials]
             NODE_ENV: development
             PORT: ${API_CONSUMER_PORT}
+            DB_URL: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:${POSTGRES_PORT}/${POSTGRES_DB}
+            DB_LOGGING: ${DB_LOGGING}
+            MINIO_ACCESS_KEY: ${MINIO_ACCESS_KEY}
+            MINIO_SECRET_KEY: ${MINIO_SECRET_KEY}
+            MINIO_URL: http://minio:${MINIO_PORT}
             BUCKET_VIDEO_NAME: ${BUCKET_VIDEO_NAME}
             BUCKET_SCREENSHOT_NAME: ${BUCKET_SCREENSHOT_NAME}
             BUCKET_REGION: us-east-1
-            URL_MINIO: http://minio:${MINIO_PORT}
             KAFKA_BROKER: kafka:29092
         ports:
             - "${API_CONSUMER_PORT}:${API_CONSUMER_PORT}"
@@ -117,7 +115,10 @@ services:
         networks:
             - microservices
         depends_on:
-            <<: *depends-db
+            postgres:
+                condition: service_healthy
+            db-migrate:
+                condition: service_completed_successfully
             kafka:
                 condition: service_healthy
             minio-init:
@@ -126,7 +127,7 @@ services:
             test:
                 [
                     "CMD-SHELL",
-                    "wget -qO- --timeout=2 http://127.0.0.1:${API_CONSUMER_PORT}/api/health || exit 1",
+                    "wget -qO- --timeout=2 http://127.0.0.1:${API_CONSUMER_PORT}/health || exit 1",
                 ]
             interval: 10s
             timeout: 5s
@@ -140,8 +141,8 @@ services:
             - "${MINIO_PORT}:9000"
             - "${MINIO_CONSOLE_PORT}:9001"
         environment:
-            MINIO_ROOT_USER: ${ACCESS_KEY_ID_MINIO}
-            MINIO_ROOT_PASSWORD: ${SECRET_ACCESS_KEY_MINIO}
+            MINIO_ROOT_USER: ${MINIO_ACCESS_KEY}
+            MINIO_ROOT_PASSWORD: ${MINIO_SECRET_KEY}
             MINIO_NOTIFY_KAFKA_ENABLE_meukafka: "on"
             MINIO_NOTIFY_KAFKA_BROKERS_meukafka: "kafka:29092"
             MINIO_NOTIFY_KAFKA_TOPIC_meukafka: "${MINIO_KAFKA_TOPIC}"
@@ -166,8 +167,8 @@ services:
         restart: "no"
         entrypoint: ["/bin/sh"]
         environment:
-            _MINIO_USER: ${ACCESS_KEY_ID_MINIO}
-            _MINIO_PASS: ${SECRET_ACCESS_KEY_MINIO}
+            _MINIO_USER: ${MINIO_ACCESS_KEY}
+            _MINIO_PASS: ${MINIO_SECRET_KEY}
             BUCKET_VIDEO_NAME: ${BUCKET_VIDEO_NAME}
             BUCKET_SCREENSHOT_NAME: ${BUCKET_SCREENSHOT_NAME}
         volumes:

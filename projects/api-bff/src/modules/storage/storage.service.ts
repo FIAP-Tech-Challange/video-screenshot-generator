@@ -10,22 +10,18 @@ export class StorageService implements IStorageClient {
   private videoBucketName: string;
 
   constructor(private readonly configService: ConfigService<AppConfig>) {
-    const endPoint = this.configService.get('MINIO_ENDPOINT', {
-      infer: true,
-    })!;
-    const port = this.configService.get('MINIO_PORT', { infer: true })!;
+    const endPoint: string = this.configService.getOrThrow('MINIO_ENDPOINT');
+    const port: number = this.configService.getOrThrow('MINIO_PORT');
 
     this.minioClient = new Minio.Client({
       endPoint,
       port,
-      accessKey: this.configService.get('MINIO_ACCESS_KEY', { infer: true })!,
-      secretKey: this.configService.get('MINIO_SECRET_KEY', { infer: true })!,
+      accessKey: this.configService.getOrThrow('MINIO_ACCESS_KEY'),
+      secretKey: this.configService.getOrThrow('MINIO_SECRET_KEY'),
       useSSL: false,
     });
 
-    this.videoBucketName = this.configService.get('BUCKET_VIDEO_NAME', {
-      infer: true,
-    })!;
+    this.videoBucketName = this.configService.getOrThrow('BUCKET_VIDEO_NAME');
   }
 
   async generateUploadUrl(fileName: string): Promise<string> {
