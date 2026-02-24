@@ -1,7 +1,7 @@
 export type AppConfig = {
   NODE_ENV: 'development' | 'production' | 'test';
   PORT: number;
-  DB_HOST: string;
+  DB_URL: string;
   DB_PORT: number;
   DB_USERNAME: string;
   DB_PASSWORD: string;
@@ -90,7 +90,7 @@ export function validateEnv(config: Record<string, unknown>): AppConfig {
   return {
     NODE_ENV: nodeEnv as AppConfig['NODE_ENV'],
     PORT: port,
-    DB_HOST: typeof config.DB_HOST === 'string' ? config.DB_HOST : '',
+    DB_URL: typeof config.DB_URL === 'string' ? config.DB_URL : '',
     DB_PORT: dbPort,
     DB_USERNAME:
       typeof config.DB_USERNAME === 'string' ? config.DB_USERNAME : '',

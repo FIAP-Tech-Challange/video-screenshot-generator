@@ -7,7 +7,7 @@ ENV NODE_ENV=development
 COPY package*.json ./
 RUN npm ci && chown -R node:node /usr/src/app
 COPY . .
-EXPOSE 3000
+EXPOSE ${PORT}
 CMD ["npm", "run", "start:dev"]
 
 FROM base AS builder
@@ -21,13 +21,12 @@ RUN npm run build
 FROM node:24-alpine AS production
 WORKDIR /usr/src/app
 ENV NODE_ENV=production
-ENV PORT=3000
 COPY package*.json ./
 RUN npm ci --omit=dev --production
 RUN apk add --no-cache curl
 COPY --from=builder /usr/src/app/dist ./dist
 USER node
-EXPOSE 3000
+EXPOSE ${PORT}
 HEALTHCHECK --interval=30s --timeout=3s --start-period=10s --retries=3 \
-  CMD curl -f http://127.0.0.1:${PORT}/api/health || exit 1
+    CMD curl -f http://127.0.0.1:${PORT}/api/health || exit 1
 CMD ["node", "dist/main"]

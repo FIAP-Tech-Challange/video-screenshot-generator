@@ -7,7 +7,7 @@ import type { IStorageClient } from './storage.interface';
 @Injectable()
 export class StorageService implements IStorageClient {
   private minioClient: Minio.Client;
-  private srcBucketName: string;
+  private videoBucketName: string;
 
   constructor(private readonly configService: ConfigService<AppConfig>) {
     const endPoint = this.configService.get('MINIO_ENDPOINT', {
@@ -23,14 +23,14 @@ export class StorageService implements IStorageClient {
       useSSL: false,
     });
 
-    this.srcBucketName = this.configService.get('SRC_BUCKET_NAME', {
+    this.videoBucketName = this.configService.get('BUCKET_VIDEO_NAME', {
       infer: true,
     })!;
   }
 
   async generateUploadUrl(fileName: string): Promise<string> {
     return this.minioClient.presignedPutObject(
-      this.srcBucketName,
+      this.videoBucketName,
       fileName,
       60,
     );

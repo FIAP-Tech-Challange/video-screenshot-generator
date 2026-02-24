@@ -29,9 +29,7 @@ export class AuthController {
   }
 
   @Post('login')
-  async login(
-    @Body() body: AuthRequestDto,
-  ): Promise<{
+  async login(@Body() body: AuthRequestDto): Promise<{
     accessToken: string;
     user: { id: string; email: string; name: string };
   }> {

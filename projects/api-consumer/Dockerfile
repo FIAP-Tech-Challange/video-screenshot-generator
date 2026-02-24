@@ -9,7 +9,7 @@ COPY package*.json ./
 RUN npm ci && chown -R node:node /usr/src/app
 COPY . .
 
-EXPOSE 3000
+EXPOSE ${PORT}
 CMD ["npm", "run", "start:dev"]
 
 FROM base AS builder
@@ -23,13 +23,12 @@ RUN npm run build
 FROM node:22-alpine AS production
 WORKDIR /usr/src/app
 ENV NODE_ENV=production
-ENV PORT=3000
 COPY package*.json ./
 RUN npm ci --omit=dev --production
 
 RUN apk add --no-cache libc6-compat curl
 COPY --from=builder /usr/src/app/dist ./dist
 USER node
-EXPOSE 3000
+EXPOSE ${PORT}
 
 CMD ["node", "dist/main"]
