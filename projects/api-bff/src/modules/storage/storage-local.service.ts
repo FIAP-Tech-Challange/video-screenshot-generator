@@ -8,4 +8,10 @@ export class StorageLocalService implements IStorageClient {
       `http://localhost/upload/${encodeURIComponent(fileName)}`,
     );
   }
+
+  generateDownloadUrl(fileName: string): Promise<string> {
+    return Promise.resolve(
+      `http://localhost/download/${encodeURIComponent(fileName)}`,
+    );
+  }
 }
