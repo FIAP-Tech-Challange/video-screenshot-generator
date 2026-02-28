@@ -2,6 +2,7 @@ import {
   Body,
   BadRequestException,
   Controller,
+  Get,
   Post,
   UseGuards,
 } from '@nestjs/common';
@@ -16,6 +17,11 @@ export class VideoProcessingJobController {
   constructor(
     private readonly videoProcessingJobService: VideoProcessingJobService,
   ) {}
+
+  @Get()
+  async list(@UserId() userId: string): Promise<VideoProcessingJob[]> {
+    return this.videoProcessingJobService.findByUserId(userId);
+  }
 
   @Post()
   async create(

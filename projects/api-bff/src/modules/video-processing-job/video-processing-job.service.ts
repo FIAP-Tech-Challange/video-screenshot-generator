@@ -33,4 +33,11 @@ export class VideoProcessingJobService {
 
     return { job: savedJob, uploadUrl };
   }
+
+  async findByUserId(userId: string): Promise<VideoProcessingJob[]> {
+    return this.videoProcessingJobRepository.find({
+      where: { userId },
+      order: { createdAt: 'DESC' },
+    });
+  }
 }
