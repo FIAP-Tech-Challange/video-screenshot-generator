@@ -52,22 +52,6 @@ export class SidebarComponent {
       title: 'Meus Vídeos - Gerencie seus vídeos',
     },
     {
-      id: 'library',
-      label: 'Biblioteca',
-      icon: 'folder-open',
-      route: '/library',
-      theme: 'outline',
-      title: 'Biblioteca - Organize por pastas',
-    },
-    {
-      id: 'analytics',
-      label: 'Analytics',
-      icon: 'line-chart',
-      route: '/analytics',
-      theme: 'outline',
-      title: 'Analytics - Métricas de desempenho',
-    },
-    {
       id: 'settings',
       label: 'Configurações',
       icon: 'setting',
