@@ -1,4 +1,4 @@
-﻿#!/bin/sh
+#!/bin/sh
 
 echo '--- initializing config ---';
 
@@ -14,5 +14,5 @@ echo "Bucket $BUCKET_VIDEO_NAME created.";
 mc mb myminio/$BUCKET_SCREENSHOT_NAME --ignore-existing;
 echo "Bucket $BUCKET_SCREENSHOT_NAME created.";
 
-mc event add myminio/$BUCKET_VIDEO_NAME arn:minio:sqs::meukafka:kafka --event put --ignore-existing;
+mc event add myminio/$BUCKET_VIDEO_NAME arn:minio:sqs::meukafka:kafka --event put --ignore-existing || true;
 echo '--- Config completed - topic upload-video created ---';
