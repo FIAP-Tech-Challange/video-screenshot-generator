@@ -5,6 +5,7 @@ export type AppConfig = {
   DB_LOGGING: boolean;
   JWT_SECRET: string;
   MINIO_URL: string;
+  MINIO_PUBLIC_URL: string;
   MINIO_ACCESS_KEY: string;
   MINIO_SECRET_KEY: string;
   BUCKET_VIDEO_NAME: string;
@@ -47,6 +48,7 @@ export function validateEnv(config: Record<string, unknown>): AppConfig {
     DB_LOGGING: getBoolean(config, 'DB_LOGGING'),
     JWT_SECRET: getString(config, 'JWT_SECRET'),
     MINIO_URL: getString(config, 'MINIO_URL'),
+    MINIO_PUBLIC_URL: getString(config, 'MINIO_PUBLIC_URL'),
     MINIO_ACCESS_KEY: getString(config, 'MINIO_ACCESS_KEY'),
     MINIO_SECRET_KEY: getString(config, 'MINIO_SECRET_KEY'),
     BUCKET_VIDEO_NAME: getString(config, 'BUCKET_VIDEO_NAME'),

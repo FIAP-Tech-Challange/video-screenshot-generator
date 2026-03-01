@@ -5,6 +5,8 @@ import {
   Get,
   Post,
   UseGuards,
+  Get,
+  Param,
 } from '@nestjs/common';
 import { JwtAuthGuard } from '../auth/jwt.guard';
 import { UserId } from '../auth/user-id.decorator';
@@ -38,9 +40,10 @@ export class VideoProcessingJobController {
     return this.videoProcessingJobService.create(userId, normalizedFileName);
   }
 
+  @Get(':jobId/screenshots')
   async getScreenshotsDownloadUrl(
     @UserId() userId: string,
-    @Body('jobId') jobId: string,
+    @Param('jobId') jobId: string,
   ): Promise<{ downloadUrl: string }> {
     const downloadUrl =
       await this.videoProcessingJobService.getScreenshotsDownloadUrl(
