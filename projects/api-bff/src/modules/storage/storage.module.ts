@@ -12,4 +12,4 @@ import { ConfigModule } from '@nestjs/config';
   ],
   exports: ['IStorageClient'],
 })
-export class StorageModule { }
+export class StorageModule {}

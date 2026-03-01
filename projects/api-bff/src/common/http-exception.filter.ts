@@ -23,9 +23,7 @@ export class AllExceptionsFilter implements ExceptionFilter {
         : HttpStatus.INTERNAL_SERVER_ERROR;
 
     const rawResponse =
-      exception instanceof HttpException
-        ? exception.getResponse()
-        : null;
+      exception instanceof HttpException ? exception.getResponse() : null;
 
     const body: Record<string, unknown> =
       typeof rawResponse === 'object' && rawResponse !== null

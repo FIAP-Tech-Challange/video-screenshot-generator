@@ -16,7 +16,7 @@ import { VideoProcessingJob } from './video-processing-job.entity';
 export class VideoProcessingJobController {
   constructor(
     private readonly videoProcessingJobService: VideoProcessingJobService,
-  ) { }
+  ) {}
 
   @Get()
   async list(@UserId() userId: string): Promise<VideoProcessingJob[]> {

@@ -29,16 +29,16 @@ describe('VideoProcessingJobService - Unit', () => {
 
   // simple storage mock: no real network, just record calls and return deterministic url
   const storageMock = {
-    generateUploadUrl: jest.fn(
-      async (bucket: string, key: string, expires: number) => {
-        return `mock://upload/${encodeURIComponent(bucket)}/${encodeURIComponent(key)}`;
-      },
-    ),
-    generateDownloadUrl: jest.fn(
-      async (bucket: string, key: string, expires: number) => {
-        return `mock://download/${encodeURIComponent(bucket)}/${encodeURIComponent(key)}`;
-      },
-    ),
+    generateUploadUrl: jest.fn(async (bucket: string, key: string) => {
+      return Promise.resolve(
+        `mock://upload/${encodeURIComponent(bucket)}/${encodeURIComponent(key)}`,
+      );
+    }),
+    generateDownloadUrl: jest.fn(async (bucket: string, key: string) => {
+      return Promise.resolve(
+        `mock://download/${encodeURIComponent(bucket)}/${encodeURIComponent(key)}`,
+      );
+    }),
   };
 
   beforeEach(async () => {
