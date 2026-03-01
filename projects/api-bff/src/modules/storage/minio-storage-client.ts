@@ -7,12 +7,11 @@ import {
 } from '@aws-sdk/client-s3';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 import type { AppConfig } from '../../config/validate-env';
-import type { IStorageClient } from './storage.interface';
+import type { IStorageClient } from './storage-client.interface';
 
 @Injectable()
-export class StorageService implements IStorageClient {
+export class MinIoStorageClient implements IStorageClient {
   private readonly s3Client: S3Client;
-  private readonly videoBucketName: string;
 
   constructor(private readonly configService: ConfigService<AppConfig>) {
     this.s3Client = new S3Client({
@@ -24,19 +23,21 @@ export class StorageService implements IStorageClient {
       },
       forcePathStyle: true,
     });
-
-    this.videoBucketName = this.configService.getOrThrow('BUCKET_VIDEO_NAME');
   }
 
-  public async generateUploadUrl(fileName: string): Promise<string> {
+  public async generateUploadUrl(
+    bucketName: string,
+    objectKey: string,
+    expiresIn: number,
+  ) {
     const command = new PutObjectCommand({
-      Bucket: this.videoBucketName,
-      Key: fileName,
+      Bucket: bucketName,
+      Key: objectKey,
     });
 
     try {
       const url = await getSignedUrl(this.s3Client, command, {
-        expiresIn: 60,
+        expiresIn: expiresIn,
       });
 
       return url;
@@ -44,20 +45,24 @@ export class StorageService implements IStorageClient {
       const cause = err instanceof Error ? err.message : String(err);
 
       throw new Error(
-        `Failed to generate upload URL for "${fileName}": ${cause}`,
+        `Failed to generate upload URL for "${objectKey}": ${cause}`,
       );
     }
   }
 
-  public async generateDownloadUrl(fileName: string): Promise<string> {
+  public async generateDownloadUrl(
+    bucketName: string,
+    objectKey: string,
+    expiresIn: number,
+  ): Promise<string> {
     const command = new GetObjectCommand({
-      Bucket: this.videoBucketName,
-      Key: fileName,
+      Bucket: bucketName,
+      Key: objectKey,
     });
 
     try {
       const url = await getSignedUrl(this.s3Client, command, {
-        expiresIn: 60,
+        expiresIn: expiresIn,
       });
 
       return url;
@@ -65,7 +70,7 @@ export class StorageService implements IStorageClient {
       const cause = err instanceof Error ? err.message : String(err);
 
       throw new Error(
-        `Failed to generate download URL for "${fileName}": ${cause}`,
+        `Failed to generate download URL for "${objectKey}": ${cause}`,
       );
     }
   }

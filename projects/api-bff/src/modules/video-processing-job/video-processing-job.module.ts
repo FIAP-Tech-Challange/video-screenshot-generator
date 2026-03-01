@@ -16,4 +16,4 @@ import { StorageModule } from '../storage/storage.module';
   providers: [VideoProcessingJobService],
   exports: [VideoProcessingJobService, TypeOrmModule],
 })
-export class VideoProcessingJobModule {}
+export class VideoProcessingJobModule { }

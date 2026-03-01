@@ -1,28 +1,15 @@
 import { Module } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
-
-import { StorageService } from './storage.service';
-import { StorageLocalService } from './storage-local.service';
-
-import type { AppConfig } from 'src/config/validate-env';
-import type { IStorageClient } from './storage.interface';
+import { MinIoStorageClient } from './minio-storage-client';
+import { ConfigModule } from '@nestjs/config';
 
 @Module({
-  imports: [],
-  controllers: [],
+  imports: [ConfigModule],
   providers: [
     {
       provide: 'IStorageClient',
-      useFactory: (configService: ConfigService<AppConfig>): IStorageClient => {
-        const env = configService.getOrThrow('NODE_ENV', { infer: true });
-
-        return env === 'test'
-          ? new StorageLocalService()
-          : new StorageService(configService);
-      },
-      inject: [ConfigService],
+      useClass: MinIoStorageClient,
     },
   ],
   exports: ['IStorageClient'],
 })
-export class StorageModule {}
+export class StorageModule { }

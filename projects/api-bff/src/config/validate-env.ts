@@ -8,6 +8,7 @@ export type AppConfig = {
   MINIO_ACCESS_KEY: string;
   MINIO_SECRET_KEY: string;
   BUCKET_VIDEO_NAME: string;
+  BUCKET_SCREENSHOT_NAME: string;
   BUCKET_REGION: string;
   MAX_FILE_SIZE_MB: number;
 };
@@ -49,6 +50,7 @@ export function validateEnv(config: Record<string, unknown>): AppConfig {
     MINIO_ACCESS_KEY: getString(config, 'MINIO_ACCESS_KEY'),
     MINIO_SECRET_KEY: getString(config, 'MINIO_SECRET_KEY'),
     BUCKET_VIDEO_NAME: getString(config, 'BUCKET_VIDEO_NAME'),
+    BUCKET_SCREENSHOT_NAME: getString(config, 'BUCKET_SCREENSHOT_NAME'),
     BUCKET_REGION: getString(config, 'BUCKET_REGION'),
     MAX_FILE_SIZE_MB: getNumber(config, 'MAX_FILE_SIZE_MB'),
   };

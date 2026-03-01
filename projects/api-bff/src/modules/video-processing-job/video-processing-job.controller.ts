@@ -16,7 +16,7 @@ import { VideoProcessingJob } from './video-processing-job.entity';
 export class VideoProcessingJobController {
   constructor(
     private readonly videoProcessingJobService: VideoProcessingJobService,
-  ) {}
+  ) { }
 
   @Get()
   async list(@UserId() userId: string): Promise<VideoProcessingJob[]> {
@@ -36,5 +36,18 @@ export class VideoProcessingJobController {
     }
 
     return this.videoProcessingJobService.create(userId, normalizedFileName);
+  }
+
+  async getScreenshotsDownloadUrl(
+    @UserId() userId: string,
+    @Body('jobId') jobId: string,
+  ): Promise<{ downloadUrl: string }> {
+    const downloadUrl =
+      await this.videoProcessingJobService.getScreenshotsDownloadUrl(
+        userId,
+        jobId,
+      );
+
+    return { downloadUrl };
   }
 }
