@@ -39,38 +39,11 @@ export class StorageService implements StorageServicePort, OnModuleInit {
     }
   }
 
-  async getPresignedUploadUrl(contentType: string = 'video/mp4') {
-    try {
-      const key = this.createPathAndName(this.bucketVideoName, 'mp4');
-      const url = await this.fileStorage.getPresignedUploadUrl(
-        this.bucketVideoName,
-        key.name,
-        contentType,
-      );
-      this.logger.log(`Generated pre-signed upload URL for ${key.name}`);
-      return { url, key: key.name };
-    } catch (error) {
-      this.logger.error('Failed to generate pre-signed upload URL', error);
-      throw error;
-    }
-  }
-
-  async getPresignedDownloadUrl(key: string) {
-    try {
-      this.logger.log(`Generating pre-signed download URL for ${key}`);
-      const url = await this.fileStorage.getPresignedDownloadUrl(
-        this.bucketScreenshotName,
-        key,
-      );
-      this.logger.log(`Generated pre-signed download URL for ${key}`);
-      return { url, expiresIn: 3600 };
-    } catch (error) {
-      this.logger.error('Failed to generate pre-signed download URL', error);
-      throw error;
-    }
-  }
-
-  async generateAndSaveScreenshots(videoKey: string, count?: number) {
+  async generateAndSaveScreenshots(
+    videoObjectKey: string,
+    jobId: string,
+    count?: number,
+  ): Promise<void> {
     const tempUuid = randomUUID();
     const tempDir = join(tmpdir(), `screenshots-${tempUuid}`);
     const videoPath = join(tempDir, 'video.mp4');
@@ -78,40 +51,14 @@ export class StorageService implements StorageServicePort, OnModuleInit {
     const zipPath = join(tempDir, 'screenshots.zip');
 
     try {
-      this.logger.log(`Starting screenshot generation for video: ${videoKey}`);
+      this.logger.log(
+        `Starting screenshot generation for video: ${videoObjectKey} with job ID: ${jobId}`,
+      );
 
       await fs.mkdir(tempDir, { recursive: true });
       await fs.mkdir(screenshotsDir, { recursive: true });
 
-      this.logger.log('Downloading video from bucket...');
-      const videoStream = await this.fileStorage.downloadFile(
-        this.bucketVideoName,
-        videoKey,
-      );
-      const fileStream = createWriteStream(videoPath);
-
-      await new Promise<void>((resolve, reject) => {
-        fileStream.on('finish', () => {
-          this.logger.log('Video stream finished writing');
-          resolve();
-        });
-        fileStream.on('error', (err) => {
-          this.logger.error('Error writing video file', err);
-          reject(err);
-        });
-        videoStream.on('error', (err) => {
-          this.logger.error('Error reading video stream', err);
-          reject(err);
-        });
-
-        videoStream.pipe(fileStream);
-      });
-
-      const stats = await fs.stat(videoPath);
-      if (stats.size === 0) {
-        throw new Error('Downloaded video file is empty');
-      }
-      this.logger.log('Video downloaded successfully');
+      await this.downloadVideoToFile(videoObjectKey, videoPath);
 
       this.logger.log('Generating screenshots...');
       await this.videoProcessor.generateScreenshots(
@@ -125,24 +72,17 @@ export class StorageService implements StorageServicePort, OnModuleInit {
 
       this.logger.log('Uploading zip to bucket...');
       const zipBuffer = await fs.readFile(zipPath);
-      const pathInfo = this.createPathAndName(this.bucketScreenshotName, 'zip');
+
+      const zipFileName = `${jobId}.zip`;
 
       await this.fileStorage.uploadFile(
         this.bucketScreenshotName,
-        pathInfo.name,
+        zipFileName,
         zipBuffer,
         'application/zip',
       );
 
-      this.logger.log(
-        `Screenshots zip uploaded successfully: ${pathInfo.name}`,
-      );
-
-      return {
-        message: 'Screenshots generated and uploaded successfully',
-        path: pathInfo.path,
-        key: pathInfo.name,
-      };
+      this.logger.log(`Screenshots zip uploaded successfully: ${zipFileName}`);
     } catch (error: unknown) {
       const errorMessage =
         error instanceof Error ? error.message : String(error);
@@ -156,6 +96,45 @@ export class StorageService implements StorageServicePort, OnModuleInit {
         this.logger.warn('Failed to clean up temporary files', cleanupError);
       }
     }
+  }
+
+  private async downloadVideoToFile(
+    videoKey: string,
+    outputPath: string,
+  ): Promise<void> {
+    this.logger.log('Downloading video from bucket...');
+
+    const videoStream = await this.fileStorage.downloadFile(
+      this.bucketVideoName,
+      videoKey,
+    );
+
+    const writable = createWriteStream(outputPath);
+
+    await new Promise<void>((resolve, reject) => {
+      writable.on('finish', () => {
+        this.logger.log('Video stream finished writing');
+        resolve();
+      });
+      writable.on('error', (err) => {
+        this.logger.error('Error writing video file', err);
+        reject(err);
+      });
+      videoStream.on('error', (err) => {
+        this.logger.error('Error reading video stream', err);
+        reject(err);
+      });
+
+      videoStream.pipe(writable);
+    });
+
+    const stats = await fs.stat(outputPath);
+
+    if (stats.size === 0) {
+      throw new Error('Downloaded video file is empty');
+    }
+
+    this.logger.log('Video downloaded successfully');
   }
 
   private async ensureBucketsExist() {
@@ -188,24 +167,6 @@ export class StorageService implements StorageServicePort, OnModuleInit {
 
   private async sleep(ms: number) {
     return new Promise((resolve) => setTimeout(resolve, ms));
-  }
-
-  private createPathAndName(
-    bucket: string,
-    extension: string,
-  ): { path: string; name: string } {
-    const today = new Date();
-    const year = today.getFullYear();
-    const month = String(today.getMonth() + 1).padStart(2, '0');
-    const day = String(today.getDate()).padStart(2, '0');
-    const uuid = randomUUID();
-
-    const key = `${year}${month}${day}${uuid}.${extension}`;
-
-    return {
-      path: `${bucket}/${key}`,
-      name: key,
-    };
   }
 
   private async createZipFile(
