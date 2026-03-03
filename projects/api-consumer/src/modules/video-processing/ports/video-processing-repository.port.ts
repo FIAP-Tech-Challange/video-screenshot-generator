@@ -5,7 +5,7 @@ import {
 
 export interface VideoProcessingRepositoryPort {
   findById(id: string): Promise<VideoProcessingJob | null>;
-  findByFileName(fileName: string): Promise<VideoProcessingJob | null>;
+
   updateStatus(
     id: string,
     status: VideoProcessingJobStatus,

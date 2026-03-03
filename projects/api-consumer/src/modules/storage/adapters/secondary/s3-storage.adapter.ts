@@ -6,7 +6,6 @@ import {
   PutObjectCommand,
   S3Client,
 } from '@aws-sdk/client-s3';
-import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { FileStoragePort } from '../../ports/output/file-storage.port';
@@ -27,32 +26,6 @@ export class S3StorageAdapter implements FileStoragePort {
       },
       forcePathStyle: true,
     });
-  }
-
-  async getPresignedUploadUrl(
-    bucket: string,
-    key: string,
-    contentType: string,
-    expiresIn: number = 3600,
-  ): Promise<string> {
-    const command = new PutObjectCommand({
-      Bucket: bucket,
-      Key: key,
-      ContentType: contentType,
-    });
-    return getSignedUrl(this.client, command, { expiresIn });
-  }
-
-  async getPresignedDownloadUrl(
-    bucket: string,
-    key: string,
-    expiresIn: number = 3600,
-  ): Promise<string> {
-    const command = new GetObjectCommand({
-      Bucket: bucket,
-      Key: key,
-    });
-    return getSignedUrl(this.client, command, { expiresIn });
   }
 
   async uploadFile(

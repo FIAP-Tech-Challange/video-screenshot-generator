@@ -14,27 +14,27 @@ export class VideoProcessingService {
     private readonly repository: VideoProcessingRepositoryPort,
   ) {}
 
-  async updateStatus(
-    id: string,
-    status: VideoProcessingJobStatus,
-    errorReason?: string,
-  ): Promise<void> {
-    const processedAt =
-      status === VideoProcessingJobStatus.SUCCESS ||
-      status === VideoProcessingJobStatus.ERROR
-        ? new Date()
-        : undefined;
-    await this.repository.updateStatus(id, status, errorReason, processedAt);
-    this.logger.log(`Job ${id} status updated to ${status}`);
+  async updateToProcessed(id: string): Promise<void> {
+    await this.repository.updateStatus(
+      id,
+      VideoProcessingJobStatus.SUCCESS,
+      undefined,
+      new Date(),
+    );
+    this.logger.log(`Job ${id} marked as processed`);
+  }
+
+  async updateToError(id: string, errorReason: string): Promise<void> {
+    await this.repository.updateStatus(
+      id,
+      VideoProcessingJobStatus.ERROR,
+      errorReason,
+      new Date(),
+    );
+    this.logger.log(`Job ${id} marked as error: ${errorReason}`);
   }
 
   async findJobById(id: string): Promise<VideoProcessingJob | null> {
     return this.repository.findById(id);
-  }
-
-  async findJobByFileName(
-    fileName: string,
-  ): Promise<VideoProcessingJob | null> {
-    return this.repository.findByFileName(fileName);
   }
 }
