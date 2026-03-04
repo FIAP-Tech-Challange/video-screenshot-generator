@@ -7,6 +7,7 @@ import { StorageModule } from './modules/storage/storage.module';
 import { EventModule } from './modules/event/event.module';
 import { VideoProcessingModule } from './modules/video-processing/video-processing.module';
 import { HealthModule } from './config/health/health.module';
+import { PrometheusModule } from '@willsoto/nestjs-prometheus';
 
 @Module({
   imports: [
@@ -19,6 +20,12 @@ import { HealthModule } from './config/health/health.module';
       imports: [ConfigModule],
       inject: [ConfigService],
       useFactory: (config: ConfigService) => createTypeOrmConfig(config),
+    }),
+    PrometheusModule.register({
+      path: '/metrics',
+      defaultMetrics: {
+        enabled: true,
+      },
     }),
     StorageModule,
     EventModule,
