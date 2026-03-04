@@ -16,23 +16,23 @@ cp .env.example .env
 # Instalar dependências das migrations (opcional; o container também roda npm install)
 cd infra/database && npm install && cd ../..
 
-# Subir Postgres, migrations, API BFF e Minio
+# Subir Postgres, migrations, API BFF, api-consumer, MinIO, Kafka e frontend
 docker compose up -d --build
 ```
 
-Aguarde os containers ficarem saudáveis (principalmente `api-bff` e `postgres`).
+Aguarde os containers ficarem saudáveis (principalmente `api-bff`, `postgres` e `frontend`).
 
 ### Testar a API
 
 **Health:**
 ```bash
-curl http://localhost:3000/health
+curl http://localhost:3000/api/health
 # Resposta esperada: {"status":"ok"}
 ```
 
 **Cadastro (register):**
 ```bash
-curl -X POST http://localhost:3000/auth/register \
+curl -X POST http://localhost:3000/api/auth/register \
   -H "Content-Type: application/json" \
   -d "{\"name\":\"Fulano Silva\",\"email\":\"fulano@email.com\",\"password\":\"Senha123!\"}"
 ```
@@ -40,7 +40,7 @@ Resposta esperada: `{"id":"...","name":"Fulano Silva","email":"fulano@email.com"
 
 **Login:**
 ```bash
-curl -X POST http://localhost:3000/auth/login \
+curl -X POST http://localhost:3000/api/auth/login \
   -H "Content-Type: application/json" \
   -d "{\"email\":\"fulano@email.com\",\"password\":\"Senha123!\"}"
 ```
@@ -50,12 +50,12 @@ Resposta esperada: `{"accessToken":"eyJ..."}`
 
 ## Etapa 2 e 3: Frontend integrado
 
-- **Cadastro:** o formulário envia apenas `name`, `email` e `password` para a API. O campo **Confirmar senha** permanece no frontend (validação local).
-- **Login:** o frontend chama `POST /auth/login`, armazena o `accessToken` e os dados do usuário (via JWT e resposta do registro).
+- **Cadastro:** o formulário envia apenas `name`, `email` e `password` para `POST /api/auth/register`. O campo **Confirmar senha** permanece no frontend (validação local).
+- **Login:** o frontend chama `POST /api/auth/login`, armazena o `accessToken` e os dados do usuário (via JWT e resposta do registro).
 - **URL da API:** configurada em `projects/frontend/src/environments/environment.ts` (`apiUrl: 'http://localhost:3000'`).
 
 Para testar a integração:
 
-1. Subir a API (Docker ou `npm run start:dev` em `projects/api-bff`).
-2. Subir o frontend: `cd projects/frontend && npm start`.
+1. **Com Docker:** `docker compose up -d --build` sobe toda a stack (incluindo frontend em http://localhost:4200).
+2. **Sem Docker:** subir a API (`npm run start:dev` em `projects/api-bff`) e o frontend (`cd projects/frontend && npm start`).
 3. Acessar http://localhost:4200, criar conta e fazer login.

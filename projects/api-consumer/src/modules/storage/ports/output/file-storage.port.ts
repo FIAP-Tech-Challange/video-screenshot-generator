@@ -1,15 +1,4 @@
 export interface FileStoragePort {
-  getPresignedUploadUrl(
-    bucket: string,
-    key: string,
-    contentType: string,
-    expiresIn?: number,
-  ): Promise<string>;
-  getPresignedDownloadUrl(
-    bucket: string,
-    key: string,
-    expiresIn?: number,
-  ): Promise<string>;
   uploadFile(
     bucket: string,
     key: string,

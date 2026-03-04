@@ -21,8 +21,6 @@ const PAGE_TITLES: Record<string, string> = {
   '/dashboard': 'Dashboard',
   '/upload': 'Upload',
   '/videos': 'Meus Vídeos',
-  '/library': 'Biblioteca',
-  '/analytics': 'Analytics',
   '/settings': 'Configurações',
 };
 
