@@ -8,6 +8,7 @@ import { StorageModule } from './modules/storage/storage.module';
 import { validateEnv } from './config/validate-env';
 import { createTypeOrmConfig } from './config/typeorm.config';
 import { VideoProcessingJobModule } from './modules/video-processing-job/video-processing-job.module';
+import { PrometheusModule } from '@willsoto/nestjs-prometheus';
 
 @Module({
   imports: [
@@ -16,13 +17,17 @@ import { VideoProcessingJobModule } from './modules/video-processing-job/video-p
       envFilePath: ['.env'],
       validate: validateEnv,
     }),
-
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
       inject: [ConfigService],
       useFactory: (config: ConfigService) => createTypeOrmConfig(config),
     }),
-
+    PrometheusModule.register({
+      path: '/metrics',
+      defaultMetrics: {
+        enabled: true,
+      },
+    }),
     UsersModule,
     AuthModule,
     StorageModule,

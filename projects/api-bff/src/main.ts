@@ -6,7 +6,7 @@ import { AllExceptionsFilter } from './common/http-exception.filter';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
-  app.setGlobalPrefix('api');
+  app.setGlobalPrefix('api', { exclude: ['/metrics'] });
   app.enableCors({ origin: true });
   app.useGlobalFilters(new AllExceptionsFilter());
 
