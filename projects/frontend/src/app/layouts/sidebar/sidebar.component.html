@@ -1,0 +1,64 @@
+<aside
+  class="sidebar"
+  [class.collapsed]="isCollapsed"
+  [class.mobile-open]="isMobileOpen"
+>
+  <div class="sidebar-logo" (click)="navigateToDashboard()">
+    <div class="logo-icon">
+      <i nz-icon nzType="video-camera" nzTheme="fill" class="video-icon"></i>
+    </div>
+    @if (!isCollapsed) {
+    <span class="logo-text">VideoFlow</span>
+    }
+  </div>
+
+  <nav class="sidebar-nav">
+    <ul class="nav-menu">
+      @for (item of menuItems; track item.id) {
+      <li
+        class="nav-item"
+        [class.active]="isActive(item.route)"
+        [attr.title]="item.title"
+      >
+        <a
+          [routerLink]="item.route"
+          routerLinkActive="active-link"
+          [routerLinkActiveOptions]="{ exact: item.route === '/dashboard' }"
+        >
+          <div class="nav-icon">
+            <i
+              nz-icon
+              [nzType]="item.icon"
+              [nzTheme]="item.theme || 'outline'"
+            ></i>
+          </div>
+          @if (!isCollapsed) {
+          <span class="nav-label">{{ item.label }}</span>
+          @if (item.badge) {
+          <nz-badge [nzCount]="item.badge" [nzOverflowCount]="99"></nz-badge>
+          } }
+        </a>
+      </li>
+      }
+    </ul>
+  </nav>
+
+  <div class="sidebar-footer">
+    <button
+      nz-button
+      nzType="text"
+      class="collapse-btn"
+      (click)="toggleCollapse.emit()"
+      type="button"
+    >
+      <i
+        nz-icon
+        [nzType]="isCollapsed ? 'right' : 'left'"
+        nzTheme="outline"
+      ></i>
+      @if (!isCollapsed) {
+      <span>Recolher</span>
+      }
+    </button>
+  </div>
+</aside>
