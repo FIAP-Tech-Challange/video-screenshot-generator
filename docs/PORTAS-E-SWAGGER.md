@@ -33,6 +33,7 @@ O **api-bff** ainda não possui Swagger configurado.
 | **MinIO Console** | 9001 | http://localhost:9001 | Interface web do MinIO |
 | **Kafka** | 9092 | localhost:9092 | Message broker |
 | **Kafdrop** | 19000 | http://localhost:19000 | UI para Kafka (tópicos, consumidores) |
+| **Grafana** | 3005 | http://localhost:3005/?kiosk | Monitoramento (Apis, Postgres, Kafka)
 
 ---
 
