@@ -74,6 +74,22 @@ const STATUS_COLORS: Record<VideoJobStatus, string> = {
                         @if (job.errorReason) {
                           <span class="list-error">{{ job.errorReason }}</span>
                         }
+                        @if (job.status === 'success') {
+                          <button
+                            nz-button
+                            nzType="link"
+                            nzSize="small"
+                            [disabled]="downloadingJobId() === job.id"
+                            (click)="downloadScreenshots(job.id)"
+                          >
+                            @if (downloadingJobId() === job.id) {
+                              <span nz-icon nzType="loading"></span>
+                            } @else {
+                              <span nz-icon nzType="download"></span>
+                            }
+                            Baixar screenshots
+                          </button>
+                        }
                       </span>
                     </ng-template>
                   </nz-list-item-meta>
@@ -144,9 +160,25 @@ export class VideosComponent implements OnInit {
 
   loading = signal(true);
   jobs = signal<VideoJob[]>([]);
+  downloadingJobId = signal<string | null>(null);
 
   ngOnInit(): void {
     this.loadJobs();
+  }
+
+  downloadScreenshots(jobId: string): void {
+    this.downloadingJobId.set(jobId);
+    this.videosService.getScreenshotsDownloadUrl(jobId).subscribe({
+      next: ({ downloadUrl }) => {
+        window.open(downloadUrl, '_blank');
+      },
+      error: () => {
+        this.downloadingJobId.set(null);
+      },
+      complete: () => {
+        this.downloadingJobId.set(null);
+      },
+    });
   }
 
   private loadJobs(): void {
@@ -154,6 +186,7 @@ export class VideosComponent implements OnInit {
     this.videosService.list().subscribe({
       next: (data) => {
         this.jobs.set(data);
+        this.videosService.setCountsFromJobs(data);
         this.loading.set(false);
       },
       error: () => {

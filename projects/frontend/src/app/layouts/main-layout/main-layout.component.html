@@ -28,7 +28,22 @@
       </div>
 
       <div class="header-actions">
-        <nz-badge [nzCount]="5" [nzOverflowCount]="99">
+        @if (videosService.completedCount() >= 1) {
+          <nz-badge
+            [nzCount]="videosService.completedCount()"
+            [nzOverflowCount]="99"
+          >
+            <button
+              nz-button
+              nzType="text"
+              nzShape="circle"
+              type="button"
+              aria-label="Notificações"
+            >
+              <i nz-icon nzType="bell" nzTheme="outline"></i>
+            </button>
+          </nz-badge>
+        } @else {
           <button
             nz-button
             nzType="text"
@@ -38,7 +53,7 @@
           >
             <i nz-icon nzType="bell" nzTheme="outline"></i>
           </button>
-        </nz-badge>
+        }
 
         <div
           nz-dropdown

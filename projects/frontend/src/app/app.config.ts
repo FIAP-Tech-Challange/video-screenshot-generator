@@ -24,6 +24,8 @@ import {
   RightOutline,
   EyeOutline,
   EyeInvisibleOutline,
+  DownloadOutline,
+  LoadingOutline,
 } from '@ant-design/icons-angular/icons';
 
 import { routes } from './app.routes';
@@ -49,6 +51,8 @@ const icons = [
   RightOutline,
   EyeOutline,
   EyeInvisibleOutline,
+  DownloadOutline,
+  LoadingOutline,
 ];
 
 export const appConfig: ApplicationConfig = {
