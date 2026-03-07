@@ -1,6 +1,7 @@
 import { Body, Controller, Post } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { User } from '../users/user.entity';
+import { Public } from './public.decorator';
 
 interface AuthRequestDto {
   email: string;
@@ -17,6 +18,7 @@ interface CreateAuthResponseDto {
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
+  @Public()
   @Post('register')
   async register(@Body() body: CreateAuthResponseDto): Promise<Partial<User>> {
     const { user } = await this.authService.register(
@@ -28,6 +30,7 @@ export class AuthController {
     return user;
   }
 
+  @Public()
   @Post('login')
   async login(@Body() body: AuthRequestDto): Promise<{
     accessToken: string;
