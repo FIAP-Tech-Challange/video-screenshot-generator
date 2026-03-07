@@ -12,7 +12,7 @@ export class CacheService implements OnModuleDestroy {
     const redisUrl: string = this.configService.getOrThrow('REDIS_URL');
 
     this.client = new Redis(redisUrl, {
-      lazyConnect: true,
+      lazyConnect: false,
       enableOfflineQueue: false,
     });
 
