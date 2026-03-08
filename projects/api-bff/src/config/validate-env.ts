@@ -12,6 +12,7 @@ export type AppConfig = {
   BUCKET_SCREENSHOT_NAME: string;
   BUCKET_REGION: string;
   MAX_FILE_SIZE_MB: number;
+  REDIS_URL: string;
 };
 
 function getString(config: Record<string, unknown>, key: string): string {
@@ -55,5 +56,6 @@ export function validateEnv(config: Record<string, unknown>): AppConfig {
     BUCKET_SCREENSHOT_NAME: getString(config, 'BUCKET_SCREENSHOT_NAME'),
     BUCKET_REGION: getString(config, 'BUCKET_REGION'),
     MAX_FILE_SIZE_MB: getNumber(config, 'MAX_FILE_SIZE_MB'),
+    REDIS_URL: getString(config, 'REDIS_URL'),
   };
 }

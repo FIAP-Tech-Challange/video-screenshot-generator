@@ -9,6 +9,7 @@ import { validateEnv } from './config/validate-env';
 import { createTypeOrmConfig } from './config/typeorm.config';
 import { VideoProcessingJobModule } from './modules/video-processing-job/video-processing-job.module';
 import { PrometheusModule } from '@willsoto/nestjs-prometheus';
+import { CacheModule } from './modules/cache/cache.module';
 
 @Module({
   imports: [
@@ -28,6 +29,7 @@ import { PrometheusModule } from '@willsoto/nestjs-prometheus';
         enabled: true,
       },
     }),
+    CacheModule,
     UsersModule,
     AuthModule,
     StorageModule,

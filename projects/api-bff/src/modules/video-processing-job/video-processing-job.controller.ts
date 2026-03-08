@@ -4,16 +4,13 @@ import {
   Controller,
   Get,
   Post,
-  UseGuards,
   Param,
 } from '@nestjs/common';
-import { JwtAuthGuard } from '../auth/jwt.guard';
 import { UserId } from '../auth/user-id.decorator';
 import { VideoProcessingJobService } from './video-processing-job.service';
 import { VideoProcessingJob } from './video-processing-job.entity';
 
 @Controller('video-processing-job')
-@UseGuards(JwtAuthGuard)
 export class VideoProcessingJobController {
   constructor(
     private readonly videoProcessingJobService: VideoProcessingJobService,
