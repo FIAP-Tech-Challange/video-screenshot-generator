@@ -15,6 +15,7 @@ import { NzDropDownModule } from 'ng-zorro-antd/dropdown';
 import { NzMenuModule } from 'ng-zorro-antd/menu';
 import { AuthService } from '../../auth/services/auth.service';
 import { SidebarService } from '../../core/services/sidebar.service';
+import { VideosService } from '../../modules/videos/services/videos.service';
 import { SidebarComponent } from '../sidebar/sidebar.component';
 
 const PAGE_TITLES: Record<string, string> = {
@@ -45,6 +46,7 @@ export class MainLayoutComponent {
   private readonly authService = inject(AuthService);
   private readonly sidebarService = inject(SidebarService);
   private readonly router = inject(Router);
+  readonly videosService = inject(VideosService);
 
   isCollapsed = toSignal(this.sidebarService.isCollapsed$, {
     initialValue: false,
@@ -73,6 +75,7 @@ export class MainLayoutComponent {
     this.router.events
       .pipe(filter((e): e is NavigationEnd => e instanceof NavigationEnd))
       .subscribe(() => this.sidebarService.closeMobileMenu());
+    this.videosService.refreshCompletedCount();
   }
 
   toggleSidebar(): void {

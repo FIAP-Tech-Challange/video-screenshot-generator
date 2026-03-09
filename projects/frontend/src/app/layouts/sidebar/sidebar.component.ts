@@ -41,7 +41,6 @@ export class SidebarComponent {
       route: '/upload',
       theme: 'outline',
       title: 'Upload - Envie novos vídeos',
-      badge: 3,
     },
     {
       id: 'videos',
