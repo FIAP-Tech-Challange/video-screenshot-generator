@@ -25,6 +25,7 @@ describe('VideoProcessingService', () => {
 
       const result = await service.findJobById('job-123');
 
+      // eslint-disable-next-line @typescript-eslint/unbound-method
       expect(mockRepository.findById).toHaveBeenCalledWith('job-123');
       expect(result).toBe(job);
     });
@@ -42,6 +43,7 @@ describe('VideoProcessingService', () => {
     it('calls updateStatus with SUCCESS and a processedAt date', async () => {
       await service.updateToProcessed('job-123');
 
+      // eslint-disable-next-line @typescript-eslint/unbound-method
       expect(mockRepository.updateStatus).toHaveBeenCalledWith(
         'job-123',
         VideoProcessingJobStatus.SUCCESS,
@@ -55,6 +57,7 @@ describe('VideoProcessingService', () => {
     it('calls updateStatus with ERROR, the error reason, and a processedAt date', async () => {
       await service.updateToError('job-123', 'something went wrong');
 
+      // eslint-disable-next-line @typescript-eslint/unbound-method
       expect(mockRepository.updateStatus).toHaveBeenCalledWith(
         'job-123',
         VideoProcessingJobStatus.ERROR,
