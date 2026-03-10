@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/unbound-method */
 import { EventService } from './event.service';
 import { StorageService } from '../../storage/services/storage.service';
 import { VideoProcessingService } from '../../video-processing/services/video-processing.service';
