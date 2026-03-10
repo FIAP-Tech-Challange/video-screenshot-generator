@@ -14,7 +14,9 @@ export class EventService implements EventServicePort {
   ) {}
 
   async handleVideoUpload(event: UploadObjectEventPayload): Promise<void> {
-    this.logger.log(`Event received: upload-video.`);
+    this.logger.log(
+      `Event received. Has Records: ${!!event?.Records}, Count: ${event?.Records?.length ?? 0}`,
+    );
 
     let jobId: string | null = null;
 
@@ -36,10 +38,12 @@ export class EventService implements EventServicePort {
 
       this.logger.log(`Processing completed for video job ID: ${jobId}`);
     } catch (error) {
-      this.logger.error('Error handling video upload event', error);
+      const msg = error instanceof Error ? error.message : String(error);
+      const stack = error instanceof Error ? error.stack : undefined;
+      this.logger.error(`Error handling video upload event: ${msg}`, stack);
 
       if (jobId) {
-        await this.videoProcessingService.updateToError(jobId, error.message);
+        await this.videoProcessingService.updateToError(jobId, msg);
       }
     }
   }
@@ -47,14 +51,17 @@ export class EventService implements EventServicePort {
   private validateEvent(event: UploadObjectEventPayload) {
     const record = event.Records?.[0];
     if (!record) {
+      this.logger.warn(
+        `Invalid event: no Records. Keys: ${JSON.stringify(Object.keys(event || {}))}`,
+      );
       throw new Error('No records found in the event payload');
     }
 
     const objectKey = decodeURIComponent(
-      record.s3.object.key.replace(/\+/g, ' '),
+      (record.s3?.object?.key ?? '').replace(/\+/g, ' '),
     );
     const [jobId, objectExt] = objectKey.split('.');
-    const contentType = record.s3.object.contentType;
+    const contentType = record.s3?.object?.contentType;
 
     if (contentType !== 'video/mp4' && objectExt !== 'mp4') {
       throw new Error(
