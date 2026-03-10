@@ -16,7 +16,10 @@ export class EventService implements EventServicePort {
   async handleVideoUpload(event: UploadObjectEventPayload): Promise<void> {
     this.logger.log(`Event received: upload-video.`);
 
-    let jobId: string | null = null;
+    const rawKey = event.Records?.[0]?.s3?.object?.key;
+    let jobId: string | null = rawKey
+      ? decodeURIComponent(rawKey.replace(/\+/g, ' ')).split('.')[0]
+      : null;
 
     try {
       const validatedData = this.validateEvent(event);
