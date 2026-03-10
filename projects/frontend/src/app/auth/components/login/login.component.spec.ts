@@ -15,11 +15,13 @@ describe('LoginComponent', () => {
   let component: LoginComponent;
   let fixture: ComponentFixture<LoginComponent>;
   let router: Router;
-  const authServiceMock = { login: jest.fn().mockReturnValue(of(true)) };
+  const authServiceMock = {
+    login: jest.fn().mockReturnValue(of({ success: true } as const)),
+  };
 
   beforeEach(async () => {
     jest.clearAllMocks();
-    authServiceMock.login.mockReturnValue(of(true));
+    authServiceMock.login.mockReturnValue(of({ success: true } as const));
 
     await TestBed.configureTestingModule({
       imports: [
@@ -70,7 +72,9 @@ describe('LoginComponent', () => {
       'user@example.com',
       'Password1!'
     );
-    expect(router.navigate).toHaveBeenCalledWith(['/dashboard']);
+    expect(router.navigate).toHaveBeenCalledWith(['/dashboard'], {
+      replaceUrl: true,
+    });
   });
 
   it('should not submit when form invalid', () => {
