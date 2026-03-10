@@ -1,11 +1,12 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
-import { ConflictException } from '@nestjs/common';
+import { ConflictException, NotFoundException } from '@nestjs/common';
 import type { Repository } from 'typeorm';
 import { scrypt } from 'node:crypto';
 import { promisify } from 'node:util';
 import { UsersService } from './users.service';
 import { User } from './user.entity';
+import { CacheService } from '../cache/cache.service';
 
 // Mock crypto.randomBytes
 jest.mock('node:crypto', () => {
@@ -31,6 +32,12 @@ describe('UsersService', () => {
     findOne: jest.fn(),
   };
 
+  const mockCacheService = {
+    get: jest.fn(),
+    set: jest.fn(),
+    del: jest.fn(),
+  };
+
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
@@ -38,6 +45,10 @@ describe('UsersService', () => {
         {
           provide: getRepositoryToken(User),
           useValue: mockRepository,
+        },
+        {
+          provide: CacheService,
+          useValue: mockCacheService,
         },
       ],
     }).compile();
@@ -51,6 +62,60 @@ describe('UsersService', () => {
 
   afterEach(() => {
     jest.restoreAllMocks();
+  });
+
+  describe('getUserById', () => {
+    const id = '123e4567-e89b-12d3-a456-426614174000';
+    const cachedUser = { id, email: 'a@b.com', name: 'Alice' };
+
+    it('should return cached user without hitting the repository', async () => {
+      mockCacheService.get.mockResolvedValue(cachedUser);
+
+      const result = await service.getUserById(id);
+
+      expect(mockCacheService.get).toHaveBeenCalledWith(`user:${id}`);
+      // eslint-disable-next-line @typescript-eslint/unbound-method
+      expect(repository.findOne).not.toHaveBeenCalled();
+      expect(result).toEqual(cachedUser);
+    });
+
+    it('should query repository and populate cache on a cache miss', async () => {
+      mockCacheService.get.mockResolvedValue(null);
+
+      const dbUser = {
+        id,
+        email: 'a@b.com',
+        name: 'Alice',
+        hashedPassword: 'hash',
+        salt: 'salt',
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      } as User;
+
+      repository.findOne.mockResolvedValue(dbUser);
+      mockCacheService.set.mockResolvedValue(undefined);
+
+      const result = await service.getUserById(id);
+
+      // eslint-disable-next-line @typescript-eslint/unbound-method
+      expect(repository.findOne).toHaveBeenCalledWith({ where: { id } });
+      expect(mockCacheService.set).toHaveBeenCalledWith(
+        `user:${id}`,
+        { id, email: dbUser.email, name: dbUser.name },
+        300,
+      );
+      expect(result).toEqual({ id, email: dbUser.email, name: dbUser.name });
+    });
+
+    it('should throw NotFoundException when user does not exist in DB', async () => {
+      mockCacheService.get.mockResolvedValue(null);
+      repository.findOne.mockResolvedValue(null);
+
+      await expect(service.getUserById(id)).rejects.toThrow(NotFoundException);
+      await expect(service.getUserById(id)).rejects.toThrow(
+        `User with id "${id}" not found`,
+      );
+    });
   });
 
   describe('createUser', () => {
