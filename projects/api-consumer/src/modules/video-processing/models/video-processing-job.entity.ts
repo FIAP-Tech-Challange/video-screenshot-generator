@@ -3,7 +3,11 @@ import {
   PrimaryGeneratedColumn,
   Column,
   CreateDateColumn,
+  ManyToOne,
+  JoinColumn,
 } from 'typeorm';
+
+import { User } from './user.entity';
 
 export enum VideoProcessingJobStatus {
   QUEUED = 'queued',
@@ -19,6 +23,10 @@ export class VideoProcessingJob {
 
   @Column({ type: 'uuid', name: 'user_id' })
   userId: string;
+
+  @ManyToOne(() => User)
+  @JoinColumn({ name: 'user_id' })
+  user: User;
 
   @Column({ type: 'varchar', name: 'file_name' })
   fileName: string;

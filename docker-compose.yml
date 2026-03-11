@@ -109,6 +109,10 @@ services:
       BUCKET_SCREENSHOT_NAME: ${BUCKET_SCREENSHOT_NAME}
       BUCKET_REGION: us-east-1
       KAFKA_BROKER: kafka:${KAFKA_INTERNAL_PORT}
+      SMTP_HOST: ${SMTP_HOST}
+      SMTP_PORT: ${SMTP_PORT}
+      SMTP_USER: ${SMTP_USER}
+      SMTP_PASS: ${SMTP_PASS}
     ports:
       - "${API_CONSUMER_PORT}:${API_CONSUMER_PORT}"
     volumes:
@@ -241,7 +245,8 @@ services:
     command: >
       "sleep 5; \
       kafka-topics --bootstrap-server kafka:${KAFKA_INTERNAL_PORT} --create --topic ${MINIO_KAFKA_TOPIC} --partitions 1 --replication-factor 1 || true; \
-      echo 'kafka-init: topic created (or already exists)'; exit 0"
+      echo 'kafka-init: topic created (or already exists), waiting for Group Coordinator...'; sleep 10; \
+      exit 0"
 
   frontend:
     build:
@@ -271,7 +276,7 @@ services:
       kafka:
         condition: service_healthy
     ports:
-      - "19000:9000"   # Kafdrop escuta na porta 9000 dentro do container
+      - "19000:9000" # Kafdrop escuta na porta 9000 dentro do container
     environment:
       KAFKA_BROKERCONNECT: kafka:${KAFKA_INTERNAL_PORT}
 
