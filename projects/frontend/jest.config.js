@@ -6,6 +6,14 @@ module.exports = {
   collectCoverage: true,
   coverageDirectory: "coverage",
   coverageReporters: ["html", "text", "lcov"],
+  coverageThreshold: {
+    global: {
+      branches: 50,
+      functions: 70,
+      lines: 70,
+      statements: 70,
+    },
+  },
   moduleNameMapper: {
     "@app/(.*)": "<rootDir>/src/app/$1",
     "@environments/(.*)": "<rootDir>/src/environments/$1",

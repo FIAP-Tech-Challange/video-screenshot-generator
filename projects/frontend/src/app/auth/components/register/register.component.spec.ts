@@ -2,6 +2,13 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ReactiveFormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { provideRouter } from '@angular/router';
+import { NZ_ICONS } from 'ng-zorro-antd/icon';
+import {
+  UserAddOutline,
+  CheckCircleFill,
+  EyeOutline,
+  EyeInvisibleOutline,
+} from '@ant-design/icons-angular/icons';
 import { NzFormModule } from 'ng-zorro-antd/form';
 import { NzInputModule } from 'ng-zorro-antd/input';
 import { NzButtonModule } from 'ng-zorro-antd/button';
@@ -16,11 +23,14 @@ describe('RegisterComponent', () => {
   let component: RegisterComponent;
   let fixture: ComponentFixture<RegisterComponent>;
   let router: Router;
-  const authServiceMock = { register: jest.fn().mockReturnValue(of(true)) };
+  const authServiceMock = {
+    register: jest.fn().mockReturnValue(of({ success: true } as const)),
+  };
 
   beforeEach(async () => {
     jest.clearAllMocks();
-    authServiceMock.register.mockReturnValue(of(true));
+    jest.useFakeTimers();
+    authServiceMock.register.mockReturnValue(of({ success: true } as const));
 
     await TestBed.configureTestingModule({
       imports: [
@@ -36,6 +46,10 @@ describe('RegisterComponent', () => {
       providers: [
         provideRouter([]),
         { provide: AuthService, useValue: authServiceMock },
+        {
+          provide: NZ_ICONS,
+          useValue: [UserAddOutline, CheckCircleFill, EyeOutline, EyeInvisibleOutline],
+        },
       ],
     }).compileComponents();
 
@@ -63,6 +77,7 @@ describe('RegisterComponent', () => {
     });
     component.onSubmit();
     expect(authServiceMock.register).toHaveBeenCalled();
+    jest.advanceTimersByTime(2000);
     expect(router.navigate).toHaveBeenCalledWith(['/dashboard'], {
       replaceUrl: true,
     });
