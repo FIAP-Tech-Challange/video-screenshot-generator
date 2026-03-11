@@ -12,6 +12,10 @@ const validEnv: Record<string, unknown> = {
   MINIO_ACCESS_KEY: 'access-key',
   MINIO_SECRET_KEY: 'secret-key',
   KAFKA_BROKER: 'localhost:9092',
+  SMTP_HOST: 'smtp.example.com',
+  SMTP_PORT: '587',
+  SMTP_USER: 'user',
+  SMTP_PASS: 'pass',
 };
 
 describe('validateEnv', () => {
@@ -30,6 +34,10 @@ describe('validateEnv', () => {
       MINIO_ACCESS_KEY: 'access-key',
       MINIO_SECRET_KEY: 'secret-key',
       KAFKA_BROKER: 'localhost:9092',
+      SMTP_HOST: 'smtp.example.com',
+      SMTP_PORT: 587,
+      SMTP_USER: 'user',
+      SMTP_PASS: 'pass',
     });
   });
 
@@ -97,6 +105,9 @@ describe('validateEnv', () => {
       'MINIO_ACCESS_KEY',
       'MINIO_SECRET_KEY',
       'KAFKA_BROKER',
+      'SMTP_HOST',
+      'SMTP_USER',
+      'SMTP_PASS',
     ])('throws when %s is missing', (key) => {
       expect(() => validateEnv({ ...validEnv, [key]: '' })).toThrow(
         `${key} is required`,

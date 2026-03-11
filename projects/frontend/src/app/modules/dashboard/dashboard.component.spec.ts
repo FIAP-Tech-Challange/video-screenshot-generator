@@ -1,4 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { provideHttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { DashboardComponent } from './dashboard.component';
 import { AuthService } from '../../auth/services/auth.service';
@@ -22,6 +23,7 @@ describe('DashboardComponent', () => {
     await TestBed.configureTestingModule({
       imports: [DashboardComponent],
       providers: [
+        provideHttpClient(),
         { provide: Router, useValue: routerMock },
         { provide: AuthService, useValue: authServiceMock },
         { provide: VideosService, useValue: videosServiceMock },

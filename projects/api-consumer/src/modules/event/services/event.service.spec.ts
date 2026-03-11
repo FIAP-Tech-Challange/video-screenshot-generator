@@ -15,6 +15,15 @@ const mockVideoProcessingService = {
   updateToError: jest.fn(),
 } as unknown as jest.Mocked<VideoProcessingService>;
 
+const mockMailService = {
+  sendVideoProcessingSuccessEmail: jest.fn(),
+  sendVideoProcessingErrorEmail: jest.fn(),
+};
+
+const mockNotificationService = {
+  createNotification: jest.fn(),
+};
+
 const makeEvent = (
   key: string,
   contentType = 'video/mp4',
@@ -36,12 +45,20 @@ describe('EventService', () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
-    service = new EventService(mockStorageService, mockVideoProcessingService);
+    service = new EventService(
+      mockStorageService,
+      mockVideoProcessingService,
+      mockMailService as never,
+      mockNotificationService as never,
+    );
   });
 
   describe('handleVideoUpload — happy path', () => {
     it('finds the job, generates screenshots, and marks it as processed', async () => {
-      const job = { id: 'job-123' } as VideoProcessingJob;
+      const job = {
+        id: 'job-123',
+        user: { email: 'user@test.com', name: 'Test User' },
+      } as VideoProcessingJob;
       mockVideoProcessingService.findJobById.mockResolvedValue(job);
 
       await service.handleVideoUpload(makeEvent('job-123.mp4'));
@@ -55,11 +72,22 @@ describe('EventService', () => {
       expect(mockVideoProcessingService.updateToProcessed).toHaveBeenCalledWith(
         'job-123',
       );
+      expect(mockMailService.sendVideoProcessingSuccessEmail).toHaveBeenCalledWith(
+        'user@test.com',
+        'Test User',
+      );
+      expect(mockNotificationService.createNotification).toHaveBeenCalledWith(
+        'job-123',
+        expect.any(String),
+      );
       expect(mockVideoProcessingService.updateToError).not.toHaveBeenCalled();
     });
 
     it('decodes a URL-encoded key with "+" as spaces', async () => {
-      const job = { id: 'job-123' } as VideoProcessingJob;
+      const job = {
+        id: 'job-123',
+        user: { email: 'user@test.com', name: 'Test User' },
+      } as VideoProcessingJob;
       mockVideoProcessingService.findJobById.mockResolvedValue(job);
 
       await service.handleVideoUpload(makeEvent('job-123.mp4'));
@@ -112,7 +140,10 @@ describe('EventService', () => {
     });
 
     it('calls updateToError when generateAndSaveScreenshots throws', async () => {
-      const job = { id: 'job-123' } as VideoProcessingJob;
+      const job = {
+        id: 'job-123',
+        user: { email: 'user@test.com', name: 'Test User' },
+      } as VideoProcessingJob;
       mockVideoProcessingService.findJobById.mockResolvedValue(job);
       mockStorageService.generateAndSaveScreenshots.mockRejectedValue(
         new Error('S3 unavailable'),

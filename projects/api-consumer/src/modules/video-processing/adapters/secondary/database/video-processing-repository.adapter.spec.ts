@@ -28,6 +28,7 @@ describe('VideoProcessingRepositoryAdapter', () => {
 
       expect(mockRepository.findOne).toHaveBeenCalledWith({
         where: { id: 'job-123' },
+        relations: ['user'],
       });
       expect(result).toBe(job);
     });
