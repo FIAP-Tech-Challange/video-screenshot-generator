@@ -3,6 +3,8 @@ import { StorageService } from '../../storage/services/storage.service';
 import { EventServicePort } from '../ports/input/event.service.port';
 import { VideoProcessingService } from 'src/modules/video-processing/services/video-processing.service';
 import { UploadObjectEventPayload } from '../types/upload-object.type';
+import { MailService } from '../../mail/services/mail.service';
+import { NotificationService } from '../../notification/services/notification.service';
 
 @Injectable()
 export class EventService implements EventServicePort {
@@ -11,6 +13,8 @@ export class EventService implements EventServicePort {
   constructor(
     private readonly storageService: StorageService,
     private readonly videoProcessingService: VideoProcessingService,
+    private readonly mailService: MailService,
+    private readonly notificationService: NotificationService,
   ) {}
 
   async handleVideoUpload(event: UploadObjectEventPayload): Promise<void> {
@@ -35,11 +39,39 @@ export class EventService implements EventServicePort {
       await this.videoProcessingService.updateToProcessed(jobId);
 
       this.logger.log(`Processing completed for video job ID: ${jobId}`);
+
+      await this.mailService.sendVideoProcessingSuccessEmail(
+        videoJob.user.email,
+        videoJob.user.name,
+      );
+      const successMessage = `O processamento do vídeo foi concluído com sucesso, acesse aba de "Meus Vídeos" para baixar os screenshots.`;
+      await this.notificationService.createNotification(jobId, successMessage);
     } catch (error) {
       this.logger.error('Error handling video upload event', error);
 
       if (jobId) {
-        await this.videoProcessingService.updateToError(jobId, error.message);
+        try {
+          await this.videoProcessingService.updateToError(jobId, error.message);
+
+          const errorMessage = `Video processing failed for job ${jobId}: ${error.message}`;
+
+          const videoJob = await this.videoProcessingService.findJobById(jobId);
+          if (videoJob) {
+            await this.mailService.sendVideoProcessingErrorEmail(
+              videoJob.user.email,
+              jobId,
+            );
+            await this.notificationService.createNotification(
+              jobId,
+              errorMessage,
+            );
+          }
+        } catch (recoveryError) {
+          this.logger.error(
+            `Failed to execute recovery steps for job ${jobId}`,
+            recoveryError,
+          );
+        }
       }
     }
   }

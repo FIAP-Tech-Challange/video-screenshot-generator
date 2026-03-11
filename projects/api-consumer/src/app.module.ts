@@ -8,6 +8,8 @@ import { EventModule } from './modules/event/event.module';
 import { VideoProcessingModule } from './modules/video-processing/video-processing.module';
 import { HealthModule } from './config/health/health.module';
 import { PrometheusModule } from '@willsoto/nestjs-prometheus';
+import { NotificationModule } from './modules/notification/notification.module';
+import { MailModule } from './modules/mail/mail.module';
 
 @Module({
   imports: [
@@ -30,6 +32,8 @@ import { PrometheusModule } from '@willsoto/nestjs-prometheus';
     StorageModule,
     EventModule,
     VideoProcessingModule,
+    NotificationModule,
+    MailModule,
     HealthModule,
   ],
   controllers: [],

@@ -109,6 +109,10 @@ services:
       BUCKET_SCREENSHOT_NAME: ${BUCKET_SCREENSHOT_NAME}
       BUCKET_REGION: us-east-1
       KAFKA_BROKER: kafka:${KAFKA_INTERNAL_PORT}
+      SMTP_HOST: ${SMTP_HOST}
+      SMTP_PORT: ${SMTP_PORT}
+      SMTP_USER: ${SMTP_USER}
+      SMTP_PASS: ${SMTP_PASS}
     ports:
       - "${API_CONSUMER_PORT}:${API_CONSUMER_PORT}"
     volumes:
@@ -187,7 +191,7 @@ services:
       BUCKET_SCREENSHOT_NAME: ${BUCKET_SCREENSHOT_NAME}
     volumes:
       - ./infra/minio/init.sh:/init.sh
-    command: ["sed 's/\\r$$//' /init.sh | sh"]
+    command: ["tr -d '\\r' < /init.sh | sh"]
     depends_on:
       minio:
         condition: service_healthy
@@ -241,7 +245,8 @@ services:
     command: >
       "sleep 5; \
       kafka-topics --bootstrap-server kafka:${KAFKA_INTERNAL_PORT} --create --topic ${MINIO_KAFKA_TOPIC} --partitions 1 --replication-factor 1 || true; \
-      echo 'kafka-init: topic created (or already exists)'; exit 0"
+      echo 'kafka-init: topic created (or already exists), waiting for Group Coordinator...'; sleep 10; \
+      exit 0"
 
   frontend:
     build:

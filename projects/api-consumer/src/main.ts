@@ -16,7 +16,12 @@ async function bootstrap() {
     transport: Transport.KAFKA,
     options: {
       client: {
+        clientId: 'api-consumer',
         brokers: [config.getOrThrow('KAFKA_BROKER')],
+        retry: {
+          initialRetryTime: 1000,
+          retries: 10,
+        },
       },
       consumer: {
         groupId: 'video-consumer-group',

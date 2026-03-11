@@ -10,6 +10,10 @@ export type AppConfig = {
   MINIO_ACCESS_KEY: string;
   MINIO_SECRET_KEY: string;
   KAFKA_BROKER: string;
+  SMTP_HOST: string;
+  SMTP_PORT: number;
+  SMTP_USER: string;
+  SMTP_PASS: string;
 };
 
 function getString(config: Record<string, unknown>, key: string): string {
@@ -51,5 +55,9 @@ export function validateEnv(config: Record<string, unknown>): AppConfig {
     BUCKET_REGION: getString(config, 'BUCKET_REGION'),
     MINIO_URL: getString(config, 'MINIO_URL'),
     KAFKA_BROKER: getString(config, 'KAFKA_BROKER'),
+    SMTP_HOST: getString(config, 'SMTP_HOST'),
+    SMTP_PORT: getNumber(config, 'SMTP_PORT'),
+    SMTP_USER: getString(config, 'SMTP_USER'),
+    SMTP_PASS: getString(config, 'SMTP_PASS'),
   };
 }
