@@ -18,7 +18,10 @@ export class EventService implements EventServicePort {
       `Event received. Has Records: ${!!event?.Records}, Count: ${event?.Records?.length ?? 0}`,
     );
 
-    let jobId: string | null = null;
+    const rawKey = event.Records?.[0]?.s3?.object?.key;
+    let jobId: string | null = rawKey
+      ? decodeURIComponent(rawKey.replace(/\+/g, ' ')).split('.')[0]
+      : null;
 
     try {
       const validatedData = this.validateEvent(event);

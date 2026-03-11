@@ -78,10 +78,28 @@
     "transform": {
       "^.+\\.(t|j)s$": "ts-jest"
     },
+    "setupFilesAfterEnv": [
+      "<rootDir>/jest.setup.ts"
+    ],
     "collectCoverageFrom": [
-      "**/*.(t|j)s"
+      "**/*.(t|j)s",
+      "!main.ts",
+      "!jest.setup.ts",
+      "!**/*.module.ts",
+      "!**/*.entity.ts",
+      "!**/*.decorator.ts",
+      "!**/*.interface.ts",
+      "!**/config/typeorm.config.ts"
     ],
     "coverageDirectory": "../coverage",
-    "testEnvironment": "node"
+    "testEnvironment": "node",
+    "coverageThreshold": {
+      "global": {
+        "lines": 80,
+        "functions": 80,
+        "branches": 80,
+        "statements": 80
+      }
+    }
   }
 }
