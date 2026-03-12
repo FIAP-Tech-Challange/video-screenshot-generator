@@ -17,7 +17,10 @@ async function bootstrap() {
     options: {
       client: {
         clientId: 'api-consumer',
-        brokers: [config.getOrThrow('KAFKA_BROKER')],
+        brokers: config
+          .getOrThrow('KAFKA_BROKERS')
+          .split(',')
+          .map((broker: string) => broker.trim()),
         retry: {
           initialRetryTime: 1000,
           retries: 10,

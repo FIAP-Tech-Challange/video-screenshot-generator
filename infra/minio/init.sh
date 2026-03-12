@@ -11,7 +11,7 @@ echo 'MinIO ready!';
 
 echo '--- Configuring Kafka notification target ---';
 mc admin config set myminio notify_kafka:meukafka \
-  brokers="kafka:${KAFKA_INTERNAL_PORT}" \
+  brokers="${KAFKA_BROKERS_INTERNAL}" \
   topic="${MINIO_KAFKA_TOPIC}";
 
 echo '--- Restarting MinIO to apply Kafka config ---';
