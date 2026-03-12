@@ -1,0 +1,615 @@
+apiVersion: v1
+data:
+  api.json: "{\r\n  \"annotations\": {\r\n    \"list\": [\r\n      {\r\n        \"builtIn\":
+    1,\r\n        \"datasource\": {\r\n          \"uid\": \"-- Grafana --\"\r\n        },\r\n
+    \       \"enable\": true,\r\n        \"hide\": true,\r\n        \"iconColor\":
+    \"rgba(0, 211, 255, 1)\",\r\n        \"name\": \"Annotations & Alerts\",\r\n        \"type\":
+    \"dashboard\"\r\n      }\r\n    ]\r\n  },\r\n  \"description\": \"monitoring APIs
+    in Nest JS\",\r\n  \"editable\": true,\r\n  \"fiscalYearStartMonth\": 0,\r\n  \"graphTooltip\":
+    0,\r\n  \"links\": [\r\n    {\r\n      \"asDropdown\": false,\r\n      \"icon\":
+    \"external link\",\r\n      \"includeVars\": false,\r\n      \"keepTime\": false,\r\n
+    \     \"tags\": [],\r\n      \"targetBlank\": false,\r\n      \"title\": \"Postgres
+    Dashboard\",\r\n      \"tooltip\": \"\",\r\n      \"type\": \"link\",\r\n      \"url\":
+    \"/d/000000039/postgre-database?kiosk\"\r\n    },\r\n    {\r\n      \"asDropdown\":
+    false,\r\n      \"icon\": \"external link\",\r\n      \"includeVars\": false,\r\n
+    \     \"keepTime\": false,\r\n      \"tags\": [],\r\n      \"targetBlank\": false,\r\n
+    \     \"title\": \"Kafka\",\r\n      \"tooltip\": \"\",\r\n      \"type\": \"link\",\r\n
+    \     \"url\": \"/d/jwPKIsniz/kafka?kiosk\"\r\n    }\r\n  ],\r\n  \"panels\":
+    [\r\n    {\r\n      \"datasource\": {\r\n        \"uid\": \"${DS_PROMETHEUS}\"\r\n
+    \     },\r\n      \"fieldConfig\": {\r\n        \"defaults\": {\r\n          \"mappings\":
+    [\r\n            {\r\n              \"options\": {\r\n                \"match\":
+    \"null\",\r\n                \"result\": {\r\n                  \"text\": \"N/A\"\r\n
+    \               }\r\n              },\r\n              \"type\": \"special\"\r\n
+    \           }\r\n          ],\r\n          \"thresholds\": {\r\n            \"mode\":
+    \"absolute\",\r\n            \"steps\": [\r\n              {\r\n                \"color\":
+    \"green\",\r\n                \"value\": 0\r\n              },\r\n              {\r\n
+    \               \"color\": \"red\",\r\n                \"value\": 80\r\n              }\r\n
+    \           ]\r\n          },\r\n          \"unit\": \"none\"\r\n        },\r\n
+    \       \"overrides\": []\r\n      },\r\n      \"gridPos\": {\r\n        \"h\":
+    2,\r\n        \"w\": 4,\r\n        \"x\": 0,\r\n        \"y\": 0\r\n      },\r\n
+    \     \"id\": 30,\r\n      \"maxDataPoints\": 100,\r\n      \"options\": {\r\n
+    \       \"colorMode\": \"value\",\r\n        \"graphMode\": \"none\",\r\n        \"justifyMode\":
+    \"auto\",\r\n        \"orientation\": \"horizontal\",\r\n        \"percentChangeColorMode\":
+    \"standard\",\r\n        \"reduceOptions\": {\r\n          \"calcs\": [\r\n            \"mean\"\r\n
+    \         ],\r\n          \"fields\": \"\",\r\n          \"values\": false\r\n
+    \       },\r\n        \"showPercentChange\": false,\r\n        \"text\": {\r\n
+    \         \"valueSize\": 20\r\n        },\r\n        \"textMode\": \"name\",\r\n
+    \       \"wideLayout\": true\r\n      },\r\n      \"pluginVersion\": \"12.4.0\",\r\n
+    \     \"repeat\": \"service\",\r\n      \"repeatDirection\": \"v\",\r\n      \"targets\":
+    [\r\n        {\r\n          \"datasource\": {\r\n            \"uid\": \"${DS_PROMETHEUS}\"\r\n
+    \         },\r\n          \"expr\": \"nodejs_version_info{job=~\\\"$service\\\"}\",\r\n
+    \         \"legendFormat\": \"{{version}}\",\r\n          \"refId\": \"A\"\r\n
+    \       }\r\n      ],\r\n      \"title\": \"$service Nodejs Version\",\r\n      \"type\":
+    \"stat\"\r\n    },\r\n    {\r\n      \"datasource\": {\r\n        \"uid\": \"${DS_PROMETHEUS}\"\r\n
+    \     },\r\n      \"fieldConfig\": {\r\n        \"defaults\": {\r\n          \"color\":
+    {\r\n            \"mode\": \"palette-classic\"\r\n          },\r\n          \"custom\":
+    {\r\n            \"axisBorderShow\": false,\r\n            \"axisCenteredZero\":
+    false,\r\n            \"axisColorMode\": \"text\",\r\n            \"axisLabel\":
+    \"\",\r\n            \"axisPlacement\": \"auto\",\r\n            \"barAlignment\":
+    0,\r\n            \"barWidthFactor\": 0.6,\r\n            \"drawStyle\": \"line\",\r\n
+    \           \"fillOpacity\": 10,\r\n            \"gradientMode\": \"none\",\r\n
+    \           \"hideFrom\": {\r\n              \"legend\": false,\r\n              \"tooltip\":
+    false,\r\n              \"viz\": false\r\n            },\r\n            \"insertNulls\":
+    false,\r\n            \"lineInterpolation\": \"linear\",\r\n            \"lineWidth\":
+    1,\r\n            \"pointSize\": 5,\r\n            \"scaleDistribution\": {\r\n
+    \             \"type\": \"linear\"\r\n            },\r\n            \"showPoints\":
+    \"never\",\r\n            \"showValues\": false,\r\n            \"spanNulls\":
+    false,\r\n            \"stacking\": {\r\n              \"group\": \"A\",\r\n              \"mode\":
+    \"none\"\r\n            },\r\n            \"thresholdsStyle\": {\r\n              \"mode\":
+    \"off\"\r\n            }\r\n          },\r\n          \"decimals\": 0,\r\n          \"mappings\":
+    [],\r\n          \"thresholds\": {\r\n            \"mode\": \"absolute\",\r\n
+    \           \"steps\": [\r\n              {\r\n                \"color\": \"green\",\r\n
+    \               \"value\": 0\r\n              },\r\n              {\r\n                \"color\":
+    \"red\",\r\n                \"value\": 80\r\n              }\r\n            ]\r\n
+    \         },\r\n          \"unit\": \"short\"\r\n        },\r\n        \"overrides\":
+    []\r\n      },\r\n      \"gridPos\": {\r\n        \"h\": 8,\r\n        \"w\":
+    8,\r\n        \"x\": 4,\r\n        \"y\": 0\r\n      },\r\n      \"id\": 6,\r\n
+    \     \"options\": {\r\n        \"dataLinks\": [],\r\n        \"legend\": {\r\n
+    \         \"calcs\": [],\r\n          \"displayMode\": \"list\",\r\n          \"placement\":
+    \"bottom\",\r\n          \"showLegend\": false\r\n        },\r\n        \"tooltip\":
+    {\r\n          \"hideZeros\": false,\r\n          \"mode\": \"multi\",\r\n          \"sort\":
+    \"none\"\r\n        }\r\n      },\r\n      \"pluginVersion\": \"12.4.0\",\r\n
+    \     \"targets\": [\r\n        {\r\n          \"datasource\": {\r\n            \"uid\":
+    \"${DS_PROMETHEUS}\"\r\n          },\r\n          \"expr\": \"nodejs_active_requests{job=~\\\"$service\\\"}\",\r\n
+    \         \"interval\": \"$interval\",\r\n          \"legendFormat\": \"{{type}}\",\r\n
+    \         \"refId\": \"A\"\r\n        },\r\n        {\r\n          \"datasource\":
+    {\r\n            \"uid\": \"${DS_PROMETHEUS}\"\r\n          },\r\n          \"expr\":
+    \"nodejs_active_requests_total{job=~\\\"$service\\\"}\",\r\n          \"interval\":
+    \"$interval\",\r\n          \"legendFormat\": \"Total\",\r\n          \"refId\":
+    \"B\"\r\n        }\r\n      ],\r\n      \"title\": \"Active Requests\",\r\n      \"type\":
+    \"timeseries\"\r\n    },\r\n    {\r\n      \"datasource\": {\r\n        \"uid\":
+    \"${DS_PROMETHEUS}\"\r\n      },\r\n      \"fieldConfig\": {\r\n        \"defaults\":
+    {\r\n          \"color\": {\r\n            \"mode\": \"palette-classic\"\r\n          },\r\n
+    \         \"custom\": {\r\n            \"axisBorderShow\": false,\r\n            \"axisCenteredZero\":
+    false,\r\n            \"axisColorMode\": \"text\",\r\n            \"axisLabel\":
+    \"\",\r\n            \"axisPlacement\": \"auto\",\r\n            \"barAlignment\":
+    0,\r\n            \"barWidthFactor\": 0.6,\r\n            \"drawStyle\": \"line\",\r\n
+    \           \"fillOpacity\": 10,\r\n            \"gradientMode\": \"none\",\r\n
+    \           \"hideFrom\": {\r\n              \"legend\": false,\r\n              \"tooltip\":
+    false,\r\n              \"viz\": false\r\n            },\r\n            \"insertNulls\":
+    false,\r\n            \"lineInterpolation\": \"linear\",\r\n            \"lineWidth\":
+    1,\r\n            \"pointSize\": 5,\r\n            \"scaleDistribution\": {\r\n
+    \             \"type\": \"linear\"\r\n            },\r\n            \"showPoints\":
+    \"never\",\r\n            \"showValues\": false,\r\n            \"spanNulls\":
+    false,\r\n            \"stacking\": {\r\n              \"group\": \"A\",\r\n              \"mode\":
+    \"none\"\r\n            },\r\n            \"thresholdsStyle\": {\r\n              \"mode\":
+    \"off\"\r\n            }\r\n          },\r\n          \"decimals\": 0,\r\n          \"mappings\":
+    [],\r\n          \"thresholds\": {\r\n            \"mode\": \"absolute\",\r\n
+    \           \"steps\": [\r\n              {\r\n                \"color\": \"green\",\r\n
+    \               \"value\": 0\r\n              },\r\n              {\r\n                \"color\":
+    \"red\",\r\n                \"value\": 80\r\n              }\r\n            ]\r\n
+    \         },\r\n          \"unit\": \"short\"\r\n        },\r\n        \"overrides\":
+    []\r\n      },\r\n      \"gridPos\": {\r\n        \"h\": 8,\r\n        \"w\":
+    8,\r\n        \"x\": 12,\r\n        \"y\": 0\r\n      },\r\n      \"id\": 4,\r\n
+    \     \"options\": {\r\n        \"dataLinks\": [],\r\n        \"legend\": {\r\n
+    \         \"calcs\": [\r\n            \"mean\",\r\n            \"lastNotNull\"\r\n
+    \         ],\r\n          \"displayMode\": \"table\",\r\n          \"placement\":
+    \"bottom\",\r\n          \"showLegend\": true\r\n        },\r\n        \"tooltip\":
+    {\r\n          \"hideZeros\": false,\r\n          \"mode\": \"multi\",\r\n          \"sort\":
+    \"desc\"\r\n        }\r\n      },\r\n      \"pluginVersion\": \"12.4.0\",\r\n
+    \     \"targets\": [\r\n        {\r\n          \"datasource\": {\r\n            \"uid\":
+    \"${DS_PROMETHEUS}\"\r\n          },\r\n          \"expr\": \"nodejs_active_handles{job=~\\\"$service\\\"}\",\r\n
+    \         \"interval\": \"$interval\",\r\n          \"legendFormat\": \"{{service}}
+    {{type}}\",\r\n          \"refId\": \"A\"\r\n        },\r\n        {\r\n          \"datasource\":
+    {\r\n            \"uid\": \"${DS_PROMETHEUS}\"\r\n          },\r\n          \"expr\":
+    \"nodejs_active_handles_total{job=~\\\"$service\\\"}\",\r\n          \"interval\":
+    \"$interval\",\r\n          \"legendFormat\": \"{{service}} Total\",\r\n          \"refId\":
+    \"B\"\r\n        }\r\n      ],\r\n      \"title\": \"Active Handles\",\r\n      \"type\":
+    \"timeseries\"\r\n    },\r\n    {\r\n      \"datasource\": {\r\n        \"uid\":
+    \"${DS_PROMETHEUS}\"\r\n      },\r\n      \"fieldConfig\": {\r\n        \"defaults\":
+    {\r\n          \"mappings\": [\r\n            {\r\n              \"options\":
+    {\r\n                \"match\": \"null\",\r\n                \"result\": {\r\n
+    \                 \"text\": \"N/A\"\r\n                }\r\n              },\r\n
+    \             \"type\": \"special\"\r\n            }\r\n          ],\r\n          \"thresholds\":
+    {\r\n            \"mode\": \"absolute\",\r\n            \"steps\": [\r\n              {\r\n
+    \               \"color\": \"green\",\r\n                \"value\": 0\r\n              },\r\n
+    \             {\r\n                \"color\": \"red\",\r\n                \"value\":
+    80\r\n              }\r\n            ]\r\n          },\r\n          \"unit\":
+    \"decbytes\"\r\n        },\r\n        \"overrides\": []\r\n      },\r\n      \"gridPos\":
+    {\r\n        \"h\": 4,\r\n        \"w\": 4,\r\n        \"x\": 20,\r\n        \"y\":
+    0\r\n      },\r\n      \"id\": 28,\r\n      \"maxDataPoints\": 100,\r\n      \"options\":
+    {\r\n        \"colorMode\": \"none\",\r\n        \"graphMode\": \"none\",\r\n
+    \       \"justifyMode\": \"auto\",\r\n        \"orientation\": \"horizontal\",\r\n
+    \       \"percentChangeColorMode\": \"standard\",\r\n        \"reduceOptions\":
+    {\r\n          \"calcs\": [\r\n            \"lastNotNull\"\r\n          ],\r\n
+    \         \"fields\": \"\",\r\n          \"values\": false\r\n        },\r\n        \"showPercentChange\":
+    false,\r\n        \"textMode\": \"auto\",\r\n        \"wideLayout\": true\r\n
+    \     },\r\n      \"pluginVersion\": \"12.4.0\",\r\n      \"repeat\": \"service\",\r\n
+    \     \"repeatDirection\": \"v\",\r\n      \"targets\": [\r\n        {\r\n          \"datasource\":
+    {\r\n            \"uid\": \"${DS_PROMETHEUS}\"\r\n          },\r\n          \"editorMode\":
+    \"code\",\r\n          \"expr\": \"process_heap_bytes{job=~\\\"$service\\\"}\",\r\n
+    \         \"range\": true,\r\n          \"refId\": \"A\"\r\n        }\r\n      ],\r\n
+    \     \"title\": \"$service Process Heap\",\r\n      \"type\": \"stat\"\r\n    },\r\n
+    \   {\r\n      \"datasource\": {\r\n        \"uid\": \"${DS_PROMETHEUS}\"\r\n
+    \     },\r\n      \"fieldConfig\": {\r\n        \"defaults\": {\r\n          \"mappings\":
+    [\r\n            {\r\n              \"options\": {\r\n                \"match\":
+    \"null\",\r\n                \"result\": {\r\n                  \"text\": \"N/A\"\r\n
+    \               }\r\n              },\r\n              \"type\": \"special\"\r\n
+    \           }\r\n          ],\r\n          \"thresholds\": {\r\n            \"mode\":
+    \"absolute\",\r\n            \"steps\": [\r\n              {\r\n                \"color\":
+    \"green\",\r\n                \"value\": 0\r\n              },\r\n              {\r\n
+    \               \"color\": \"red\",\r\n                \"value\": 80\r\n              }\r\n
+    \           ]\r\n          },\r\n          \"unit\": \"dateTimeFromNow\"\r\n        },\r\n
+    \       \"overrides\": []\r\n      },\r\n      \"gridPos\": {\r\n        \"h\":
+    4,\r\n        \"w\": 4,\r\n        \"x\": 0,\r\n        \"y\": 2\r\n      },\r\n
+    \     \"id\": 24,\r\n      \"maxDataPoints\": 100,\r\n      \"options\": {\r\n
+    \       \"colorMode\": \"value\",\r\n        \"graphMode\": \"none\",\r\n        \"justifyMode\":
+    \"auto\",\r\n        \"orientation\": \"horizontal\",\r\n        \"percentChangeColorMode\":
+    \"standard\",\r\n        \"reduceOptions\": {\r\n          \"calcs\": [\r\n            \"lastNotNull\"\r\n
+    \         ],\r\n          \"fields\": \"\",\r\n          \"values\": false\r\n
+    \       },\r\n        \"showPercentChange\": false,\r\n        \"text\": {\r\n
+    \         \"valueSize\": 40\r\n        },\r\n        \"textMode\": \"auto\",\r\n
+    \       \"wideLayout\": true\r\n      },\r\n      \"pluginVersion\": \"12.4.0\",\r\n
+    \     \"repeat\": \"service\",\r\n      \"repeatDirection\": \"v\",\r\n      \"targets\":
+    [\r\n        {\r\n          \"datasource\": {\r\n            \"uid\": \"${DS_PROMETHEUS}\"\r\n
+    \         },\r\n          \"editorMode\": \"code\",\r\n          \"expr\": \"((process_start_time_seconds{job=~\\\"$service\\\"})
+    *1000)\",\r\n          \"legendFormat\": \"{{service}}\",\r\n          \"range\":
+    true,\r\n          \"refId\": \"A\"\r\n        }\r\n      ],\r\n      \"title\":
+    \"$service Process start time\",\r\n      \"type\": \"stat\"\r\n    },\r\n    {\r\n
+    \     \"datasource\": {\r\n        \"uid\": \"${DS_PROMETHEUS}\"\r\n      },\r\n
+    \     \"fieldConfig\": {\r\n        \"defaults\": {\r\n          \"mappings\":
+    [\r\n            {\r\n              \"options\": {\r\n                \"match\":
+    \"null\",\r\n                \"result\": {\r\n                  \"text\": \"N/A\"\r\n
+    \               }\r\n              },\r\n              \"type\": \"special\"\r\n
+    \           }\r\n          ],\r\n          \"thresholds\": {\r\n            \"mode\":
+    \"absolute\",\r\n            \"steps\": [\r\n              {\r\n                \"color\":
+    \"green\",\r\n                \"value\": 0\r\n              },\r\n              {\r\n
+    \               \"color\": \"red\",\r\n                \"value\": 80\r\n              }\r\n
+    \           ]\r\n          },\r\n          \"unit\": \"none\"\r\n        },\r\n
+    \       \"overrides\": []\r\n      },\r\n      \"gridPos\": {\r\n        \"h\":
+    5,\r\n        \"w\": 4,\r\n        \"x\": 20,\r\n        \"y\": 4\r\n      },\r\n
+    \     \"id\": 20,\r\n      \"maxDataPoints\": 100,\r\n      \"options\": {\r\n
+    \       \"colorMode\": \"none\",\r\n        \"graphMode\": \"none\",\r\n        \"justifyMode\":
+    \"auto\",\r\n        \"orientation\": \"horizontal\",\r\n        \"percentChangeColorMode\":
+    \"standard\",\r\n        \"reduceOptions\": {\r\n          \"calcs\": [\r\n            \"mean\"\r\n
+    \         ],\r\n          \"fields\": \"\",\r\n          \"values\": false\r\n
+    \       },\r\n        \"showPercentChange\": false,\r\n        \"textMode\": \"auto\",\r\n
+    \       \"wideLayout\": true\r\n      },\r\n      \"pluginVersion\": \"12.4.0\",\r\n
+    \     \"repeat\": \"service\",\r\n      \"repeatDirection\": \"v\",\r\n      \"targets\":
+    [\r\n        {\r\n          \"datasource\": {\r\n            \"uid\": \"${DS_PROMETHEUS}\"\r\n
+    \         },\r\n          \"editorMode\": \"code\",\r\n          \"expr\": \"process_max_fds{job=~\\\"$service\\\"}\",\r\n
+    \         \"range\": true,\r\n          \"refId\": \"A\"\r\n        }\r\n      ],\r\n
+    \     \"title\": \"$service Max file descriptors\",\r\n      \"type\": \"stat\"\r\n
+    \   },\r\n    {\r\n      \"datasource\": {\r\n        \"uid\": \"${DS_PROMETHEUS}\"\r\n
+    \     },\r\n      \"fieldConfig\": {\r\n        \"defaults\": {\r\n          \"mappings\":
+    [\r\n            {\r\n              \"options\": {\r\n                \"match\":
+    \"null\",\r\n                \"result\": {\r\n                  \"text\": \"N/A\"\r\n
+    \               }\r\n              },\r\n              \"type\": \"special\"\r\n
+    \           }\r\n          ],\r\n          \"thresholds\": {\r\n            \"mode\":
+    \"absolute\",\r\n            \"steps\": [\r\n              {\r\n                \"color\":
+    \"green\",\r\n                \"value\": 0\r\n              },\r\n              {\r\n
+    \               \"color\": \"red\",\r\n                \"value\": 80\r\n              }\r\n
+    \           ]\r\n          },\r\n          \"unit\": \"s\"\r\n        },\r\n        \"overrides\":
+    []\r\n      },\r\n      \"gridPos\": {\r\n        \"h\": 6,\r\n        \"w\":
+    4,\r\n        \"x\": 0,\r\n        \"y\": 6\r\n      },\r\n      \"id\": 26,\r\n
+    \     \"maxDataPoints\": 100,\r\n      \"options\": {\r\n        \"colorMode\":
+    \"value\",\r\n        \"graphMode\": \"area\",\r\n        \"justifyMode\": \"auto\",\r\n
+    \       \"orientation\": \"horizontal\",\r\n        \"percentChangeColorMode\":
+    \"standard\",\r\n        \"reduceOptions\": {\r\n          \"calcs\": [\r\n            \"lastNotNull\"\r\n
+    \         ],\r\n          \"fields\": \"\",\r\n          \"values\": false\r\n
+    \       },\r\n        \"showPercentChange\": false,\r\n        \"textMode\": \"auto\",\r\n
+    \       \"wideLayout\": true\r\n      },\r\n      \"pluginVersion\": \"12.4.0\",\r\n
+    \     \"repeat\": \"service\",\r\n      \"repeatDirection\": \"v\",\r\n      \"targets\":
+    [\r\n        {\r\n          \"datasource\": {\r\n            \"uid\": \"${DS_PROMETHEUS}\"\r\n
+    \         },\r\n          \"editorMode\": \"code\",\r\n          \"expr\": \"scrape_duration_seconds{job=~\\\"$service\\\"}\",\r\n
+    \         \"range\": true,\r\n          \"refId\": \"A\"\r\n        }\r\n      ],\r\n
+    \     \"title\": \"$service Metrics scrape duration\",\r\n      \"type\": \"stat\"\r\n
+    \   },\r\n    {\r\n      \"datasource\": {\r\n        \"uid\": \"${DS_PROMETHEUS}\"\r\n
+    \     },\r\n      \"fieldConfig\": {\r\n        \"defaults\": {\r\n          \"color\":
+    {\r\n            \"mode\": \"palette-classic\"\r\n          },\r\n          \"custom\":
+    {\r\n            \"axisBorderShow\": false,\r\n            \"axisCenteredZero\":
+    false,\r\n            \"axisColorMode\": \"text\",\r\n            \"axisLabel\":
+    \"\",\r\n            \"axisPlacement\": \"auto\",\r\n            \"barAlignment\":
+    0,\r\n            \"barWidthFactor\": 0.6,\r\n            \"drawStyle\": \"line\",\r\n
+    \           \"fillOpacity\": 10,\r\n            \"gradientMode\": \"none\",\r\n
+    \           \"hideFrom\": {\r\n              \"legend\": false,\r\n              \"tooltip\":
+    false,\r\n              \"viz\": false\r\n            },\r\n            \"insertNulls\":
+    false,\r\n            \"lineInterpolation\": \"linear\",\r\n            \"lineWidth\":
+    1,\r\n            \"pointSize\": 5,\r\n            \"scaleDistribution\": {\r\n
+    \             \"type\": \"linear\"\r\n            },\r\n            \"showPoints\":
+    \"never\",\r\n            \"showValues\": false,\r\n            \"spanNulls\":
+    false,\r\n            \"stacking\": {\r\n              \"group\": \"A\",\r\n              \"mode\":
+    \"none\"\r\n            },\r\n            \"thresholdsStyle\": {\r\n              \"mode\":
+    \"off\"\r\n            }\r\n          },\r\n          \"mappings\": [],\r\n          \"thresholds\":
+    {\r\n            \"mode\": \"absolute\",\r\n            \"steps\": [\r\n              {\r\n
+    \               \"color\": \"green\",\r\n                \"value\": 0\r\n              },\r\n
+    \             {\r\n                \"color\": \"red\",\r\n                \"value\":
+    80\r\n              }\r\n            ]\r\n          },\r\n          \"unit\":
+    \"percent\"\r\n        },\r\n        \"overrides\": []\r\n      },\r\n      \"gridPos\":
+    {\r\n        \"h\": 10,\r\n        \"w\": 8,\r\n        \"x\": 4,\r\n        \"y\":
+    8\r\n      },\r\n      \"id\": 34,\r\n      \"options\": {\r\n        \"dataLinks\":
+    [],\r\n        \"legend\": {\r\n          \"calcs\": [\r\n            \"mean\",\r\n
+    \           \"lastNotNull\"\r\n          ],\r\n          \"displayMode\": \"table\",\r\n
+    \         \"placement\": \"bottom\",\r\n          \"showLegend\": true\r\n        },\r\n
+    \       \"tooltip\": {\r\n          \"hideZeros\": false,\r\n          \"mode\":
+    \"multi\",\r\n          \"sort\": \"desc\"\r\n        }\r\n      },\r\n      \"pluginVersion\":
+    \"12.4.0\",\r\n      \"targets\": [\r\n        {\r\n          \"datasource\":
+    {\r\n            \"uid\": \"${DS_PROMETHEUS}\"\r\n          },\r\n          \"expr\":
+    \"rate(process_cpu_user_seconds_total{job=~\\\"$service\\\"}[$interval])\",\r\n
+    \         \"interval\": \"$interval\",\r\n          \"legendFormat\": \"{{service}}
+    User\",\r\n          \"refId\": \"A\"\r\n        },\r\n        {\r\n          \"datasource\":
+    {\r\n            \"uid\": \"${DS_PROMETHEUS}\"\r\n          },\r\n          \"expr\":
+    \"rate(process_cpu_system_seconds_total{job=~\\\"$service\\\"}[$interval])\",\r\n
+    \         \"interval\": \"$interval\",\r\n          \"legendFormat\": \"{{service}}
+    System\",\r\n          \"refId\": \"B\"\r\n        },\r\n        {\r\n          \"datasource\":
+    {\r\n            \"uid\": \"${DS_PROMETHEUS}\"\r\n          },\r\n          \"expr\":
+    \"rate(process_cpu_seconds_total{service=\\\"$service\\\", stack=~\\\"$stack\\\"}[$interval])\",\r\n
+    \         \"legendFormat\": \"{{service}} Total\",\r\n          \"refId\": \"C\"\r\n
+    \       }\r\n      ],\r\n      \"title\": \"% CPU usage\",\r\n      \"type\":
+    \"timeseries\"\r\n    },\r\n    {\r\n      \"datasource\": {\r\n        \"uid\":
+    \"${DS_PROMETHEUS}\"\r\n      },\r\n      \"fieldConfig\": {\r\n        \"defaults\":
+    {\r\n          \"color\": {\r\n            \"mode\": \"palette-classic\"\r\n          },\r\n
+    \         \"custom\": {\r\n            \"axisBorderShow\": false,\r\n            \"axisCenteredZero\":
+    false,\r\n            \"axisColorMode\": \"text\",\r\n            \"axisLabel\":
+    \"\",\r\n            \"axisPlacement\": \"auto\",\r\n            \"barAlignment\":
+    0,\r\n            \"barWidthFactor\": 0.6,\r\n            \"drawStyle\": \"line\",\r\n
+    \           \"fillOpacity\": 10,\r\n            \"gradientMode\": \"none\",\r\n
+    \           \"hideFrom\": {\r\n              \"legend\": false,\r\n              \"tooltip\":
+    false,\r\n              \"viz\": false\r\n            },\r\n            \"insertNulls\":
+    false,\r\n            \"lineInterpolation\": \"linear\",\r\n            \"lineWidth\":
+    1,\r\n            \"pointSize\": 5,\r\n            \"scaleDistribution\": {\r\n
+    \             \"type\": \"linear\"\r\n            },\r\n            \"showPoints\":
+    \"never\",\r\n            \"showValues\": false,\r\n            \"spanNulls\":
+    false,\r\n            \"stacking\": {\r\n              \"group\": \"A\",\r\n              \"mode\":
+    \"none\"\r\n            },\r\n            \"thresholdsStyle\": {\r\n              \"mode\":
+    \"off\"\r\n            }\r\n          },\r\n          \"mappings\": [],\r\n          \"thresholds\":
+    {\r\n            \"mode\": \"absolute\",\r\n            \"steps\": [\r\n              {\r\n
+    \               \"color\": \"green\",\r\n                \"value\": 0\r\n              },\r\n
+    \             {\r\n                \"color\": \"red\",\r\n                \"value\":
+    80\r\n              }\r\n            ]\r\n          },\r\n          \"unit\":
+    \"s\"\r\n        },\r\n        \"overrides\": []\r\n      },\r\n      \"gridPos\":
+    {\r\n        \"h\": 10,\r\n        \"w\": 8,\r\n        \"x\": 12,\r\n        \"y\":
+    8\r\n      },\r\n      \"id\": 2,\r\n      \"options\": {\r\n        \"dataLinks\":
+    [],\r\n        \"legend\": {\r\n          \"calcs\": [\r\n            \"mean\",\r\n
+    \           \"lastNotNull\"\r\n          ],\r\n          \"displayMode\": \"table\",\r\n
+    \         \"placement\": \"bottom\",\r\n          \"showLegend\": true\r\n        },\r\n
+    \       \"tooltip\": {\r\n          \"hideZeros\": false,\r\n          \"mode\":
+    \"multi\",\r\n          \"sort\": \"desc\"\r\n        }\r\n      },\r\n      \"pluginVersion\":
+    \"12.4.0\",\r\n      \"targets\": [\r\n        {\r\n          \"datasource\":
+    {\r\n            \"uid\": \"${DS_PROMETHEUS}\"\r\n          },\r\n          \"expr\":
+    \"nodejs_eventloop_lag_seconds{job=~\\\"$service\\\"}\",\r\n          \"interval\":
+    \"$interval\",\r\n          \"legendFormat\": \"{{service}} Event Loop Lag\",\r\n
+    \         \"refId\": \"A\"\r\n        }\r\n      ],\r\n      \"title\": \"Event
+    loop lag\",\r\n      \"type\": \"timeseries\"\r\n    },\r\n    {\r\n      \"datasource\":
+    {\r\n        \"uid\": \"${DS_PROMETHEUS}\"\r\n      },\r\n      \"fieldConfig\":
+    {\r\n        \"defaults\": {\r\n          \"mappings\": [\r\n            {\r\n
+    \             \"options\": {\r\n                \"match\": \"null\",\r\n                \"result\":
+    {\r\n                  \"text\": \"N/A\"\r\n                }\r\n              },\r\n
+    \             \"type\": \"special\"\r\n            }\r\n          ],\r\n          \"thresholds\":
+    {\r\n            \"mode\": \"absolute\",\r\n            \"steps\": [\r\n              {\r\n
+    \               \"color\": \"green\",\r\n                \"value\": 0\r\n              },\r\n
+    \             {\r\n                \"color\": \"red\",\r\n                \"value\":
+    80\r\n              }\r\n            ]\r\n          },\r\n          \"unit\":
+    \"none\"\r\n        },\r\n        \"overrides\": []\r\n      },\r\n      \"gridPos\":
+    {\r\n        \"h\": 9,\r\n        \"w\": 4,\r\n        \"x\": 20,\r\n        \"y\":
+    9\r\n      },\r\n      \"id\": 22,\r\n      \"maxDataPoints\": 100,\r\n      \"options\":
+    {\r\n        \"colorMode\": \"value\",\r\n        \"graphMode\": \"area\",\r\n
+    \       \"justifyMode\": \"auto\",\r\n        \"orientation\": \"horizontal\",\r\n
+    \       \"percentChangeColorMode\": \"standard\",\r\n        \"reduceOptions\":
+    {\r\n          \"calcs\": [\r\n            \"mean\"\r\n          ],\r\n          \"fields\":
+    \"\",\r\n          \"values\": false\r\n        },\r\n        \"showPercentChange\":
+    false,\r\n        \"textMode\": \"auto\",\r\n        \"wideLayout\": true\r\n
+    \     },\r\n      \"pluginVersion\": \"12.4.0\",\r\n      \"repeat\": \"service\",\r\n
+    \     \"repeatDirection\": \"v\",\r\n      \"targets\": [\r\n        {\r\n          \"datasource\":
+    {\r\n            \"uid\": \"${DS_PROMETHEUS}\"\r\n          },\r\n          \"editorMode\":
+    \"code\",\r\n          \"expr\": \"process_open_fds{job=~\\\"$service\\\"}\",\r\n
+    \         \"range\": true,\r\n          \"refId\": \"A\"\r\n        }\r\n      ],\r\n
+    \     \"title\": \"$service Open file descriptors\",\r\n      \"type\": \"stat\"\r\n
+    \   },\r\n    {\r\n      \"collapsed\": false,\r\n      \"gridPos\": {\r\n        \"h\":
+    1,\r\n        \"w\": 24,\r\n        \"x\": 0,\r\n        \"y\": 18\r\n      },\r\n
+    \     \"id\": 40,\r\n      \"panels\": [],\r\n      \"title\": \"Memory\",\r\n
+    \     \"type\": \"row\"\r\n    },\r\n    {\r\n      \"datasource\": {\r\n        \"uid\":
+    \"${DS_PROMETHEUS}\"\r\n      },\r\n      \"fieldConfig\": {\r\n        \"defaults\":
+    {\r\n          \"color\": {\r\n            \"mode\": \"palette-classic\"\r\n          },\r\n
+    \         \"custom\": {\r\n            \"axisBorderShow\": false,\r\n            \"axisCenteredZero\":
+    false,\r\n            \"axisColorMode\": \"text\",\r\n            \"axisLabel\":
+    \"\",\r\n            \"axisPlacement\": \"auto\",\r\n            \"barAlignment\":
+    0,\r\n            \"barWidthFactor\": 0.6,\r\n            \"drawStyle\": \"line\",\r\n
+    \           \"fillOpacity\": 10,\r\n            \"gradientMode\": \"none\",\r\n
+    \           \"hideFrom\": {\r\n              \"legend\": false,\r\n              \"tooltip\":
+    false,\r\n              \"viz\": false\r\n            },\r\n            \"insertNulls\":
+    false,\r\n            \"lineInterpolation\": \"linear\",\r\n            \"lineWidth\":
+    1,\r\n            \"pointSize\": 5,\r\n            \"scaleDistribution\": {\r\n
+    \             \"type\": \"linear\"\r\n            },\r\n            \"showPoints\":
+    \"never\",\r\n            \"showValues\": false,\r\n            \"spanNulls\":
+    false,\r\n            \"stacking\": {\r\n              \"group\": \"A\",\r\n              \"mode\":
+    \"none\"\r\n            },\r\n            \"thresholdsStyle\": {\r\n              \"mode\":
+    \"off\"\r\n            }\r\n          },\r\n          \"mappings\": [],\r\n          \"thresholds\":
+    {\r\n            \"mode\": \"absolute\",\r\n            \"steps\": [\r\n              {\r\n
+    \               \"color\": \"green\",\r\n                \"value\": 0\r\n              },\r\n
+    \             {\r\n                \"color\": \"red\",\r\n                \"value\":
+    80\r\n              }\r\n            ]\r\n          },\r\n          \"unit\":
+    \"decbytes\"\r\n        },\r\n        \"overrides\": []\r\n      },\r\n      \"gridPos\":
+    {\r\n        \"h\": 8,\r\n        \"w\": 8,\r\n        \"x\": 0,\r\n        \"y\":
+    19\r\n      },\r\n      \"id\": 8,\r\n      \"options\": {\r\n        \"dataLinks\":
+    [],\r\n        \"legend\": {\r\n          \"calcs\": [\r\n            \"mean\",\r\n
+    \           \"lastNotNull\"\r\n          ],\r\n          \"displayMode\": \"table\",\r\n
+    \         \"placement\": \"bottom\",\r\n          \"showLegend\": true\r\n        },\r\n
+    \       \"tooltip\": {\r\n          \"hideZeros\": false,\r\n          \"mode\":
+    \"multi\",\r\n          \"sort\": \"desc\"\r\n        }\r\n      },\r\n      \"pluginVersion\":
+    \"12.4.0\",\r\n      \"targets\": [\r\n        {\r\n          \"datasource\":
+    {\r\n            \"uid\": \"${DS_PROMETHEUS}\"\r\n          },\r\n          \"expr\":
+    \"nodejs_external_memory_bytes{job=~\\\"$service\\\"}\",\r\n          \"interval\":
+    \"$interval\",\r\n          \"legendFormat\": \"{{service}} External Memory\",\r\n
+    \         \"refId\": \"A\"\r\n        }\r\n      ],\r\n      \"title\": \"External
+    Memory\",\r\n      \"type\": \"timeseries\"\r\n    },\r\n    {\r\n      \"datasource\":
+    {\r\n        \"uid\": \"${DS_PROMETHEUS}\"\r\n      },\r\n      \"fieldConfig\":
+    {\r\n        \"defaults\": {\r\n          \"color\": {\r\n            \"mode\":
+    \"palette-classic\"\r\n          },\r\n          \"custom\": {\r\n            \"axisBorderShow\":
+    false,\r\n            \"axisCenteredZero\": false,\r\n            \"axisColorMode\":
+    \"text\",\r\n            \"axisLabel\": \"\",\r\n            \"axisPlacement\":
+    \"auto\",\r\n            \"barAlignment\": 0,\r\n            \"barWidthFactor\":
+    0.6,\r\n            \"drawStyle\": \"line\",\r\n            \"fillOpacity\": 10,\r\n
+    \           \"gradientMode\": \"none\",\r\n            \"hideFrom\": {\r\n              \"legend\":
+    false,\r\n              \"tooltip\": false,\r\n              \"viz\": false\r\n
+    \           },\r\n            \"insertNulls\": false,\r\n            \"lineInterpolation\":
+    \"linear\",\r\n            \"lineWidth\": 1,\r\n            \"pointSize\": 5,\r\n
+    \           \"scaleDistribution\": {\r\n              \"type\": \"linear\"\r\n
+    \           },\r\n            \"showPoints\": \"never\",\r\n            \"showValues\":
+    false,\r\n            \"spanNulls\": false,\r\n            \"stacking\": {\r\n
+    \             \"group\": \"A\",\r\n              \"mode\": \"none\"\r\n            },\r\n
+    \           \"thresholdsStyle\": {\r\n              \"mode\": \"off\"\r\n            }\r\n
+    \         },\r\n          \"mappings\": [],\r\n          \"thresholds\": {\r\n
+    \           \"mode\": \"absolute\",\r\n            \"steps\": [\r\n              {\r\n
+    \               \"color\": \"green\",\r\n                \"value\": 0\r\n              },\r\n
+    \             {\r\n                \"color\": \"red\",\r\n                \"value\":
+    80\r\n              }\r\n            ]\r\n          },\r\n          \"unit\":
+    \"decbytes\"\r\n        },\r\n        \"overrides\": []\r\n      },\r\n      \"gridPos\":
+    {\r\n        \"h\": 8,\r\n        \"w\": 8,\r\n        \"x\": 8,\r\n        \"y\":
+    19\r\n      },\r\n      \"id\": 10,\r\n      \"options\": {\r\n        \"dataLinks\":
+    [],\r\n        \"legend\": {\r\n          \"calcs\": [\r\n            \"mean\",\r\n
+    \           \"lastNotNull\"\r\n          ],\r\n          \"displayMode\": \"table\",\r\n
+    \         \"placement\": \"bottom\",\r\n          \"showLegend\": true\r\n        },\r\n
+    \       \"tooltip\": {\r\n          \"hideZeros\": false,\r\n          \"mode\":
+    \"multi\",\r\n          \"sort\": \"desc\"\r\n        }\r\n      },\r\n      \"pluginVersion\":
+    \"12.4.0\",\r\n      \"targets\": [\r\n        {\r\n          \"datasource\":
+    {\r\n            \"uid\": \"${DS_PROMETHEUS}\"\r\n          },\r\n          \"expr\":
+    \"nodejs_heap_size_total_bytes{job=~\\\"$service\\\"}\",\r\n          \"interval\":
+    \"$interval\",\r\n          \"legendFormat\": \"{{service}} Total\",\r\n          \"refId\":
+    \"A\"\r\n        },\r\n        {\r\n          \"datasource\": {\r\n            \"uid\":
+    \"${DS_PROMETHEUS}\"\r\n          },\r\n          \"expr\": \"nodejs_heap_size_used_bytes{job=~\\\"$service\\\"}\",\r\n
+    \         \"interval\": \"$interval\",\r\n          \"legendFormat\": \"{{service}}
+    Used\",\r\n          \"refId\": \"B\"\r\n        }\r\n      ],\r\n      \"title\":
+    \"Heap size\",\r\n      \"type\": \"timeseries\"\r\n    },\r\n    {\r\n      \"datasource\":
+    {\r\n        \"uid\": \"${DS_PROMETHEUS}\"\r\n      },\r\n      \"fieldConfig\":
+    {\r\n        \"defaults\": {\r\n          \"color\": {\r\n            \"mode\":
+    \"palette-classic\"\r\n          },\r\n          \"custom\": {\r\n            \"axisBorderShow\":
+    false,\r\n            \"axisCenteredZero\": false,\r\n            \"axisColorMode\":
+    \"text\",\r\n            \"axisLabel\": \"\",\r\n            \"axisPlacement\":
+    \"auto\",\r\n            \"barAlignment\": 0,\r\n            \"barWidthFactor\":
+    0.6,\r\n            \"drawStyle\": \"line\",\r\n            \"fillOpacity\": 10,\r\n
+    \           \"gradientMode\": \"none\",\r\n            \"hideFrom\": {\r\n              \"legend\":
+    false,\r\n              \"tooltip\": false,\r\n              \"viz\": false\r\n
+    \           },\r\n            \"insertNulls\": false,\r\n            \"lineInterpolation\":
+    \"linear\",\r\n            \"lineWidth\": 1,\r\n            \"pointSize\": 5,\r\n
+    \           \"scaleDistribution\": {\r\n              \"type\": \"linear\"\r\n
+    \           },\r\n            \"showPoints\": \"never\",\r\n            \"showValues\":
+    false,\r\n            \"spanNulls\": false,\r\n            \"stacking\": {\r\n
+    \             \"group\": \"A\",\r\n              \"mode\": \"none\"\r\n            },\r\n
+    \           \"thresholdsStyle\": {\r\n              \"mode\": \"off\"\r\n            }\r\n
+    \         },\r\n          \"mappings\": [],\r\n          \"thresholds\": {\r\n
+    \           \"mode\": \"absolute\",\r\n            \"steps\": [\r\n              {\r\n
+    \               \"color\": \"green\",\r\n                \"value\": 0\r\n              },\r\n
+    \             {\r\n                \"color\": \"red\",\r\n                \"value\":
+    80\r\n              }\r\n            ]\r\n          },\r\n          \"unit\":
+    \"decbytes\"\r\n        },\r\n        \"overrides\": []\r\n      },\r\n      \"gridPos\":
+    {\r\n        \"h\": 8,\r\n        \"w\": 8,\r\n        \"x\": 16,\r\n        \"y\":
+    19\r\n      },\r\n      \"id\": 32,\r\n      \"options\": {\r\n        \"dataLinks\":
+    [],\r\n        \"legend\": {\r\n          \"calcs\": [\r\n            \"mean\",\r\n
+    \           \"lastNotNull\"\r\n          ],\r\n          \"displayMode\": \"table\",\r\n
+    \         \"placement\": \"bottom\",\r\n          \"showLegend\": true\r\n        },\r\n
+    \       \"tooltip\": {\r\n          \"hideZeros\": false,\r\n          \"mode\":
+    \"multi\",\r\n          \"sort\": \"desc\"\r\n        }\r\n      },\r\n      \"pluginVersion\":
+    \"12.4.0\",\r\n      \"targets\": [\r\n        {\r\n          \"datasource\":
+    {\r\n            \"uid\": \"${DS_PROMETHEUS}\"\r\n          },\r\n          \"expr\":
+    \"process_resident_memory_bytes{job=~\\\"$service\\\"}\",\r\n          \"interval\":
+    \"$interval\",\r\n          \"legendFormat\": \"{{service}} Resident\",\r\n          \"refId\":
+    \"A\"\r\n        },\r\n        {\r\n          \"datasource\": {\r\n            \"uid\":
+    \"${DS_PROMETHEUS}\"\r\n          },\r\n          \"expr\": \"process_virtual_memory_bytes{job=~\\\"$service\\\"}\",\r\n
+    \         \"interval\": \"$interval\",\r\n          \"legendFormat\": \"{{service}}
+    Virtual\",\r\n          \"refId\": \"B\"\r\n        }\r\n      ],\r\n      \"title\":
+    \"Process Memory\",\r\n      \"type\": \"timeseries\"\r\n    },\r\n    {\r\n      \"collapsed\":
+    false,\r\n      \"gridPos\": {\r\n        \"h\": 1,\r\n        \"w\": 24,\r\n
+    \       \"x\": 0,\r\n        \"y\": 27\r\n      },\r\n      \"id\": 18,\r\n      \"panels\":
+    [],\r\n      \"title\": \"Heap Space Size\",\r\n      \"type\": \"row\"\r\n    },\r\n
+    \   {\r\n      \"datasource\": {\r\n        \"uid\": \"${DS_PROMETHEUS}\"\r\n
+    \     },\r\n      \"fieldConfig\": {\r\n        \"defaults\": {\r\n          \"color\":
+    {\r\n            \"mode\": \"palette-classic\"\r\n          },\r\n          \"custom\":
+    {\r\n            \"axisBorderShow\": false,\r\n            \"axisCenteredZero\":
+    false,\r\n            \"axisColorMode\": \"text\",\r\n            \"axisLabel\":
+    \"\",\r\n            \"axisPlacement\": \"auto\",\r\n            \"barAlignment\":
+    0,\r\n            \"barWidthFactor\": 0.6,\r\n            \"drawStyle\": \"line\",\r\n
+    \           \"fillOpacity\": 10,\r\n            \"gradientMode\": \"none\",\r\n
+    \           \"hideFrom\": {\r\n              \"legend\": false,\r\n              \"tooltip\":
+    false,\r\n              \"viz\": false\r\n            },\r\n            \"insertNulls\":
+    false,\r\n            \"lineInterpolation\": \"linear\",\r\n            \"lineWidth\":
+    1,\r\n            \"pointSize\": 5,\r\n            \"scaleDistribution\": {\r\n
+    \             \"type\": \"linear\"\r\n            },\r\n            \"showPoints\":
+    \"never\",\r\n            \"showValues\": false,\r\n            \"spanNulls\":
+    false,\r\n            \"stacking\": {\r\n              \"group\": \"A\",\r\n              \"mode\":
+    \"none\"\r\n            },\r\n            \"thresholdsStyle\": {\r\n              \"mode\":
+    \"off\"\r\n            }\r\n          },\r\n          \"mappings\": [],\r\n          \"thresholds\":
+    {\r\n            \"mode\": \"absolute\",\r\n            \"steps\": [\r\n              {\r\n
+    \               \"color\": \"green\",\r\n                \"value\": 0\r\n              },\r\n
+    \             {\r\n                \"color\": \"red\",\r\n                \"value\":
+    80\r\n              }\r\n            ]\r\n          },\r\n          \"unit\":
+    \"decbytes\"\r\n        },\r\n        \"overrides\": []\r\n      },\r\n      \"gridPos\":
+    {\r\n        \"h\": 8,\r\n        \"w\": 8,\r\n        \"x\": 0,\r\n        \"y\":
+    28\r\n      },\r\n      \"id\": 14,\r\n      \"options\": {\r\n        \"dataLinks\":
+    [],\r\n        \"legend\": {\r\n          \"calcs\": [\r\n            \"mean\",\r\n
+    \           \"lastNotNull\"\r\n          ],\r\n          \"displayMode\": \"table\",\r\n
+    \         \"placement\": \"bottom\",\r\n          \"showLegend\": true\r\n        },\r\n
+    \       \"tooltip\": {\r\n          \"hideZeros\": false,\r\n          \"mode\":
+    \"multi\",\r\n          \"sort\": \"none\"\r\n        }\r\n      },\r\n      \"pluginVersion\":
+    \"12.4.0\",\r\n      \"targets\": [\r\n        {\r\n          \"datasource\":
+    {\r\n            \"uid\": \"${DS_PROMETHEUS}\"\r\n          },\r\n          \"expr\":
+    \"nodejs_heap_space_size_total_bytes{job=~\\\"$service\\\"}\",\r\n          \"interval\":
+    \"$interval\",\r\n          \"legendFormat\": \"{{service}} {{space}}\",\r\n          \"refId\":
+    \"A\"\r\n        }\r\n      ],\r\n      \"title\": \"Total\",\r\n      \"type\":
+    \"timeseries\"\r\n    },\r\n    {\r\n      \"datasource\": {\r\n        \"uid\":
+    \"${DS_PROMETHEUS}\"\r\n      },\r\n      \"fieldConfig\": {\r\n        \"defaults\":
+    {\r\n          \"color\": {\r\n            \"mode\": \"palette-classic\"\r\n          },\r\n
+    \         \"custom\": {\r\n            \"axisBorderShow\": false,\r\n            \"axisCenteredZero\":
+    false,\r\n            \"axisColorMode\": \"text\",\r\n            \"axisLabel\":
+    \"\",\r\n            \"axisPlacement\": \"auto\",\r\n            \"barAlignment\":
+    0,\r\n            \"barWidthFactor\": 0.6,\r\n            \"drawStyle\": \"line\",\r\n
+    \           \"fillOpacity\": 10,\r\n            \"gradientMode\": \"none\",\r\n
+    \           \"hideFrom\": {\r\n              \"legend\": false,\r\n              \"tooltip\":
+    false,\r\n              \"viz\": false\r\n            },\r\n            \"insertNulls\":
+    false,\r\n            \"lineInterpolation\": \"linear\",\r\n            \"lineWidth\":
+    1,\r\n            \"pointSize\": 5,\r\n            \"scaleDistribution\": {\r\n
+    \             \"type\": \"linear\"\r\n            },\r\n            \"showPoints\":
+    \"never\",\r\n            \"showValues\": false,\r\n            \"spanNulls\":
+    false,\r\n            \"stacking\": {\r\n              \"group\": \"A\",\r\n              \"mode\":
+    \"none\"\r\n            },\r\n            \"thresholdsStyle\": {\r\n              \"mode\":
+    \"off\"\r\n            }\r\n          },\r\n          \"mappings\": [],\r\n          \"thresholds\":
+    {\r\n            \"mode\": \"absolute\",\r\n            \"steps\": [\r\n              {\r\n
+    \               \"color\": \"green\",\r\n                \"value\": 0\r\n              },\r\n
+    \             {\r\n                \"color\": \"red\",\r\n                \"value\":
+    80\r\n              }\r\n            ]\r\n          },\r\n          \"unit\":
+    \"decbytes\"\r\n        },\r\n        \"overrides\": []\r\n      },\r\n      \"gridPos\":
+    {\r\n        \"h\": 8,\r\n        \"w\": 8,\r\n        \"x\": 8,\r\n        \"y\":
+    28\r\n      },\r\n      \"id\": 12,\r\n      \"options\": {\r\n        \"dataLinks\":
+    [],\r\n        \"legend\": {\r\n          \"calcs\": [\r\n            \"mean\",\r\n
+    \           \"lastNotNull\"\r\n          ],\r\n          \"displayMode\": \"table\",\r\n
+    \         \"placement\": \"bottom\",\r\n          \"showLegend\": true\r\n        },\r\n
+    \       \"tooltip\": {\r\n          \"hideZeros\": false,\r\n          \"mode\":
+    \"multi\",\r\n          \"sort\": \"none\"\r\n        }\r\n      },\r\n      \"pluginVersion\":
+    \"12.4.0\",\r\n      \"targets\": [\r\n        {\r\n          \"datasource\":
+    {\r\n            \"uid\": \"${DS_PROMETHEUS}\"\r\n          },\r\n          \"expr\":
+    \"nodejs_heap_space_size_available_bytes{job=~\\\"$service\\\"}\",\r\n          \"interval\":
+    \"$interval\",\r\n          \"legendFormat\": \"{{service}}-{{space}}\",\r\n          \"refId\":
+    \"A\"\r\n        }\r\n      ],\r\n      \"title\": \"Available\",\r\n      \"type\":
+    \"timeseries\"\r\n    },\r\n    {\r\n      \"datasource\": {\r\n        \"uid\":
+    \"${DS_PROMETHEUS}\"\r\n      },\r\n      \"fieldConfig\": {\r\n        \"defaults\":
+    {\r\n          \"color\": {\r\n            \"mode\": \"palette-classic\"\r\n          },\r\n
+    \         \"custom\": {\r\n            \"axisBorderShow\": false,\r\n            \"axisCenteredZero\":
+    false,\r\n            \"axisColorMode\": \"text\",\r\n            \"axisLabel\":
+    \"\",\r\n            \"axisPlacement\": \"auto\",\r\n            \"barAlignment\":
+    0,\r\n            \"barWidthFactor\": 0.6,\r\n            \"drawStyle\": \"line\",\r\n
+    \           \"fillOpacity\": 10,\r\n            \"gradientMode\": \"none\",\r\n
+    \           \"hideFrom\": {\r\n              \"legend\": false,\r\n              \"tooltip\":
+    false,\r\n              \"viz\": false\r\n            },\r\n            \"insertNulls\":
+    false,\r\n            \"lineInterpolation\": \"linear\",\r\n            \"lineWidth\":
+    1,\r\n            \"pointSize\": 5,\r\n            \"scaleDistribution\": {\r\n
+    \             \"type\": \"linear\"\r\n            },\r\n            \"showPoints\":
+    \"never\",\r\n            \"showValues\": false,\r\n            \"spanNulls\":
+    false,\r\n            \"stacking\": {\r\n              \"group\": \"A\",\r\n              \"mode\":
+    \"none\"\r\n            },\r\n            \"thresholdsStyle\": {\r\n              \"mode\":
+    \"off\"\r\n            }\r\n          },\r\n          \"mappings\": [],\r\n          \"thresholds\":
+    {\r\n            \"mode\": \"absolute\",\r\n            \"steps\": [\r\n              {\r\n
+    \               \"color\": \"green\",\r\n                \"value\": 0\r\n              },\r\n
+    \             {\r\n                \"color\": \"red\",\r\n                \"value\":
+    80\r\n              }\r\n            ]\r\n          },\r\n          \"unit\":
+    \"decbytes\"\r\n        },\r\n        \"overrides\": []\r\n      },\r\n      \"gridPos\":
+    {\r\n        \"h\": 8,\r\n        \"w\": 8,\r\n        \"x\": 16,\r\n        \"y\":
+    28\r\n      },\r\n      \"id\": 16,\r\n      \"options\": {\r\n        \"dataLinks\":
+    [],\r\n        \"legend\": {\r\n          \"calcs\": [\r\n            \"mean\",\r\n
+    \           \"lastNotNull\"\r\n          ],\r\n          \"displayMode\": \"table\",\r\n
+    \         \"placement\": \"bottom\",\r\n          \"showLegend\": true\r\n        },\r\n
+    \       \"tooltip\": {\r\n          \"hideZeros\": false,\r\n          \"mode\":
+    \"multi\",\r\n          \"sort\": \"none\"\r\n        }\r\n      },\r\n      \"pluginVersion\":
+    \"12.4.0\",\r\n      \"targets\": [\r\n        {\r\n          \"datasource\":
+    {\r\n            \"uid\": \"${DS_PROMETHEUS}\"\r\n          },\r\n          \"expr\":
+    \"nodejs_heap_space_size_used_bytes{job=~\\\"$service\\\"}\",\r\n          \"interval\":
+    \"$interval\",\r\n          \"legendFormat\": \"{{service}} {{space}}\",\r\n          \"refId\":
+    \"A\"\r\n        }\r\n      ],\r\n      \"title\": \"Used\",\r\n      \"type\":
+    \"timeseries\"\r\n    }\r\n  ],\r\n  \"preload\": false,\r\n  \"refresh\": \"\",\r\n
+    \ \"schemaVersion\": 42,\r\n  \"tags\": [\r\n    \"api\",\r\n    \"nestjs\",\r\n
+    \   \"node\"\r\n  ],\r\n  \"templating\": {\r\n    \"list\": [\r\n      {\r\n
+    \       \"auto\": true,\r\n        \"auto_count\": 30,\r\n        \"auto_min\":
+    \"10s\",\r\n        \"current\": {\r\n          \"text\": \"1m\",\r\n          \"value\":
+    \"1m\"\r\n        },\r\n        \"label\": \"Interval\",\r\n        \"name\":
+    \"interval\",\r\n        \"options\": [\r\n          {\r\n            \"selected\":
+    false,\r\n            \"text\": \"10s\",\r\n            \"value\": \"10s\"\r\n
+    \         },\r\n          {\r\n            \"selected\": false,\r\n            \"text\":
+    \"30s\",\r\n            \"value\": \"30s\"\r\n          },\r\n          {\r\n
+    \           \"selected\": true,\r\n            \"text\": \"1m\",\r\n            \"value\":
+    \"1m\"\r\n          },\r\n          {\r\n            \"selected\": false,\r\n
+    \           \"text\": \"5m\",\r\n            \"value\": \"5m\"\r\n          },\r\n
+    \         {\r\n            \"selected\": false,\r\n            \"text\": \"10m\",\r\n
+    \           \"value\": \"10m\"\r\n          },\r\n          {\r\n            \"selected\":
+    false,\r\n            \"text\": \"30m\",\r\n            \"value\": \"30m\"\r\n
+    \         },\r\n          {\r\n            \"selected\": false,\r\n            \"text\":
+    \"1h\",\r\n            \"value\": \"1h\"\r\n          },\r\n          {\r\n            \"selected\":
+    false,\r\n            \"text\": \"6h\",\r\n            \"value\": \"6h\"\r\n          },\r\n
+    \         {\r\n            \"selected\": false,\r\n            \"text\": \"12h\",\r\n
+    \           \"value\": \"12h\"\r\n          },\r\n          {\r\n            \"selected\":
+    false,\r\n            \"text\": \"1d\",\r\n            \"value\": \"1d\"\r\n          },\r\n
+    \         {\r\n            \"selected\": false,\r\n            \"text\": \"7d\",\r\n
+    \           \"value\": \"7d\"\r\n          },\r\n          {\r\n            \"selected\":
+    false,\r\n            \"text\": \"14d\",\r\n            \"value\": \"14d\"\r\n
+    \         },\r\n          {\r\n            \"selected\": false,\r\n            \"text\":
+    \"30d\",\r\n            \"value\": \"30d\"\r\n          }\r\n        ],\r\n        \"query\":
+    \"10s,30s,1m,5m,10m,30m,1h,6h,12h,1d,7d,14d,30d\",\r\n        \"refresh\": 2,\r\n
+    \       \"type\": \"interval\"\r\n      },\r\n      {\r\n        \"current\":
+    {\r\n          \"text\": \"\",\r\n          \"value\": \"\"\r\n        },\r\n
+    \       \"datasource\": {\r\n          \"type\": \"prometheus\",\r\n          \"uid\":
+    \"bfed6k87ivfuod\"\r\n        },\r\n        \"definition\": \"label_values(nodejs_active_handles,
+    group)\",\r\n        \"hide\": 2,\r\n        \"includeAll\": false,\r\n        \"label\":
+    \"Group\",\r\n        \"name\": \"group\",\r\n        \"options\": [],\r\n        \"query\":
+    \"label_values(nodejs_active_handles, group)\",\r\n        \"refresh\": 2,\r\n
+    \       \"regex\": \"\",\r\n        \"regexApplyTo\": \"value\",\r\n        \"sort\":
+    1,\r\n        \"type\": \"query\"\r\n      },\r\n      {\r\n        \"current\":
+    {\r\n          \"text\": \"\",\r\n          \"value\": \"\"\r\n        },\r\n
+    \       \"datasource\": {\r\n          \"type\": \"prometheus\",\r\n          \"uid\":
+    \"bfed6k87ivfuod\"\r\n        },\r\n        \"definition\": \"label_values(nodejs_active_handles{group=\\\"$group\\\"},stack)\",\r\n
+    \       \"hide\": 2,\r\n        \"includeAll\": false,\r\n        \"label\": \"Stack\",\r\n
+    \       \"name\": \"stack\",\r\n        \"options\": [],\r\n        \"query\":
+    \"label_values(nodejs_active_handles{group=\\\"$group\\\"},stack)\",\r\n        \"refresh\":
+    2,\r\n        \"regex\": \"\",\r\n        \"regexApplyTo\": \"value\",\r\n        \"type\":
+    \"query\"\r\n      },\r\n      {\r\n        \"allowCustomValue\": false,\r\n        \"current\":
+    {\r\n          \"text\": \"api-consumer\",\r\n          \"value\": \"api-consumer\"\r\n
+    \       },\r\n        \"datasource\": {\r\n          \"type\": \"prometheus\",\r\n
+    \         \"uid\": \"bfed6k87ivfuod\"\r\n        },\r\n        \"definition\":
+    \"label_values(nodejs_version_info, job)\",\r\n        \"includeAll\": false,\r\n
+    \       \"label\": \"Service\",\r\n        \"name\": \"service\",\r\n        \"options\":
+    [],\r\n        \"query\": {\r\n          \"qryType\": 5,\r\n          \"query\":
+    \"label_values(nodejs_version_info, job)\",\r\n          \"refId\": \"PrometheusVariableQueryEditor-VariableQuery\"\r\n
+    \       },\r\n        \"refresh\": 2,\r\n        \"regex\": \"\",\r\n        \"regexApplyTo\":
+    \"value\",\r\n        \"type\": \"query\"\r\n      },\r\n      {\r\n        \"current\":
+    {\r\n          \"text\": \"All\",\r\n          \"value\": \"$__all\"\r\n        },\r\n
+    \       \"definition\": \"label_values(nodejs_active_handles{stack=\\\"$stack\\\",service=\\\"$service\\\"},host)\",\r\n
+    \       \"hide\": 2,\r\n        \"includeAll\": true,\r\n        \"label\": \"Host\",\r\n
+    \       \"multi\": true,\r\n        \"name\": \"host\",\r\n        \"options\":
+    [],\r\n        \"query\": \"label_values(nodejs_active_handles{stack=\\\"$stack\\\",service=\\\"$service\\\"},host)\",\r\n
+    \       \"refresh\": 2,\r\n        \"regex\": \"\",\r\n        \"regexApplyTo\":
+    \"value\",\r\n        \"type\": \"query\"\r\n      },\r\n      {\r\n        \"current\":
+    {\r\n          \"text\": \"\",\r\n          \"value\": \"\"\r\n        },\r\n
+    \       \"datasource\": {\r\n          \"type\": \"prometheus\",\r\n          \"uid\":
+    \"bfed6k87ivfuod\"\r\n        },\r\n        \"hide\": 2,\r\n        \"name\":
+    \"query0\",\r\n        \"options\": [],\r\n        \"query\": \"\",\r\n        \"refresh\":
+    1,\r\n        \"regex\": \"\",\r\n        \"regexApplyTo\": \"value\",\r\n        \"type\":
+    \"query\"\r\n      },\r\n      {\r\n        \"current\": {\r\n          \"text\":
+    \"prometheus\",\r\n          \"value\": \"bfed6k87ivfuod\"\r\n        },\r\n        \"hide\":
+    2,\r\n        \"label\": \"DS_PROMETHEUS\",\r\n        \"name\": \"DS_PROMETHEUS\",\r\n
+    \       \"options\": [],\r\n        \"query\": \"prometheus\",\r\n        \"refresh\":
+    1,\r\n        \"regex\": \"\",\r\n        \"type\": \"datasource\"\r\n      }\r\n
+    \   ]\r\n  },\r\n  \"time\": {\r\n    \"from\": \"now-1h\",\r\n    \"to\": \"now\"\r\n
+    \ },\r\n  \"timepicker\": {},\r\n  \"timezone\": \"browser\",\r\n  \"title\":
+    \"Nest JS - APIs\",\r\n  \"uid\": \"zvsXmKEWk\",\r\n  \"version\": 1,\r\n  \"weekStart\":
+    \"\"\r\n}"
+kind: ConfigMap
+metadata:
+  name: grafana-dashboards
+  namespace: video-app

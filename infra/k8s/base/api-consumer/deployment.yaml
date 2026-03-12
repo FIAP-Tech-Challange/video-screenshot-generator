@@ -1,0 +1,146 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: api-consumer
+  namespace: video-app
+  labels:
+    app: api-consumer
+spec:
+  replicas: 1  # HPA vai controlar
+  selector:
+    matchLabels:
+      app: api-consumer
+  template:
+    metadata:
+      labels:
+        app: api-consumer
+    spec:
+      hostAliases:
+      - ip: "172.19.0.1"
+        hostnames:
+        - "host.docker.internal"
+      containers:
+      - name: api-consumer
+        image: api-consumer:latest
+        imagePullPolicy: Never  # Usa imagem local do Minikube
+        ports:
+        - containerPort: 3001
+          name: http
+        env:
+        - name: PORT
+          value: "3001"
+        - name: NODE_ENV
+          valueFrom:
+            configMapKeyRef:
+              name: app-config
+              key: NODE_ENV
+        - name: KAFKA_BROKERS
+          valueFrom:
+            configMapKeyRef:
+              name: app-config
+              key: KAFKA_BROKERS
+        - name: POSTGRES_USER
+          valueFrom:
+            secretKeyRef:
+              name: app-secrets
+              key: POSTGRES_USER
+        - name: POSTGRES_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: app-secrets
+              key: POSTGRES_PASSWORD
+        - name: POSTGRES_HOST
+          valueFrom:
+            configMapKeyRef:
+              name: app-config
+              key: POSTGRES_HOST
+        - name: POSTGRES_PORT
+          valueFrom:
+            configMapKeyRef:
+              name: app-config
+              key: POSTGRES_PORT
+        - name: POSTGRES_DB
+          valueFrom:
+            configMapKeyRef:
+              name: app-config
+              key: POSTGRES_DB
+        - name: DB_URL
+          value: "postgresql://$(POSTGRES_USER):$(POSTGRES_PASSWORD)@$(POSTGRES_HOST):$(POSTGRES_PORT)/$(POSTGRES_DB)"
+        - name: DB_LOGGING
+          valueFrom:
+            configMapKeyRef:
+              name: app-config
+              key: DB_LOGGING
+        - name: MINIO_URL
+          valueFrom:
+            configMapKeyRef:
+              name: app-config
+              key: MINIO_URL
+        - name: MINIO_ACCESS_KEY
+          valueFrom:
+            secretKeyRef:
+              name: app-secrets
+              key: MINIO_ACCESS_KEY
+        - name: MINIO_SECRET_KEY
+          valueFrom:
+            secretKeyRef:
+              name: app-secrets
+              key: MINIO_SECRET_KEY
+        - name: BUCKET_VIDEO_NAME
+          valueFrom:
+            configMapKeyRef:
+              name: app-config
+              key: BUCKET_VIDEO_NAME
+        - name: BUCKET_SCREENSHOT_NAME
+          valueFrom:
+            configMapKeyRef:
+              name: app-config
+              key: BUCKET_SCREENSHOT_NAME
+        - name: BUCKET_REGION
+          valueFrom:
+            configMapKeyRef:
+              name: app-config
+              key: BUCKET_REGION
+        - name: SMTP_HOST
+          valueFrom:
+            secretKeyRef:
+              name: app-secrets
+              key: SMTP_HOST
+        - name: SMTP_PORT
+          valueFrom:
+            secretKeyRef:
+              name: app-secrets
+              key: SMTP_PORT
+        - name: SMTP_USER
+          valueFrom:
+            secretKeyRef:
+              name: app-secrets
+              key: SMTP_USER
+        - name: SMTP_PASS
+          valueFrom:
+            secretKeyRef:
+              name: app-secrets
+              key: SMTP_PASS
+        resources:
+          requests:
+            cpu: 100m
+            memory: 256Mi
+          limits:
+            cpu: 500m
+            memory: 512Mi
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 3001
+          initialDelaySeconds: 30
+          periodSeconds: 10
+          timeoutSeconds: 5
+          failureThreshold: 3
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 3001
+          initialDelaySeconds: 15
+          periodSeconds: 5
+          timeoutSeconds: 3
+          failureThreshold: 3
