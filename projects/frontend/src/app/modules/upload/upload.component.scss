@@ -1,0 +1,174 @@
+@use "styles/variables" as *;
+
+.upload-container {
+  max-width: 720px;
+}
+
+.upload-header {
+  margin-bottom: 24px;
+
+  h1 {
+    margin: 0 0 8px;
+    font-size: 24px;
+    font-weight: 700;
+    color: $color-dark;
+  }
+
+  p {
+    margin: 0;
+    font-size: 14px;
+    color: rgba(0, 0, 0, 0.45);
+  }
+}
+
+.upload-area {
+  margin-bottom: 24px;
+
+  ::ng-deep .ant-upload-drag {
+    border-radius: $border-radius-card;
+    border: 2px dashed #d9d9d9;
+    background: #fafafa;
+    padding: 48px 24px;
+    transition: $transition-base;
+
+    &:hover {
+      border-color: $color-primary;
+      background: rgba(99, 102, 241, 0.04);
+    }
+  }
+}
+
+.upload-content {
+  text-align: center;
+
+  .ant-upload-drag-icon {
+    margin-bottom: 16px;
+
+    .anticon {
+      font-size: 64px;
+      color: $color-primary;
+    }
+  }
+
+  .ant-upload-text {
+    font-size: 16px;
+    font-weight: 500;
+    color: $color-dark;
+    margin: 0 0 8px;
+  }
+
+  .ant-upload-hint {
+    font-size: 13px;
+    color: rgba(0, 0, 0, 0.45);
+    margin: 0;
+  }
+}
+
+.upload-progress {
+  padding: 20px;
+  background: #fff;
+  border-radius: $border-radius-card;
+  box-shadow: $card-shadow;
+  margin-bottom: 24px;
+
+  .progress-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+
+    h4 {
+      margin: 0;
+      font-size: 14px;
+      font-weight: 600;
+    }
+
+    span {
+      font-size: 14px;
+      font-weight: 600;
+      color: $color-primary;
+    }
+  }
+
+  .file-info {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 12px;
+    font-size: 13px;
+    color: rgba(0, 0, 0, 0.65);
+
+    .file-size {
+      color: rgba(0, 0, 0, 0.45);
+      margin-left: auto;
+    }
+  }
+}
+
+.video-preview {
+  margin-top: 32px;
+  background: #fff;
+  border-radius: $border-radius-card;
+  box-shadow: $card-shadow;
+  overflow: hidden;
+
+  .preview-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 20px 24px;
+    border-bottom: 1px solid #f0f0f0;
+
+    h3 {
+      margin: 0;
+      font-size: 16px;
+      font-weight: 600;
+    }
+
+    .preview-actions {
+      display: flex;
+      gap: 12px;
+
+      .btn-confirm {
+        border-radius: 8px;
+        font-weight: 500;
+        padding: 0 20px;
+        height: 40px;
+        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+
+        &:not([disabled]):hover {
+          transform: translateY(-1px);
+          box-shadow: 0 2px 8px rgba(99, 102, 241, 0.25);
+        }
+
+        .anticon {
+          margin-right: 6px;
+        }
+      }
+
+      .btn-remove {
+        border-radius: 8px;
+        font-weight: 500;
+        padding: 0 20px;
+        height: 40px;
+        border-color: #d9d9d9;
+        color: rgba(0, 0, 0, 0.65);
+
+        &:hover {
+          border-color: #ff4d4f;
+          color: #ff4d4f;
+        }
+
+        .anticon {
+          margin-right: 6px;
+        }
+      }
+    }
+  }
+
+  .preview-player {
+    width: 100%;
+    max-height: 400px;
+    display: block;
+  }
+}

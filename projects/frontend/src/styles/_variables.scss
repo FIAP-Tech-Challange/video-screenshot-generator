@@ -1,0 +1,26 @@
+// Design System - Video Screenshot Generator
+$primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+$card-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+$hover-shadow: 0 15px 35px rgba(0, 0, 0, 0.15);
+$sidebar-shadow: 2px 0 20px rgba(0, 0, 0, 0.08);
+
+$color-primary: #6366f1;
+$color-primary-dark: #4f46e5;
+$color-secondary: #8b5cf6;
+$color-success: #10b981;
+$color-danger: #ef4444;
+$color-warning: #f59e0b;
+$color-dark: #1f2937;
+$color-light: #f9fafb;
+
+$border-radius-card: 16px;
+$border-radius-item: 12px;
+$transition-base: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+
+// Sidebar
+$sidebar-width: 260px;
+$sidebar-collapsed-width: 80px;
+$header-height: 70px;
+$sidebar-bg: #ffffff;
+$sidebar-border: #f0f0f0;
+$transition-speed: 0.3s;
