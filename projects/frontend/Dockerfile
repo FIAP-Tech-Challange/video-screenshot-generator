@@ -10,4 +10,6 @@ COPY . .
 EXPOSE 4200
 
 # Proxy para Docker: /api -> api-bff:3000 (usa proxy.conf.docker.json)
-CMD ["npx", "ng", "serve", "--host", "0.0.0.0", "--disable-host-check", "--proxy-config", "proxy.conf.docker.json"]
+# Force binding to all interfaces with --host and --port
+# Use dev-server configuration directly to ensure 0.0.0.0 binding
+CMD ["npx", "ng", "serve", "--configuration", "development", "--host", "0.0.0.0", "--port", "4200", "--disable-host-check", "--proxy-config", "proxy.conf.docker.json", "--poll", "2000"]
