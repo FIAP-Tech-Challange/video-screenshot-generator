@@ -2,15 +2,17 @@ global:
   scrape_interval: 15s
 
 scrape_configs:
-  - job_name: "api-consumer"
-    metrics_path: "/metrics"
-    static_configs:
-      - targets: ["api-consumer:3001"]
-
   - job_name: "api-bff"
     metrics_path: "/metrics"
     static_configs:
-      - targets: ["api-bff:3000"]
+      # API BFF via NodePort do container Minikube na rede k8s_microservices
+      - targets: ["172.19.0.13:31630"]
+
+  - job_name: "api-consumer"
+    metrics_path: "/metrics"
+    static_configs:
+      # API Consumer via NodePort do container Minikube na rede k8s_microservices
+      - targets: ["172.19.0.13:31053"]
 
   - job_name: "postgres-exporter"
     static_configs:
