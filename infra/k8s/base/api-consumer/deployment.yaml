@@ -6,7 +6,7 @@ metadata:
   labels:
     app: api-consumer
 spec:
-  replicas: 1  # HPA vai controlar
+  replicas: 1
   selector:
     matchLabels:
       app: api-consumer
@@ -22,7 +22,7 @@ spec:
       containers:
       - name: api-consumer
         image: api-consumer:latest
-        imagePullPolicy: Never  # Usa imagem local do Minikube
+        imagePullPolicy: Never
         ports:
         - containerPort: 3001
           name: http

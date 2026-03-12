@@ -6,7 +6,7 @@ metadata:
   labels:
     app: api-bff
 spec:
-  replicas: 1  # HPA vai ajustar
+  replicas: 1
   selector:
     matchLabels:
       app: api-bff

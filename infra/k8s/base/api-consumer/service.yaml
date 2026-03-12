@@ -10,4 +10,4 @@ spec:
   - port: 3001
     targetPort: 3001
     name: http
-  type: LoadBalancer  # Exposto para Prometheus coletar métricas
+  type: LoadBalancer
