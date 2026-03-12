@@ -1,0 +1,28 @@
+<div class="settings-container">
+  <div class="settings-header">
+    <h1>Meu perfil</h1>
+    <p>Suas informações de cadastro</p>
+  </div>
+
+  <div class="settings-content">
+    <nz-card class="profile-card modern-card" nzHoverable>
+      <div class="profile-section">
+        <nz-avatar
+          nzIcon="user"
+          [nzSize]="80"
+          class="profile-avatar"
+        ></nz-avatar>
+        <div class="profile-data">
+          <div class="profile-field">
+            <span class="profile-label">Nome</span>
+            <span class="profile-value">{{ user?.name ?? '—' }}</span>
+          </div>
+          <div class="profile-field">
+            <span class="profile-label">Email</span>
+            <span class="profile-value">{{ user?.email ?? '—' }}</span>
+          </div>
+        </div>
+      </div>
+    </nz-card>
+  </div>
+</div>
