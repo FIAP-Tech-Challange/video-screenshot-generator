@@ -1,6 +1,34 @@
 # Frontend - Video Screenshot Generator
 
-Aplicação frontend desenvolvida com Angular 17 e ng-zorro-antd (Ant Design).
+Interface web desenvolvida com Angular 17 e Ng-Zorro-Antd. Consome o **api-bff** (porta 3000) como backend principal. Faz parte de um monorepo cujas aplicações são orquestradas pelo **docker-compose na raiz** do projeto.
+
+## Execução
+
+### Via Docker Compose (recomendado)
+
+Todas as aplicações do projeto são executadas pelo **docker-compose na raiz** do repositório:
+
+```bash
+# Na raiz do projeto (video-screenshot-generator)
+docker compose up -d --build
+```
+
+O frontend sobe após o `api-bff` estar saudável.
+
+- **URL:** http://localhost:4200 (ou porta definida em `FRONTEND_PORT`)
+- **Proxy:** em Docker, requisições `/api` são encaminhadas para `api-bff:3000`
+
+### Isolado (desenvolvimento)
+
+```bash
+cd projects/frontend
+npm install
+npm start
+```
+
+O proxy (`proxy.conf.json`) encaminha `/api` para `http://localhost:3000` (api-bff).
+
+---
 
 ## 🚀 Tecnologias
 
@@ -84,23 +112,17 @@ npm run lint              # Executar ESLint
 npm run lint:fix          # Executar ESLint com auto-fix
 ```
 
-## 🌍 Ambientes
+## 🌍 Ambientes e integração
 
-### Desenvolvimento
+O frontend se comunica apenas com o **api-bff** (porta 3000). O **api-consumer** (porta 3001) é acionado automaticamente pelo Kafka e não é chamado pelo frontend.
 
-- **URL da API**: `http://localhost:3000/api`
-- **URL do BFF**: `http://localhost:3001/api`
+| Ambiente | URL base | Descrição |
+|----------|----------|-----------|
+| Dev local | `/api` | Proxy encaminha para `http://localhost:3000` |
+| Docker | `/api` | Proxy encaminha para `http://api-bff:3000` |
+| Produção | `/api` | Relativo ao domínio da aplicação |
 
-### Produção
-
-- **URL da API**: `/api` (relativo)
-- **URL do BFF**: `/api` (relativo)
-
-## 🔌 Proxy de Desenvolvimento
-
-O projeto está configurado com um proxy para facilitar o desenvolvimento local. Todas as requisições para `/api` são redirecionadas para `http://localhost:3000`.
-
-Configuração em: `proxy.conf.json`
+Configuração do proxy: `proxy.conf.json` (local) / `proxy.conf.docker.json` (Docker)
 
 ## 🎨 Biblioteca de UI (Ng-Zorro-Antd)
 

@@ -18,9 +18,14 @@ export class EventService implements EventServicePort {
   ) {}
 
   async handleVideoUpload(event: UploadObjectEventPayload): Promise<void> {
-    this.logger.log(`Event received: upload-video.`);
+    this.logger.log(
+      `Event received. Has Records: ${!!event?.Records}, Count: ${event?.Records?.length ?? 0}`,
+    );
 
-    let jobId: string | null = null;
+    const rawKey = event.Records?.[0]?.s3?.object?.key;
+    let jobId: string | null = rawKey
+      ? decodeURIComponent(rawKey.replace(/\+/g, ' ')).split('.')[0]
+      : null;
 
     try {
       const validatedData = this.validateEvent(event);
@@ -47,7 +52,9 @@ export class EventService implements EventServicePort {
       const successMessage = `O processamento do vídeo foi concluído com sucesso, acesse aba de "Meus Vídeos" para baixar os screenshots.`;
       await this.notificationService.createNotification(jobId, successMessage);
     } catch (error) {
-      this.logger.error('Error handling video upload event', error);
+      const msg = error instanceof Error ? error.message : String(error);
+      const stack = error instanceof Error ? error.stack : undefined;
+      this.logger.error(`Error handling video upload event: ${msg}`, stack);
 
       if (jobId) {
         try {
@@ -79,14 +86,17 @@ export class EventService implements EventServicePort {
   private validateEvent(event: UploadObjectEventPayload) {
     const record = event.Records?.[0];
     if (!record) {
+      this.logger.warn(
+        `Invalid event: no Records. Keys: ${JSON.stringify(Object.keys(event || {}))}`,
+      );
       throw new Error('No records found in the event payload');
     }
 
     const objectKey = decodeURIComponent(
-      record.s3.object.key.replace(/\+/g, ' '),
+      (record.s3?.object?.key ?? '').replace(/\+/g, ' '),
     );
     const [jobId, objectExt] = objectKey.split('.');
-    const contentType = record.s3.object.contentType;
+    const contentType = record.s3?.object?.contentType;
 
     if (contentType !== 'video/mp4' && objectExt !== 'mp4') {
       throw new Error(

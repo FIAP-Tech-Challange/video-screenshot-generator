@@ -6,8 +6,9 @@ import { NzIconModule } from 'ng-zorro-antd/icon';
 import { NzProgressModule } from 'ng-zorro-antd/progress';
 import { FileSizePipe } from '../../shared/pipes/file-size.pipe';
 import { VideosService } from '../videos/services/videos.service';
+import { environment } from '../../../environments/environment';
 
-const ACCEPT_VIDEO = '.mp4,.mov,.avi,.mkv,.webm';
+const ACCEPT_VIDEO = '.mp4';
 
 @Component({
   selector: 'app-upload',
@@ -21,7 +22,11 @@ export class UploadComponent implements OnDestroy {
   private readonly videosService = inject(VideosService);
   private readonly router = inject(Router);
 
-  acceptTypes = '.mp4,.mov,.avi,.mkv,.webm';
+  /** Formato aceito: apenas MP4 (alinhado ao api-consumer) */
+  acceptTypes = ACCEPT_VIDEO;
+  /** Tamanho máximo em MB (alinhado ao MAX_FILE_SIZE_MB do api-bff) */
+  readonly maxFileSizeMb = environment.maxFileSizeMb ?? 10;
+  readonly maxFileSizeBytes = (environment.maxFileSizeMb ?? 10) * 1024 * 1024;
 
   uploadProgress = signal(0);
   uploadStatus = signal<'active' | 'success' | 'exception'>('active');
@@ -38,18 +43,17 @@ export class UploadComponent implements OnDestroy {
     const rawFile = file.originFileObj ?? (file as unknown as File);
     const name = file.name ?? rawFile?.name ?? '';
     const size = file.size ?? rawFile?.size ?? 0;
-    const isVideo = ACCEPT_VIDEO.split(',')
-      .map((ext) => ext.trim())
-      .some((ext) => name.toLowerCase().endsWith(ext));
-    if (!isVideo) {
+
+    if (!name.toLowerCase().endsWith('.mp4')) {
       this.message.error(
-        'Apenas vídeos são permitidos (MP4, MOV, AVI, MKV, WebM)'
+        `Formato inválido. Apenas arquivos MP4 são aceitos (máx. ${this.maxFileSizeMb} MB).`
       );
       return false;
     }
-    const isLt100M = size / 1024 / 1024 < 100;
-    if (!isLt100M) {
-      this.message.error('O arquivo deve ter menos de 100MB');
+    if (size > this.maxFileSizeBytes) {
+      this.message.error(
+        `Arquivo muito grande. O tamanho máximo permitido é ${this.maxFileSizeMb} MB.`
+      );
       return false;
     }
     this.currentFile.set(rawFile instanceof File ? rawFile : null);
