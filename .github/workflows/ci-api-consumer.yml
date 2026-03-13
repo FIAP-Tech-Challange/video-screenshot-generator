@@ -1,0 +1,30 @@
+name: CI - api-consumer
+
+on:
+  push:
+    paths:
+      - "projects/api-consumer/**"
+  pull_request:
+    paths:
+      - "projects/api-consumer/**"
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+          cache-dependency-path: projects/api-consumer/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+        working-directory: projects/api-consumer
+
+      - name: Run tests
+        run: npm run test:cov
+        working-directory: projects/api-consumer
