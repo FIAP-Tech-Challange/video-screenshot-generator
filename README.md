@@ -2,8 +2,9 @@
 
 ## ▶️ Apresentação
 
-- [Explicação da infraestrutura](https://youtu.be/QQek4QOU6ng)
-- [Vídeo do repositório](https://youtu.be/1Y4Y__VChjI)
+- [01 - Introdução](https://youtu.be/MfzcyIsv2s8)
+- [02 - Explicação da infraestrutura](https://youtu.be/QQek4QOU6ng)
+- [03 - Vídeo do repositório](https://youtu.be/1Y4Y__VChjI)
 
 ## 👥 Equipe - Grupo 211
 
