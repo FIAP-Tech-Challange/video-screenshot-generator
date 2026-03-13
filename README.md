@@ -2,7 +2,7 @@
 
 ## ▶️ Apresentação
 
-- [Apresentação](https://youtu.be/0TpF8UJVnN4)
+- [Vídeo](https://youtu.be/0TpF8UJVnN4)
 
 ## 👥 Equipe - Grupo 211
 
