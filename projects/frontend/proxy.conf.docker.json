@@ -1,6 +1,6 @@
 {
   "/api": {
-    "target": "http://dev-api-bff.video-app.svc.cluster.local:3000",
+    "target": "http://api-bff:3000",
     "secure": false,
     "changeOrigin": true,
     "logLevel": "debug"
