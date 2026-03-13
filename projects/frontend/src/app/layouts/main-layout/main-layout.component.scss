@@ -1,0 +1,123 @@
+@use "styles/variables" as *;
+
+.layout-wrapper {
+  display: flex;
+  min-height: 100vh;
+  position: relative;
+}
+
+.main-content {
+  flex: 1;
+  margin-left: $sidebar-width;
+  transition: margin-left $transition-speed;
+  min-height: 100vh;
+  background: $color-light;
+
+  &.collapsed {
+    margin-left: $sidebar-collapsed-width;
+  }
+
+  .main-header {
+    position: sticky;
+    top: 0;
+    z-index: 999;
+    height: $header-height;
+    background: white;
+    border-bottom: 1px solid #e5e7eb;
+    padding: 0 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+
+    .header-left {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+
+      .sidebar-toggle {
+        width: 40px;
+        height: 40px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        i {
+          font-size: 18px;
+          color: #6b7280;
+        }
+
+        &:hover i {
+          color: $color-primary;
+        }
+      }
+
+      .page-title {
+        margin: 0;
+        font-size: 20px;
+        font-weight: 600;
+        color: $color-dark;
+      }
+    }
+
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+
+      .user-avatar-dropdown {
+        cursor: pointer;
+
+        nz-avatar {
+          border: 2px solid transparent;
+          transition: border-color 0.2s;
+
+          &:hover {
+            border-color: $color-primary;
+          }
+        }
+      }
+    }
+  }
+
+  .content-wrapper {
+    padding: 24px;
+    max-width: 100%;
+    overflow-x: hidden !important;
+  }
+}
+
+.sidebar-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 999;
+  background: rgba(0, 0, 0, 0.4);
+  animation: fadeIn 0.2s ease-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@media (max-width: 768px) {
+  .main-content {
+    margin-left: 0 !important;
+
+    .main-header {
+      padding: 0 16px;
+
+      .page-title {
+        font-size: 18px;
+      }
+    }
+
+    .content-wrapper {
+      padding: 16px;
+    }
+  }
+}
