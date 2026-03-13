@@ -1,7 +1,7 @@
 <div class="upload-container">
   <div class="upload-header">
     <h1>Upload de Vídeo</h1>
-    <p>Envie seus vídeos nos formatos suportados</p>
+    <p>Apenas MP4, até {{ maxFileSizeMb }} MB</p>
   </div>
 
   <nz-upload
@@ -18,12 +18,12 @@
       </p>
       <p class="ant-upload-text">Clique ou arraste o arquivo para esta área</p>
       <p class="ant-upload-hint">
-        Formatos suportados: MP4, MOV, AVI, MKV, WebM (máx. 100MB)
+        Apenas MP4 (máx. {{ maxFileSizeMb }} MB)
       </p>
     </div>
   </nz-upload>
 
-  @if (uploadProgress() > 0 && uploadProgress() < 100) {
+  @if (uploading() || (uploadProgress() > 0 && uploadProgress() < 100)) {
   <div class="upload-progress">
     <div class="progress-header">
       <h4>Enviando vídeo...</h4>
@@ -46,11 +46,22 @@
     <div class="preview-header">
       <h3>Pré-visualização</h3>
       <div class="preview-actions">
-        <button nz-button nzType="primary" (click)="confirmUpload()">
+        <button
+          nz-button
+          nzType="primary"
+          class="btn-confirm"
+          [disabled]="uploading()"
+          (click)="confirmUpload()"
+        >
           <span nz-icon nzType="check"></span>
-          Confirmar Upload
+          {{ uploading() ? 'Enviando...' : 'Confirmar Upload' }}
         </button>
-        <button nz-button nzType="default" (click)="removePreview()">
+        <button
+          nz-button
+          nzType="default"
+          class="btn-remove"
+          (click)="removePreview()"
+        >
           <span nz-icon nzType="close"></span>
           Remover
         </button>

@@ -15,7 +15,10 @@ export class VideoProcessingRepositoryAdapter implements VideoProcessingReposito
   ) {}
 
   async findById(id: string): Promise<VideoProcessingJob | null> {
-    return this.repository.findOne({ where: { id } });
+    return this.repository.findOne({
+      where: { id },
+      relations: ['user'],
+    });
   }
 
   async updateStatus(

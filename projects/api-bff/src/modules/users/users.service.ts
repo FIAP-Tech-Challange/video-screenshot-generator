@@ -1,9 +1,15 @@
-import { ConflictException, Injectable } from '@nestjs/common';
+import {
+  ConflictException,
+  Injectable,
+  Logger,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import type { Repository } from 'typeorm';
 import { scrypt, randomBytes } from 'node:crypto';
 import { promisify } from 'util';
 import { User } from './user.entity';
+import { CacheService } from '../cache/cache.service';
 
 type SimpleUser = {
   id: string;
@@ -13,12 +19,46 @@ type SimpleUser = {
 
 const scryptAsync = promisify(scrypt);
 
+const USER_CACHE_TTL_SECONDS = 300; // 5 minutes
+const userCacheKey = (id: string) => `user:${id}`;
+
 @Injectable()
 export class UsersService {
+  private readonly logger = new Logger(UsersService.name);
+
   constructor(
     @InjectRepository(User)
     private readonly usersRepository: Repository<User>,
+    private readonly cacheService: CacheService,
   ) {}
+
+  async getUserById(id: string): Promise<SimpleUser> {
+    this.logger.log(`getUserById: id=${id}`);
+
+    const cacheKey = userCacheKey(id);
+
+    const cached = await this.cacheService.get<SimpleUser>(cacheKey);
+    if (cached) {
+      this.logger.log(`getUserById: cache hit for id=${id}`);
+      return cached;
+    }
+
+    const user = await this.usersRepository.findOne({ where: { id } });
+    if (!user) {
+      this.logger.log(`getUserById: not found for id=${id}`);
+      throw new NotFoundException(`User with id "${id}" not found`);
+    }
+
+    const result: SimpleUser = {
+      id: user.id,
+      email: user.email,
+      name: user.name,
+    };
+    await this.cacheService.set(cacheKey, result, USER_CACHE_TTL_SECONDS);
+
+    this.logger.log(`getUserById: user found for id=${id}`);
+    return result;
+  }
 
   async createUser(
     email: string,

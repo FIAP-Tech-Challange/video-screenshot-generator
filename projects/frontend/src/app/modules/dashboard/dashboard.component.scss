@@ -21,8 +21,8 @@
   }
 }
 
-.stats-cards {
-  margin-bottom: 24px;
+.dashboard-cards {
+  margin-bottom: 0;
 }
 
 .modern-card {
@@ -41,8 +41,7 @@
   }
 }
 
-.stat-card,
-.action-card {
+.dashboard-card {
   .card-content {
     display: flex;
     align-items: center;
@@ -67,6 +66,14 @@
       font-size: 24px;
       color: #fff;
     }
+
+    &.card-icon-videos {
+      background: linear-gradient(135deg, #667eea, #764ba2);
+    }
+
+    &.card-icon-upload {
+      background: linear-gradient(135deg, #f093fb, #f5576c);
+    }
   }
 
   .card-info {
@@ -87,57 +94,8 @@
     }
   }
 
-  .trend {
-    font-size: 13px;
-    font-weight: 600;
-
-    &.up {
-      color: $color-success;
-    }
-  }
-
   .arrow {
     font-size: 18px;
     color: rgba(0, 0, 0, 0.25);
-  }
-
-  nz-progress {
-    width: 100%;
-    margin-top: 8px;
-  }
-}
-
-.activity-section {
-  margin-top: 24px;
-}
-
-.activity-card {
-  .card-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: 20px;
-
-    h3 {
-      margin: 0;
-      font-size: 18px;
-      font-weight: 600;
-      color: $color-dark;
-    }
-
-    .anticon {
-      font-size: 20px;
-      color: rgba(0, 0, 0, 0.25);
-    }
-  }
-
-  .time {
-    font-size: 12px;
-    color: rgba(0, 0, 0, 0.45);
-  }
-
-  ::ng-deep .ant-timeline-item-content p {
-    margin: 0 0 4px;
-    font-size: 14px;
   }
 }

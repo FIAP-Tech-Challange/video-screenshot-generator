@@ -17,6 +17,14 @@ export class SwaggerDoc {
     const document = SwaggerModule.createDocument(app, config);
 
     SwaggerModule.setup('docs', app, document);
-    writeFileSync('./swagger-docs.json', JSON.stringify(document));
+    
+    // Only write file in development mode
+    if (process.env.NODE_ENV === 'development') {
+      try {
+        writeFileSync('./swagger-docs.json', JSON.stringify(document));
+      } catch (error) {
+        console.warn('⚠️ Could not write swagger-docs.json:', error.message);
+      }
+    }
   };
 }

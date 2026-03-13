@@ -24,11 +24,14 @@ import {
   RightOutline,
   EyeOutline,
   EyeInvisibleOutline,
+  DownloadOutline,
+  LoadingOutline,
 } from '@ant-design/icons-angular/icons';
 
 import { routes } from './app.routes';
 import { authInterceptor } from './core/interceptors/auth.interceptor';
 import { httpErrorInterceptor } from './core/interceptors/http-error.interceptor';
+import { unauthorizedInterceptor } from './core/interceptors/unauthorized.interceptor';
 
 registerLocaleData(pt);
 
@@ -49,6 +52,8 @@ const icons = [
   RightOutline,
   EyeOutline,
   EyeInvisibleOutline,
+  DownloadOutline,
+  LoadingOutline,
 ];
 
 export const appConfig: ApplicationConfig = {
@@ -56,7 +61,11 @@ export const appConfig: ApplicationConfig = {
     provideRouter(routes),
     provideAnimations(),
     provideHttpClient(
-      withInterceptors([authInterceptor, httpErrorInterceptor])
+      withInterceptors([
+        authInterceptor,
+        httpErrorInterceptor,
+        unauthorizedInterceptor,
+      ])
     ),
     provideNzI18n(pt_BR),
     { provide: NZ_ICONS, useValue: icons },

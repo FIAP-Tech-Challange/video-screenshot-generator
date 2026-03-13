@@ -139,7 +139,7 @@ describe('VideoProcessingJobService - Unit', () => {
 
       await expect(
         service.getScreenshotsDownloadUrl(job.userId, job.id),
-      ).rejects.toThrow('Job is not completed yet');
+      ).rejects.toThrow('Job is not on success status');
 
       // ensure we did query the repo
       expect(mockRepo.findOne).toHaveBeenCalledWith({

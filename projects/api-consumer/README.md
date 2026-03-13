@@ -1,98 +1,126 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
-</p>
+# API Consumer - Video Screenshot Generator
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+Serviço consumidor de eventos Kafka que processa vídeos enviados ao MinIO, gera screenshots via FFmpeg e notifica o usuário por e-mail.
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+## Tecnologias
 
-## Description
+| Tecnologia | Versão | Uso |
+|------------|--------|-----|
+| NestJS | 11.x | Framework principal |
+| TypeScript | 5.x | Linguagem |
+| KafkaJS | 2.x | Consumidor Kafka |
+| TypeORM | 0.3.x | ORM para PostgreSQL |
+| PostgreSQL | 15 | Banco de dados (compartilhado com api-bff) |
+| FFmpeg (fluent-ffmpeg) | 2.x | Geração de screenshots de vídeo |
+| MinIO (S3) | AWS SDK | Storage de vídeos e screenshots |
+| Nodemailer | 8.x | Envio de e-mails |
+| Swagger | 11.x | Documentação da API |
+| Prometheus | prom-client | Métricas |
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+## Arquitetura
 
-## Project setup
+Arquitetura hexagonal com módulos bem definidos:
 
-```bash
-$ npm install
+```
+src/
+├── main.ts                    # Bootstrap + microserviço Kafka
+├── app.module.ts
+├── config/                    # validate-env, typeorm, health
+│   └── health/                # GET /health
+├── docs/                      # Swagger
+└── modules/
+    ├── event/                 # Consumidor Kafka, orquestra o fluxo
+    │   ├── adapters/primary/  # EventController (HTTP opcional)
+    │   ├── services/          # EventService (handleVideoUpload)
+    │   ├── ports/             # EventServicePort
+    │   └── types/             # UploadObjectEventPayload
+    ├── video-processing/      # Repositório de jobs, atualização de status
+    │   ├── adapters/secondary/database/  # VideoProcessingRepositoryAdapter
+    │   ├── services/          # VideoProcessingService
+    │   └── models/            # Entidades (job, user)
+    ├── storage/               # MinIO, FFmpeg, geração de screenshots
+    │   ├── adapters/secondary/  # S3StorageAdapter, FfmpegVideoAdapter
+    │   ├── services/          # StorageService (generateAndSaveScreenshots)
+    │   └── ports/             # FileStoragePort, VideoProcessorPort
+    ├── notification/          # Notificações no banco
+    └── mail/                  # E-mail (Nodemailer)
 ```
 
-## Compile and run the project
+## Fluxo de processamento
+
+1. **MinIO** envia evento `put` para o tópico Kafka `upload-video` quando um vídeo é enviado
+2. **EventService** consome o evento e valida o payload (apenas MP4)
+3. **StorageService** baixa o vídeo do MinIO, gera screenshots via FFmpeg, compacta em ZIP e faz upload no bucket de screenshots
+4. **VideoProcessingService** atualiza o status do job (SUCCESS ou ERROR)
+5. **MailService** envia e-mail de sucesso ou erro ao usuário
+6. **NotificationService** persiste notificação no banco
+
+## Endpoints HTTP
+
+O serviço também expõe rotas REST (para uso alternativo ou testes):
+
+| Método | Endpoint | Descrição |
+|--------|----------|-----------|
+| GET | `/health` | Health check |
+| GET | `/metrics` | Métricas Prometheus |
+| GET | `/docs` | Documentação Swagger interativa |
+
+## Execução
+
+### Via Docker Compose (recomendado)
+
+Todas as aplicações do projeto são executadas pelo **docker-compose na raiz** do repositório:
 
 ```bash
-# development
-$ npm run start
-
-# watch mode
-$ npm run start:dev
-
-# production mode
-$ npm run start:prod
+# Na raiz do projeto (video-screenshot-generator)
+docker compose up -d --build
 ```
 
-## Run tests
+O `api-consumer` sobe após Postgres, migrations, Kafka, MinIO (init) e Prometheus.
+
+- **URL:** http://localhost:3001  
+- **Health:** http://localhost:3001/health  
+- **Swagger:** http://localhost:3001/docs  
+- **Porta:** configurável via `API_CONSUMER_PORT` no `.env`
+
+### Isolado (desenvolvimento)
 
 ```bash
-# unit tests
-$ npm run test
-
-# e2e tests
-$ npm run test:e2e
-
-# test coverage
-$ npm run test:cov
+cd projects/api-consumer
+npm install
+npm run start:dev
 ```
 
-## Deployment
+Requisições: PostgreSQL, Kafka, MinIO, e SMTP configurado.
 
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
+## Variáveis de ambiente
 
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
+| Variável | Descrição |
+|----------|-----------|
+| `PORT` / `API_CONSUMER_PORT` | Porta do servidor (padrão 3001) |
+| `DB_URL` | Connection string PostgreSQL |
+| `KAFKA_BROKER` | Brokers Kafka (ex: `kafka:9093`) |
+| `MINIO_URL` | URL do MinIO |
+| `MINIO_ACCESS_KEY` / `MINIO_SECRET_KEY` | Credenciais MinIO |
+| `BUCKET_VIDEO_NAME` / `BUCKET_SCREENSHOT_NAME` | Nomes dos buckets |
+| `SMTP_HOST` / `SMTP_PORT` / `SMTP_USER` / `SMTP_PASS` | Configuração SMTP |
+
+## Scripts
 
 ```bash
-$ npm install -g @nestjs/mau
-$ mau deploy
+npm run start:dev   # Desenvolvimento com watch
+npm run start:prod  # Produção
+npm test            # Testes unitários
+npm run test:cov    # Cobertura
+npm run lint        # ESLint
 ```
 
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
+## Integração com o restante do sistema
 
-## Resources
+- **api-bff**: Cria jobs e URLs presigned; o frontend faz upload direto no MinIO
+- **api-consumer**: Consome eventos Kafka do MinIO, processa vídeos e atualiza os mesmos jobs no banco compartilhado
+- O frontend consulta o `api-bff` para listar jobs e obter o link de download das screenshots
 
-Check out a few resources that may come in handy when working with NestJS:
+## Licença
 
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
-
-## Support
-
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
-
-## Stay in touch
-
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
-
-## License
-
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+UNLICENSED – Video Screenshot Generator
