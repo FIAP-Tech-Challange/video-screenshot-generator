@@ -1,0 +1,21 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+namespace: video-app
+
+resources:
+  - namespace.yaml
+  - configmap.yaml
+  - secrets.yaml
+  - api-bff/deployment.yaml
+  - api-bff/service.yaml
+  - api-bff/hpa.yaml
+  - api-consumer/deployment.yaml
+  - api-consumer/service.yaml
+  - api-consumer/hpa.yaml
+  - frontend/deployment.yaml
+  - frontend/service.yaml
+
+commonLabels:
+  project: video-screenshot-generator
+  managed-by: kustomize
